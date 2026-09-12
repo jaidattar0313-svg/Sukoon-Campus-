@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#8b5cf6">
+    <title>Sukoon Campus — Padhai bhi, Sukoon bhi</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js for Mood Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* CSS Variables & Theme Setup */
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #8b5cf6; /* Soft Purple */
+            --primary-hover: #7c3aed;
+            --secondary: #10b981; /* Mint Green */
+            --secondary-hover: #059669;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --radius: 12px;
+            --danger: #ef4444;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #a78bfa;
+            --primary-hover: #8b5cf6;
+            --secondary: #34d399;
+            --secondary-hover: #10b981;
+            --border: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Prevent Auto Zoom on Inputs in iOS */
+        input, select, textarea, button {
+            font-size: 16px !important;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* HEADER */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .logo-box {
+            background-color: var(--primary);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle, .hamburger-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* NAVIGATION DRAWER */
+        .nav-drawer {
+            position: fixed;
+            top: 70px;
+            right: -100%;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background-color: var(--bg-surface);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 999;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-drawer.active {
+            right: 0;
+        }
+
+        .nav-link {
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-main);
+            border-radius: 8px;
+            font-weight: 500;
+            display: block;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background-color: var(--bg-primary);
+            color: var(--primary);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-primary) 100%);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .hero-btns {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+
+        /* TABS SECTION */
+        .tabs-section {
+            padding: 20px 0 60px;
+        }
+
+        .tabs-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-surface);
+            color: var(--text-muted);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            background-color: var(--bg-surface);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* CHATBOT TAB */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            background-color: var(--bg-primary);
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+        }
+
+        .message.bot {
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border: 1px solid var(--border);
+        }
+
+        .message.user {
+            background-color: var(--primary);
+            color: #ffffff;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-input-zone {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-zone input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            outline: none;
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+        }
+
+        /* MOOD TRACKER TAB */
+        .mood-selector {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .mood-btn {
+            font-size: 2.2rem;
+            background: none;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .mood-btn:hover, .mood-btn.selected {
+            transform: scale(1.2);
+            border-color: var(--primary);
+        }
+
+        /* STUDY PLANNER & TIMETABLE TABLES */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+        }
+
+        /* FLOATING EMERGENCY SOS BUTTON */
+        .sos-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+            border: 2px solid #ffffff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--bg-surface);
+            padding: 30px;
+            border-radius: var(--radius);
+            max-width: 450px;
+            width: 100%;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        /* ADMIN DASHBOARD CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-primary);
+            padding: 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-danger { background-color: #fee2e2; color: #dc2626; }
+        .badge-success { background-color: #d1fae5; color: #059669; }
+
+        /* FOOTER */
+        footer {
+            background-color: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* RESPONSIVE DESIGN ADJUSTMENTS */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero p { font-size: 0.95rem; }
+            .tabs-nav { justify-content: flex-start; }
+            .modal-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <div class="logo-box">SC</div>
+                <span>Sukoon Campus</span>
+            </a>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌙</button>
+                <button class="hamburger-btn" id="menuToggle" title="Menu">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION DRAWER -->
+    <nav class="nav-drawer" id="navDrawer">
+        <a class="nav-link" onclick="openModal('loginModal'); toggleMenu();">Login</a>
+        <a class="nav-link" onclick="openModal('signupModal'); toggleMenu();">Signup</a>
+        <a class="nav-link" onclick="switchTab('tab1'); toggleMenu();">AI Chatbot</a>
+        <a class="nav-link" onclick="switchTab('tab2'); toggleMenu();">Mood Tracker</a>
+        <a class="nav-link" onclick="switchTab('tab3'); toggleMenu();">Study Planner</a>
+        <a class="nav-link" onclick="switchTab('tab4'); toggleMenu();">Timetable Generator</a>
+        <a class="nav-link" onclick="openModal('adminModal'); toggleMenu();">Admin Login</a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container">
+            <h1>Padhai bhi, Sukoon bhi.</h1>
+            <p>An AI-powered platform for student mental wellness and smart academic scheduling.</p>
+            <div class="hero-btns">
+                <button class="btn btn-primary" onclick="switchTab('tab1')">💬 Talk to AI</button>
+                <button class="btn btn-secondary" onclick="switchTab('tab4')">📅 Generate Timetable</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN FEATURE TABS -->
+    <section class="container tabs-section">
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('tab1')">AI Chatbot</button>
+            <button class="tab-btn" onclick="switchTab('tab2')">Mood Tracker</button>
+            <button class="tab-btn" onclick="switchTab('tab3')">Study Planner</button>
+            <button class="tab-btn" onclick="switchTab('tab4')">Timetable Generator</button>
+            <button class="tab-btn" onclick="switchTab('tab5')" id="adminTabBtn" style="display:none;">Admin Dashboard</button>
+        </div>
+
+        <!-- TAB 1: AI CHATBOT -->
+        <div id="tab1" class="tab-content active">
+            <h2>Sukoon AI Companion</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">A safe space to express your feelings and stress free from judgment.</p>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">Hello! I am Sukoon AI. How are you feeling about your studies today?</div>
+                </div>
+                <div class="chat-input-zone">
+                    <input type="text" id="chatInput" placeholder="Type your thoughts here..." onkeypress="handleChatKey(event)">
+                    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: MOOD TRACKER -->
+        <div id="tab2" class="tab-content">
+            <h2>Daily Mood Check-in</h2>
+            <p style="color: var(--text-muted);">Track your mental wellness over time.</p>
+            
+            <div class="mood-selector">
+                <button class="mood-btn" onclick="logMood('😊', 'Happy')">😊</button>
+                <button class="mood-btn" onclick="logMood('😐', 'Neutral')">😐</button>
+                <button class="mood-btn" onclick="logMood('😔', 'Sad')">😔</button>
+                <button class="mood-btn" onclick="logMood('😢', 'Anxious')">😢</button>
+                <button class="mood-btn" onclick="logMood('😡', 'Stressed')">😡</button>
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Weekly Mood History</h3>
+            <canvas id="moodChart" style="max-height: 250px; width: 100%;"></canvas>
+        </div>
+
+        <!-- TAB 3: STUDY PLANNER -->
+        <div id="tab3" class="tab-content">
+            <h2>AI Personalised Study Planner</h2>
+            <form onsubmit="generateStudyPlan(event)">
+                <div class="form-group">
+                    <label>Subjects (comma separated)</label>
+                    <input type="text" id="subjects" placeholder="Data Structures, DBMS, Math" required>
+                </div>
+                <div class="form-group">
+                    <label>Daily Available Study Hours</label>
+                    <input type="number" id="studyHours" placeholder="4" min="1" max="16" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Generate Study Plan</button>
+            </form>
+
+            <div id="studyPlanResult" class="table-responsive" style="display:none;">
+                <h3 style="margin-top: 20px;">Your Custom Study Schedule</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time Slot</th>
+                            <th>Subject</th>
+                            <th>Focus Area</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studyPlanBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 4: TIMETABLE GENERATOR -->
+        <div id="tab4" class="tab-content">
+            <h2>Automated College Timetable Generator</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Generate optimized, conflict-free schedules with integrated break slots.</p>
+            
+            <div class="form-group">
+                <label>Select Department & Semester</label>
+                <select id="deptSelect">
+                    <option>Computer Science - Sem 4</option>
+                    <option>Information Technology - Sem 6</option>
+                    <option>Electronics - Sem 2</option>
+                </select>
+            </div>
+            <button class="btn btn-secondary" onclick="generateTimetable()">Generate Optimal Timetable</button>
+
+            <div id="timetableResult" class="table-responsive" style="margin-top:20px;">
+                <!-- Demo Generated Timetable -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Day / Time</th>
+                            <th>09:00 - 10:00</th>
+                            <th>10:00 - 11:00</th>
+                            <th>11:15 - 12:15</th>
+                            <th>12:15 - 01:15 (Break)</th>
+                            <th>01:15 - 03:15</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Monday</strong></td>
+                            <td>OS (Lecture)</td>
+                            <td>DBMS (Lecture)</td>
+                            <td>AI (Lecture)</td>
+                            <td>🥗 Sukoon Break</td>
+                            <td>Web Dev Lab</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tuesday</strong></td>
+                            <td>Maths (Lecture)</td>
+                            <td>OS (Lecture)</td>
+                            <td>CN (Lecture)</td>
+                            <td>🥗 Sukoon Break</td>
+                            <td>DBMS Lab</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wednesday</strong></td>
+                            <td>AI (Lecture)</td>
+                            <td>CN (Lecture)</td>
+                            <td>Maths (Lecture)</td>
+                            <td>🥗 Sukoon Break</td>
+                            <td>Self-Study / Wellness</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 5: ADMIN DASHBOARD -->
+        <div id="tab5" class="tab-content">
+            <h2>Admin Dashboard — Wellness & Scheduling Overview</h2>
+            <br>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>1,240</h3>
+                    <p>Total Students</p>
+                </div>
+                <div class="stat-card">
+                    <h3>856</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat-card">
+                    <h3 style="color: var(--danger);">12</h3>
+                    <p>Mood Alerts Flagged</p>
+                </div>
+                <div class="stat-card">
+                    <h3>3</h3>
+                    <p>Pending Actions</p>
+                </div>
+            </div>
+
+            <h3>Student Status Flags</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Logged Mood Status</th>
+                            <th>Action Needed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CS2025-045</td>
+                            <td>Rahul Sharma</td>
+                            <td>CSE - Sem 4</td>
+                            <td><span class="badge badge-danger">Sad (3 consecutive days)</span></td>
+                            <td><button class="btn btn-primary" style="padding: 4px 10px; font-size: 0.8rem;" onclick="alert('Counselor Notification Sent')">Notify Counselor</button></td>
+                        </tr>
+                        <tr>
+                            <td>IT2025-012</td>
+                            <td>Priya Patel</td>
+                            <td>IT - Sem 6</td>
+                            <td><span class="badge badge-success">Neutral / Stable</span></td>
+                            <td>None</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FLOATING EMERGENCY SOS BUTTON -->
+    <div class="sos-btn" onclick="openModal('sosModal')" title="Emergency Wellness Helpline">SOS</div>
+
+    <!-- SOS MODAL -->
+    <div class="modal" id="sosModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('sosModal')">&times;</span>
+            <h2 style="color: var(--danger); margin-bottom: 15px;">Emergency Wellness Support</h2>
+            <p>If you or someone you know is feeling overwhelmed, immediate help is available:</p>
+            <br>
+            <div style="background-color: var(--bg-primary); padding: 15px; border-radius: 8px;">
+                <p><strong>📞 KIRAN National Helpline:</strong></p>
+                <a href="tel:18005990019" style="font-size: 1.2rem; color: var(--primary); text-decoration: none; font-weight: 700;">1800-599-0019</a>
+                <br><br>
+                <p><strong>🏫 Campus Counselor Desk:</strong></p>
+                <a href="tel:+919876543210" style="color: var(--secondary); text-decoration: none; font-weight: 600;">+91 98765 43210</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOOD ALERT MODAL -->
+    <div class="modal" id="moodAlertModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('moodAlertModal')">&times;</span>
+            <h2>We're here for you 💜</h2>
+            <br>
+            <p>We noticed you've been feeling down for a few consecutive days. Remember, it's completely okay to ask for support.</p>
+            <br>
+            <p>Would you like to connect with a campus counselor or call the toll-free KIRAN Mental Health Helpline?</p>
+            <br>
+            <a href="tel:18005990019" class="btn btn-primary" style="width: 100%; text-align: center; justify-content: center;">Call KIRAN Helpline (1800-599-0019)</a>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Student Login</h2>
+            <br>
+            <form onsubmit="handleAuth(event, 'Student Login successful!')">
+                <div class="form-group">
+                    <label>College Email ID</label>
+                    <input type="email" placeholder="student@college.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SIGNUP MODAL -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('signupModal')">&times;</span>
+            <h2>Create Student Account</h2>
+            <br>
+            <form onsubmit="handleAuth(event, 'Registration successful!')">
+                <div class="form-group">
+                    <label>College Email ID</label>
+                    <input type="email" placeholder="student@college.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>Roll Number</label>
+                    <input type="text" placeholder="CS2025-XXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-secondary" style="width:100%;">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('adminModal')">&times;</span>
+            <h2>Admin Portal Login</h2>
+            <br>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Admin ID</label>
+                    <input type="text" placeholder="admin@college.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>Access Code</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Login as Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <h3>Sukoon Campus</h3>
+            <p>A Student Well-being & Academic Management Initiative for SIH 2025</p>
+            <div class="footer-links">
+                <a href="#" onclick="openModal('sosModal')">Helpline Numbers</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+                <a href="#">Terms & Privacy</a>
+            </div>
+            <p style="font-size: 0.85rem; margin-top: 15px;">&copy; 2025 Sukoon Campus. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // DARK MODE TOGGLE LOGIC
+        const themeToggleBtn = document.getElementById('themeToggle');
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            themeToggleBtn.textContent = targetTheme === 'dark' ? '☀️' : '🌙';
+        });
+
+        // MENU DRAWER TOGGLE
+        const menuToggleBtn = document.getElementById('menuToggle');
+        const navDrawer = document.getElementById('navDrawer');
+        menuToggleBtn.addEventListener('click', toggleMenu);
+
+        function toggleMenu() {
+            navDrawer.classList.toggle('active');
+        }
+
+        // TAB SWITCHING
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight Tab Button
+            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        // MODAL MANAGEMENT
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function handleAuth(e, message) {
+            e.preventDefault();
+            alert(message);
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            closeModal('adminModal');
+            document.getElementById('adminTabBtn').style.display = 'inline-block';
+            switchTab('tab5');
+            alert('Admin Authentication Successful.');
+        }
+
+        // CHATBOT LOGIC
+        function handleChatKey(event) {
+            if (event.key === 'Enter') sendMessage();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const messageText = input.value.trim();
+            if (!messageText) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+
+            // Render User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.textContent = messageText;
+            chatMessages.appendChild(userMsg);
+            input.value = '';
+
+            // Auto-scroll
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulated Gemini API Response Callback Structure
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot';
+                botMsg.textContent = getAIResponse(messageText);
+                chatMessages.appendChild(botMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 800);
+        }
+
+        function getAIResponse(userText) {
+            const text = userText.toLowerCase();
+            if (text.includes('stress') || text.includes('exam') || text.includes('scared')) {
+                return "Take a deep breath! Exams measure your knowledge, not your worth. Break your study time into short 25-minute sprints using the Pomodoro technique.";
+            } else if (text.includes('sad') || text.includes('lonely') || text.includes('depressed')) {
+                return "I'm really sorry you're feeling this way. Remember you are not alone. Consider using our Mood Tracker or reaching out to a campus peer.";
+            } else {
+                return "I hear you. Balancing college life can be challenging. Remember to schedule short wellness breaks alongside your studies!";
+            }
+        }
+
+        /* GEMINI API INTEGRATION EXAMPLE (Ready for backend/env integration)
+        async function fetchGeminiResponse(prompt) {
+            const API_KEY = "YOUR_GEMINI_API_KEY";
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+        */
+
+        // MOOD TRACKER LOGIC
+        let sadStreak = 0;
+        function logMood(emoji, moodName) {
+            alert(`Logged mood: ${emoji} ${moodName}`);
+            
+            if (moodName === 'Sad' || moodName === 'Anxious' || moodName === 'Stressed') {
+                sadStreak++;
+            } else {
+                sadStreak = 0;
+            }
+
+            // Check trigger condition for modal (e.g. 3 consecutive sad mood logs)
+            if (sadStreak >= 3) {
+                openModal('moodAlertModal');
+            }
+        }
+
+        // INITIALIZE CHART.JS FOR MOOD HISTORY
+        window.onload = function() {
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Mood Level (1: Low - 5: High)',
+                        data: [3, 2, 4, 2, 1, 1, 1], // Simulated sequential data
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { min: 1, max: 5 }
+                    }
+                }
+            });
+        };
+
+        // STUDY PLAN GENERATOR LOGIC
+        function generateStudyPlan(e) {
+            e.preventDefault();
+            const subjectsStr = document.getElementById('subjects').value;
+            const hours = parseInt(document.getElementById('studyHours').value);
+            const subjects = subjectsStr.split(',').map(s => s.trim());
+            const tbody = document.getElementById('studyPlanBody');
+
+            tbody.innerHTML = '';
+
+            subjects.forEach((subj, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>Slot ${idx + 1} (${Math.round(hours / subjects.length)} hrs)</td>
+                    <td><strong>${subj}</strong></td>
+                    <td>Core Concept Review & Practice Problems</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('studyPlanResult').style.display = 'block';
+        }
+
+        // TIMETABLE GENERATOR LOGIC
+        function generateTimetable() {
+            alert('Timetable generated and optimized with Sukoon break slots!');
+        }
+    </script>
+</body>
+</html>

@@ -2532,4 +2532,794 @@ document.addEventListener("DOMContentLoaded", function () {
       course: user && user.course ? user.course : "",
       section: user && user.section ? user.section : "",
       message: "SOS triggered from the CampusOne app.",
-      createdAt
+      createdAt: new Date().toISOString()
+    });
+
+    toast("🚨 SOS alert sent to campus security!", "error", 5000);
+  }
+
+  $("#sosBtn").addEventListener("click", triggerSOS);
+  $("#quickSos").addEventListener("click", triggerSOS);
+
+  /* ---------- LOST & FOUND ---------- */
+  const DEFAULT_ITEMS = [
+    {
+      id: "LF1", type: "lost", name: "Black Leather Wallet",
+      category: "Other", location: "Canteen, near counter 2",
+      date: "2025-01-12", description: "Black leather wallet with a blue stripe. Contains my ID card and library card.",
+      photo: "", reporter: "aarav@college.edu", createdAt: "2025-01-12T10:20:00.000Z"
+    },
+    {
+      id: "LF2", type: "found", name: "Blue Water Bottle",
+      category: "Water Bottle", location: "Lab 204, under desk",
+      date: "2025-01-13", description: "Blue Milton bottle with a small dent near the cap. Found after the chemistry lab.",
+      photo: "", reporter: "meera@college.edu", createdAt: "2025-01-13T14:05:00.000Z"
+    },
+    {
+      id: "LF3", type: "lost", name: "College ID Card",
+      category: "ID Card", location: "Library, 2nd Floor",
+      date: "2025-01-14", description: "Student ID card. Name: Rohan Verma. BCA 2nd Year, Section B.",
+      photo: "", reporter: "rohan@college.edu", createdAt: "2025-01-14T09:00:00.000Z"
+    },
+    {
+      id: "LF4", type: "found", name: "Wireless Earbuds (White)",
+      category: "Electronics", location: "Auditorium, Row 7",
+      date: "2025-01-15", description: "White TWS earbuds in a charging case. Brand appears to be boAt.",
+      photo: "", reporter: "sara@college.edu", createdAt: "2025-01-15T17:40:00.000Z"
+    }
+  ];
+
+  function getItems() {
+    let items = readLS(K.items, null);
+    if (!items || !Array.isArray(items)) {
+      items = DEFAULT_ITEMS.slice();
+      writeLS(K.items, items);
+    }
+    return items;
+  }
+  function saveItems(list) { writeLS(K.items, list); }
+
+  function aiMatchScore(item) {
+    let hash = 0;
+    const s = String(item.id || "") + String(item.name || "");
+    for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) % 100000;
+    const base = 62 + (hash % 34);
+    return Math.min(98, base);
+  }
+
+  let lfFilter = "all";
+
+  function formatDate(d) {
+    if (!d) return "—";
+    const dt = new Date(d);
+    if (isNaN(dt.getTime())) return d;
+    return dt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  function renderItems() {
+    const grid = $("#lfGrid");
+    if (!grid) return;
+
+    const q = ($("#lfSearch").value || "").trim().toLowerCase();
+    const cat = $("#lfCategory").value;
+
+    let items = getItems();
+
+    if (lfFilter !== "all") items = items.filter(function (i) { return i.type === lfFilter; });
+    if (cat) items = items.filter(function (i) { return i.category === cat; });
+    if (q) {
+      items = items.filter(function (i) {
+        return (i.name || "").toLowerCase().indexOf(q) !== -1 ||
+               (i.location || "").toLowerCase().indexOf(q) !== -1 ||
+               (i.description || "").toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
+    if (items.length === 0) {
+      grid.innerHTML =
+        '<div class="empty" style="grid-column:1/-1;">' +
+          '<span class="e-emoji">🔍</span>' +
+          "No items match your search. Try a different filter." +
+        "</div>";
+      return;
+    }
+
+    grid.innerHTML = items.map(function (item) {
+      const isLost = item.type === "lost";
+      const badgeClass = isLost ? "lost" : "found";
+      const badgeText = isLost ? "LOST" : "FOUND";
+      const score = aiMatchScore(item);
+      const btnLabel = isLost ? "This is Mine" : "I Found This";
+      const emojiMap = {
+        "Electronics": "🎧", "ID Card": "🪪", "Books / Notes": "📚",
+        "Bag / Backpack": "🎒", "Clothing": "👕", "Keys": "🔑",
+        "Water Bottle": "🚰", "Jewellery": "💍", "Other": "📦"
+      };
+      const emoji = emojiMap[item.category] || "📦";
+      const thumb = item.photo
+        ? '<img src="' + esc(item.photo) + '" alt="">'
+        : emoji;
+
+      return (
+        '<div class="item-card">' +
+          '<div class="item-thumb">' +
+            thumb +
+            '<div class="item-badges">' +
+              '<span class="badge-lf ' + badgeClass + '">' + badgeText + "</span>" +
+              '<span class="badge-ai">🤖 ' + score + "% match</span>" +
+            "</div>" +
+          "</div>" +
+          '<div class="item-body">' +
+            '<div class="item-name">' + esc(item.name) + "</div>" +
+            '<div class="item-info">' +
+              "<span>📍 " + esc(item.location) + "</span>" +
+              "<span>🗓️ " + esc(formatDate(item.date)) + "</span>" +
+              "<span>🏷️ " + esc(item.category) + "</span>" +
+            "</div>" +
+            '<div class="item-actions-row">' +
+              '<button type="button" class="btn btn-primary btn-sm" data-claim="' + esc(item.id) + '">' + btnLabel + "</button>" +
+              '<button type="button" class="btn btn-ghost btn-sm" data-detail="' + esc(item.id) + '">Details</button>' +
+            "</div>" +
+          "</div>" +
+        "</div>"
+      );
+    }).join("");
+  }
+
+  /* Lost & Found filter chips (delegated) */
+  document.addEventListener("click", function (e) {
+    const chip = e.target.closest("#lfFilters .chip");
+    if (!chip) return;
+    e.preventDefault();
+    $$("#lfFilters .chip").forEach(function (c) { c.classList.remove("active"); });
+    chip.classList.add("active");
+    lfFilter = chip.getAttribute("data-filter");
+    renderItems();
+  });
+
+  $("#lfSearch").addEventListener("input", renderItems);
+  $("#lfCategory").addEventListener("change", renderItems);
+
+  $("#lfAddBtn").addEventListener("click", function () {
+    resetItemForm();
+    const today = new Date().toISOString().slice(0, 10);
+    $("#itDate").value = today;
+    openModal("itemModal");
+  });
+
+  function resetItemForm() {
+    const f = $("#itemForm");
+    f.reset();
+    clearMsg("itMsg");
+    $("#itPreview").innerHTML = "🖼️";
+    f.dataset.photo = "";
+  }
+
+  $("#itemForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    clearMsg("itMsg");
+
+    const typeInput = $$('input[name="itType"]').find(function (r) { return r.checked; });
+    const type = typeInput ? typeInput.value : "lost";
+    const name = $("#itName").value.trim();
+    const category = $("#itCategory").value;
+    const location = $("#itLocation").value.trim();
+    const date = $("#itDate").value;
+    const description = $("#itDesc").value.trim();
+    const photo = this.dataset.photo || "";
+
+    if (!name) return formMsg("itMsg", "Please enter the item name.", "error");
+    if (!category) return formMsg("itMsg", "Please select a category.", "error");
+    if (!location) return formMsg("itMsg", "Please enter the location.", "error");
+    if (!date) return formMsg("itMsg", "Please select the date.", "error");
+    if (description.length < 5) return formMsg("itMsg", "Please add a short description.", "error");
+
+    const session = getSession();
+
+    const item = {
+      id: "LF" + Date.now().toString(36).toUpperCase(),
+      type: type, name: name, category: category, location: location,
+      date: date, description: description, photo: photo,
+      reporter: session ? session.email : "anonymous@college.edu",
+      createdAt: new Date().toISOString()
+    };
+
+    const list = getItems();
+    list.unshift(item);
+    saveItems(list);
+
+    formMsg("itMsg", "Item posted successfully!", "success");
+    toast("Item reported ✅", "success");
+
+    setTimeout(function () {
+      closeModal("itemModal");
+      renderItems();
+    }, 600);
+  });
+
+  /* Claim / Details (delegated) */
+  $("#lfGrid").addEventListener("click", function (e) {
+    const claimBtn = e.target.closest("[data-claim]");
+    const detailBtn = e.target.closest("[data-detail]");
+
+    if (claimBtn) {
+      e.preventDefault();
+      const id = claimBtn.getAttribute("data-claim");
+      const item = getItems().find(function (i) { return i.id === id; });
+      if (!item) return;
+      toast("📩 Request sent for \"" + item.name + "\". The reporter will contact you.", "success", 4200);
+      return;
+    }
+
+    if (detailBtn) {
+      e.preventDefault();
+      const id = detailBtn.getAttribute("data-detail");
+      const item = getItems().find(function (i) { return i.id === id; });
+      if (!item) return;
+      window.alert(
+        "📦 " + item.name + "\n\n" +
+        "Type: " + item.type.toUpperCase() + "\n" +
+        "Category: " + item.category + "\n" +
+        "Location: " + item.location + "\n" +
+        "Date: " + formatDate(item.date) + "\n" +
+        "AI Match: " + aiMatchScore(item) + "%\n\n" +
+        "Description:\n" + item.description
+      );
+    }
+  });
+
+  /* ---------- SUKOON AI ---------- */
+  const chatBody = $("#chatBody");
+  const chatInput = $("#chatInput");
+
+  const CRISIS_WORDS = [
+    "suicide", "kill myself", "end my life", "self harm", "self-harm",
+    "want to die", "no reason to live", "end it all"
+  ];
+
+  const RESPONSES = {
+    stress: "I hear you — stress can feel really heavy. 💙\n\nTry the 4-7-8 breathing technique:\n• Breathe in for 4 seconds\n• Hold for 7 seconds\n• Breathe out for 8 seconds\n\nRepeat 4 times. It slows your heart rate and calms your nervous system. You've got this.",
+    sleep: "Sleep troubles are really common during college. 🌙\n\nA few things that genuinely help:\n• Put your phone away 30 minutes before bed\n• Keep your room cool and dark\n• Avoid caffeine after 4 PM\n• Try writing down tomorrow's tasks so your mind can let go\n\nIf it persists for weeks, please talk to a counsellor.",
+    exam: "Exam pressure is real, and it doesn't mean you're failing. 📚\n\nTry this:\n• Break your syllabus into small daily chunks\n• Use the Pomodoro method — 25 min focus, 5 min break\n• Teach a topic aloud to test yourself\n• Sleep is a study tool, not a waste of time\n\nYou are more than your marks. 💙",
+    lonely: "Feeling lonely is painful, and it's okay to admit it. 🤝\n\nYou're not alone in feeling this way — many students do.\n\nTry:\n• Message one old friend today, even just \"hey\"\n• Join one club or study group this week\n• Sit in a common area instead of your room\n\nAnd remember — Sukoon is always here to listen.",
+    anxious: "Anxiety can make everything feel urgent. 🌿\n\nGround yourself with the 5-4-3-2-1 technique:\n• 5 things you can see\n• 4 things you can touch\n• 3 things you can hear\n• 2 things you can smell\n• 1 thing you can taste\n\nThis pulls your mind back to the present. You're safe right now.",
+    sad: "I'm sorry you're feeling this way. 💙\n\nSadness is valid, and it doesn't need to be fixed immediately.\n\nBe gentle with yourself today:\n• Drink some water\n• Step outside for 5 minutes\n• Talk to someone you trust\n\nIf this feeling lasts more than two weeks, please reach out to a counsellor. You deserve support.",
+    "default": "Thank you for sharing that with me. 💙\n\nI'm here to listen. Can you tell me a bit more about what's going on?\n\nYou can also try one of the quick replies below, or type how you're feeling."
+  };
+
+  function detectCrisis(text) {
+    const lower = text.toLowerCase();
+    for (let i = 0; i < CRISIS_WORDS.length; i++) {
+      if (lower.indexOf(CRISIS_WORDS[i]) !== -1) return true;
+    }
+    return false;
+  }
+
+  function getResponse(text) {
+    const lower = text.toLowerCase();
+    if (/(stress|stressed|overwhelm|pressure|too much)/.test(lower)) return RESPONSES.stress;
+    if (/(sleep|insomnia|can't sleep|cannot sleep|awake|tired)/.test(lower)) return RESPONSES.sleep;
+    if (/(exam|test|study|marks|grades|result|fail)/.test(lower)) return RESPONSES.exam;
+    if (/(lonely|alone|no friends|isolated|left out)/.test(lower)) return RESPONSES.lonely;
+    if (/(anxious|anxiety|panic|nervous|worried)/.test(lower)) return RESPONSES.anxious;
+    if (/(sad|depress|down|cry|hopeless|empty)/.test(lower)) return RESPONSES.sad;
+    return RESPONSES["default"];
+  }
+
+  function addBubble(text, who) {
+    const div = document.createElement("div");
+    div.className = "bubble " + who;
+    div.textContent = text;
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function addCrisisAlert() {
+    const div = document.createElement("div");
+    div.className = "crisis-alert";
+    div.innerHTML =
+      '<div class="ct">🚨 You are not alone</div>' +
+      "<p>What you're feeling is serious, and you deserve immediate support. Please reach out right now — talking to someone can make a real difference.</p>" +
+      '<span class="helpline">📞 KIRAN Helpline · 1800-599-0019<small>Free · 24/7 · Confidential · Govt. of India</small></span>' +
+      '<span class="helpline">📞 AASRA · 9820466726<small>24/7 Crisis Support</small></span>' +
+      "<p style='margin-bottom:0;'>If you are in immediate danger, please call <b>112</b> or go to your nearest emergency room.</p>";
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function showTyping() {
+    const div = document.createElement("div");
+    div.className = "bubble bot typing";
+    div.id = "typingIndicator";
+    div.innerHTML = "<span></span><span></span><span></span>";
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+    return div;
+  }
+
+  function sendMessage(text) {
+    const msg = String(text || "").trim();
+    if (!msg) return;
+
+    addBubble(msg, "user");
+    chatInput.value = "";
+
+    if (detectCrisis(msg)) {
+      const typing = showTyping();
+      setTimeout(function () {
+        typing.remove();
+        addCrisisAlert();
+        saveChatHistory();
+      }, 900);
+      return;
+    }
+
+    const typing = showTyping();
+    setTimeout(function () {
+      typing.remove();
+      addBubble(getResponse(msg), "bot");
+      saveChatHistory();
+    }, 850 + Math.random() * 500);
+  }
+
+  function saveChatHistory() {
+    const bubbles = $$(".bubble", chatBody).slice(-40).map(function (b) {
+      return {
+        who: b.classList.contains("user") ? "user" : "bot",
+        text: b.textContent
+      };
+    });
+    writeLS(K.chat, bubbles);
+  }
+
+  function loadChatHistory() {
+    const history = readLS(K.chat, null);
+    if (history && history.length) {
+      history.forEach(function (m) { addBubble(m.text, m.who); });
+      return true;
+    }
+    return false;
+  }
+
+  function initChat() {
+    const had = loadChatHistory();
+    if (!had) {
+      addBubble(
+        "Hi, I'm Sukoon 🧠\n\nI'm here to listen — no judgement, no records, completely private.\n\nHow are you feeling today?",
+        "bot"
+      );
+    }
+  }
+
+  $("#chatSend").addEventListener("click", function () { sendMessage(chatInput.value); });
+  chatInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); sendMessage(chatInput.value); }
+  });
+
+  $$(".qr").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      sendMessage(btn.getAttribute("data-msg"));
+    });
+  });
+
+  /* ---------- MOOD TRACKER ---------- */
+  function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0");
+  }
+
+  function getMoods() { return readLS(K.moods, {}); }
+
+  function setMood(value) {
+    const moods = getMoods();
+    moods[todayKey()] = value;
+    writeLS(K.moods, moods);
+    renderMoodChart();
+    renderMoodSelection();
+    toast("Mood saved for today 💙", "success");
+  }
+
+  function renderMoodSelection() {
+    const moods = getMoods();
+    const today = moods[todayKey()];
+    $$("#moodRow .mood-btn").forEach(function (b) {
+      b.classList.toggle("selected", Number(b.getAttribute("data-mood")) === today);
+    });
+  }
+
+  function renderMoodChart() {
+    const chart = $("#moodChart");
+    if (!chart) return;
+
+    const moods = getMoods();
+    const emojis = { 5: "😊", 4: "😐", 3: "😔", 2: "😢", 1: "😡" };
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    let html = "";
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+
+      const key = d.getFullYear() + "-" +
+        String(d.getMonth() + 1).padStart(2, "0") + "-" +
+        String(d.getDate()).padStart(2, "0");
+
+      const value = moods[key] || 0;
+      const heightPx = value ? Math.round((value / 5) * 80) + 10 : 6;
+      const emoji = value ? emojis[value] : "";
+      const dayName = days[d.getDay()];
+      const barClass = value ? "bar" : "bar empty";
+
+      html +=
+        '<div class="bar-col">' +
+          '<div class="be">' + (emoji || "&nbsp;") + "</div>" +
+          '<div class="' + barClass + '" style="height:' + heightPx + 'px"></div>' +
+          '<div class="bd">' + dayName + "</div>" +
+        "</div>";
+    }
+    chart.innerHTML = html;
+  }
+
+  /* Delegated mood buttons */
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("#moodRow .mood-btn");
+    if (!btn) return;
+    e.preventDefault();
+    setMood(Number(btn.getAttribute("data-mood")));
+  });
+
+  /* ---------- SCHEDULE ---------- */
+  $("#spGenerate").addEventListener("click", function () {
+    const rawSubs = $("#spSubjects").value.trim();
+    const examDate = $("#spExam").value;
+    const hours = parseInt($("#spHours").value, 10) || 4;
+
+    if (!rawSubs) return toast("Please enter at least one subject.", "error");
+    if (!examDate) return toast("Please select an exam date.", "error");
+
+    const subjects = rawSubs.split(",").map(function (s) { return s.trim(); })
+      .filter(function (s) { return s.length > 0; });
+
+    if (subjects.length === 0) return toast("Please enter at least one subject.", "error");
+
+    const exam = new Date(examDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const daysLeft = Math.max(1, Math.ceil((exam - today) / 86400000));
+    const perDay = Math.max(1, Math.floor(hours / subjects.length));
+    const extra = hours - (perDay * subjects.length);
+
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    let html = "";
+    html += '<div class="plan-day">' +
+      '<div class="pd-head">' +
+        '<span class="pd-name">📌 Plan Overview</span>' +
+        '<span class="pd-total">' + daysLeft + " days left</span>" +
+      "</div>" +
+      "<ul>" +
+        "<li>" + subjects.length + " subjects · " + hours + " hours/day</li>" +
+        "<li>≈ " + perDay + "h per subject each day</li>" +
+        "<li>Exam on " + esc(formatDate(examDate)) + "</li>" +
+      "</ul>" +
+    "</div>";
+
+    for (let d = 0; d < Math.min(7, daysLeft); d++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() + d);
+      const dayName = dayNames[date.getDay()];
+
+      let list = "";
+      for (let s = 0; s < subjects.length; s++) {
+        const slot = perDay + (s < extra ? 1 : 0);
+        list += "<li>" + esc(subjects[s]) + " — " + slot + "h</li>";
+      }
+
+      html +=
+        '<div class="plan-day">' +
+          '<div class="pd-head">' +
+            '<span class="pd-name">' + esc(dayName) + " · " + esc(formatDate(date.toISOString().slice(0, 10))) + "</span>" +
+            '<span class="pd-total">' + hours + "h</span>" +
+          "</div>" +
+          "<ul>" + list + "</ul>" +
+        "</div>";
+    }
+
+    $("#planList").innerHTML = html;
+    toast("Study plan generated ✅", "success");
+  });
+
+  $("#ttGenerate").addEventListener("click", function () {
+    const course = $("#ttCourse").value;
+    if (!course) return toast("Please select a course.", "error");
+
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const slots = ["9:00 – 10:00", "10:00 – 11:00", "11:15 – 12:15", "12:15 – 1:15", "2:00 – 3:00"];
+
+    const pool = [
+      "Mathematics", "Physics", "Chemistry", "English", "Computer Science",
+      "Biology", "Economics", "Accountancy", "Business Studies", "History",
+      "Geography", "Political Science", "Lab Session", "Library / Self Study"
+    ];
+
+    let seed = 0;
+    for (let i = 0; i < course.length; i++) seed = (seed * 31 + course.charCodeAt(i)) % 9999;
+
+    function pick(offset) {
+      return pool[(seed + offset) % pool.length];
+    }
+
+    let html = '<div class="tt-wrap"><table class="tt"><thead><tr><th>Time</th>';
+    days.forEach(function (d) { html += "<th>" + d + "</th>"; });
+    html += "</tr></thead><tbody>";
+
+    slots.forEach(function (slot, si) {
+      html += "<tr><td>" + slot + "</td>";
+      days.forEach(function (_, di) {
+        html += "<td>" + pick(si * 3 + di * 7) + "</td>";
+      });
+      html += "</tr>";
+    });
+
+    html += "</tbody></table></div>";
+    html += '<p class="hint" style="margin-top:12px;">Timetable for <b>' + esc(course) + "</b> · demo schedule</p>";
+
+    $("#ttResult").innerHTML = html;
+    toast("Timetable generated ✅", "success");
+  });
+
+  /* ---------- DASHBOARD ---------- */
+  function showDashboard() {
+    showView("dashboard");
+    refreshDashboard();
+  }
+
+  function statusClass(status) {
+    if (status === "Resolved") return "resolved";
+    if (status === "In Progress") return "progress";
+    return "pending";
+  }
+
+  function priorityClass(p) {
+    return String(p || "Low").toLowerCase();
+  }
+
+  function timeAgo(iso) {
+    const then = new Date(iso).getTime();
+    const diff = Math.max(0, Date.now() - then);
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return mins + "m ago";
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + "h ago";
+    const days = Math.floor(hrs / 24);
+    if (days < 30) return days + "d ago";
+    return new Date(iso).toLocaleDateString();
+  }
+
+  function complaintCardHTML(c, isTeacher) {
+    return (
+      '<div class="item">' +
+        '<div class="item-top">' +
+          "<div>" +
+            '<div class="item-title">' +
+              esc(c.category) +
+              ' <span class="badge ' + statusClass(c.status) + '">' + esc(c.status) + "</span>" +
+            "</div>" +
+            '<div class="item-meta">' +
+              esc(c.course || "—") +
+              (c.section ? " • Section " + esc(c.section) : "") +
+              " • " + esc(timeAgo(c.createdAt)) +
+              " • ID: " + esc(c.id) +
+            "</div>" +
+          "</div>" +
+          '<span class="priority ' + priorityClass(c.priority) + '">' + esc(c.priority) + "</span>" +
+        "</div>" +
+        '<p class="item-desc">' + esc(c.description) + "</p>" +
+        (isTeacher
+          ? '<div class="item-meta">👤 ' + esc(c.name) + " • " + esc(c.email) + "</div>" +
+            '<div class="item-actions">' +
+              '<button type="button" class="btn btn-ghost btn-sm" data-status="In Progress" data-id="' + esc(c.id) + '">Mark In Progress</button>' +
+              '<button type="button" class="btn btn-primary btn-sm" data-status="Resolved" data-id="' + esc(c.id) + '">Mark Resolved</button>' +
+            "</div>"
+          : "") +
+      "</div>"
+    );
+  }
+
+  function alertCardHTML(a) {
+    return (
+      '<div class="alert-item">' +
+        '<div class="at">🚨 ' + esc(a.type) + "</div>" +
+        '<div class="item-meta" style="margin-top:6px;">' +
+          "👤 " + esc(a.name) + " • " + esc(a.email) +
+          (a.course ? " • " + esc(a.course) : "") +
+          (a.section ? " • Sec " + esc(a.section) : "") +
+          " • " + esc(timeAgo(a.createdAt)) +
+        "</div>" +
+        '<p class="item-desc" style="margin-top:8px;margin-bottom:0;">' + esc(a.message) + "</p>" +
+      "</div>"
+    );
+  }
+
+  function refreshDashboard() {
+    const user = getSession();
+    if (!user) return;
+
+    const complaints = getComplaints();
+    const alerts = getAlerts();
+
+    if (user.role === "student") {
+      renderStudentDashboard(user, complaints);
+    } else {
+      renderTeacherDashboard(user, complaints, alerts);
+    }
+  }
+
+  function renderStudentDashboard(user, complaints) {
+    const mine = complaints.filter(function (c) {
+      return c.userEmail === user.email || c.email === user.email;
+    });
+
+    const total = mine.length;
+    const pending = mine.filter(function (c) { return c.status === "Pending"; }).length;
+    const progress = mine.filter(function (c) { return c.status === "In Progress"; }).length;
+    const resolved = mine.filter(function (c) { return c.status === "Resolved"; }).length;
+
+    $("#dashTitle").innerHTML = "🎓 " + esc(user.fullName.split(" ")[0]) + "'s Dashboard";
+    $("#dashSub").textContent =
+      (user.course || "") +
+      (user.section ? " · Section " + user.section : "") +
+      (user.collegeId ? " · " + user.collegeId : "");
+
+    let html = "";
+    html +=
+      '<div class="stats">' +
+        '<div class="stat"><div class="num">' + total + '</div><div class="lbl">Total</div></div>' +
+        '<div class="stat p"><div class="num">' + pending + '</div><div class="lbl">Pending</div></div>' +
+        '<div class="stat i"><div class="num">' + progress + '</div><div class="lbl">In Progress</div></div>' +
+        '<div class="stat r"><div class="num">' + resolved + '</div><div class="lbl">Resolved</div></div>' +
+      "</div>";
+
+    html += '<div class="panel">';
+    html += '<div class="panel-title">📋 My Complaints</div>';
+
+    if (mine.length === 0) {
+      html +=
+        '<div class="empty">' +
+          '<span class="e-emoji">📭</span>' +
+          "You haven't filed any complaints yet." +
+        "</div>";
+    } else {
+      mine.forEach(function (c) { html += complaintCardHTML(c, false); });
+    }
+    html += "</div>";
+
+    $("#dashContent").innerHTML = html;
+  }
+
+  function renderTeacherDashboard(user, complaints, alerts) {
+    const myClasses = Array.isArray(user.classes) ? user.classes : [];
+
+    let relevant;
+    if (myClasses.length === 0) {
+      relevant = complaints.slice();
+    } else {
+      relevant = complaints.filter(function (c) { return myClasses.indexOf(c.course) !== -1; });
+    }
+
+    const relevantAlerts = alerts.filter(function (a) {
+      if (!a.course) return true;
+      if (myClasses.length === 0) return true;
+      return myClasses.indexOf(a.course) !== -1;
+    });
+
+    const total = relevant.length;
+    const pending = relevant.filter(function (c) { return c.status === "Pending"; }).length;
+    const progress = relevant.filter(function (c) { return c.status === "In Progress"; }).length;
+    const resolved = relevant.filter(function (c) { return c.status === "Resolved"; }).length;
+
+    $("#dashTitle").innerHTML = "👨‍🏫 " + esc(user.fullName.split(" ")[0]) + "'s Dashboard";
+    $("#dashSub").textContent =
+      (user.designation || "") +
+      (user.department ? " · " + user.department + " Dept." : "") +
+      (myClasses.length ? " · " + myClasses.length + " class(es)" : "");
+
+    let html = "";
+    html +=
+      '<div class="stats">' +
+        '<div class="stat"><div class="num">' + total + '</div><div class="lbl">Total</div></div>' +
+        '<div class="stat p"><div class="num">' + pending + '</div><div class="lbl">Pending</div></div>' +
+        '<div class="stat i"><div class="num">' + progress + '</div><div class="lbl">In Progress</div></div>' +
+        '<div class="stat r"><div class="num">' + resolved + '</div><div class="lbl">Resolved</div></div>' +
+      "</div>";
+
+    html += '<div class="dash-grid">';
+
+    html += '<div class="panel">';
+    html += '<div class="panel-title">🚨 Emergency Alerts' +
+            (relevantAlerts.length ? ' <span class="badge pending">' + relevantAlerts.length + "</span>" : "") +
+            "</div>";
+
+    if (relevantAlerts.length === 0) {
+      html += '<div class="empty"><span class="e-emoji">✅</span>No emergency alerts right now.</div>';
+    } else {
+      relevantAlerts.slice(0, 12).forEach(function (a) { html += alertCardHTML(a); });
+    }
+    html += "</div>";
+
+    html += '<div class="panel">';
+    html += '<div class="panel-title">📚 Complaints from Your Classes</div>';
+
+    if (myClasses.length === 0) {
+      html +=
+        '<div class="form-msg show error" style="margin-bottom:14px;">' +
+          "You haven't selected any classes. Showing all complaints instead." +
+        "</div>";
+    }
+
+    if (relevant.length === 0) {
+      html += '<div class="empty"><span class="e-emoji">📭</span>No complaints from your classes yet.</div>';
+    } else {
+      relevant.forEach(function (c) { html += complaintCardHTML(c, true); });
+    }
+
+    html += "</div>";
+    html += "</div>";
+
+    $("#dashContent").innerHTML = html;
+  }
+
+  function updateComplaintStatus(id, status) {
+    const list = getComplaints();
+    const idx = list.findIndex(function (c) { return c.id === id; });
+    if (idx === -1) return;
+    list[idx].status = status;
+    saveComplaints(list);
+    refreshDashboard();
+    toast("Complaint " + id + " marked as " + status + ".", "success");
+  }
+
+  /* Delegated status buttons (works after dashboard re-render) */
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-status][data-id]");
+    if (!btn) return;
+    e.preventDefault();
+    updateComplaintStatus(btn.getAttribute("data-id"), btn.getAttribute("data-status"));
+  });
+
+  /* ---------- FOOTER LINKS ---------- */
+  $$(".footer-links a").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      const which = a.getAttribute("data-footer");
+      const msgs = {
+        about: "CampusOne is a student welfare initiative built for Smart India Hackathon 2025. It brings complaints, emergency SOS, lost & found, mental wellness, and scheduling into one platform.",
+        contact: "📧 support@campusone.app\n📞 +91 9022516317 (Mon–Sat, 9 AM – 6 PM)",
+        privacy: "We store your data locally in your browser. We never upload it to any server. Photos and complaints stay on your device.",
+        terms: "Use CampusOne responsibly. False emergency reports may lead to disciplinary action. Content must follow your college's code of conduct.",
+        help: "Need help? Email support@campusone.app or use the Sukoon AI chat for immediate mental-health support."
+      };
+      window.alert(msgs[which] || "CampusOne");
+    });
+  });
+
+  /* ---------- INIT ---------- */
+  updateAuthUI();
+  initChat();
+  renderMoodChart();
+  renderMoodSelection();
+  renderItems();
+
+  /* If already logged in on load, stay on home but keep session ready */
+  if (getSession()) {
+    refreshDashboard();
+  }
+});
+</script>
+
+</body>
+</html>

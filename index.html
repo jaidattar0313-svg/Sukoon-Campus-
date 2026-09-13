@@ -20,31 +20,16 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 
 :root{
-  --bg:#0a1020;
-  --bg-soft:#111a2e;
-  --card:#141f38;
-  --border:#25324f;
-  --text:#e9eefb;
-  --muted:#8fa0c2;
-  --input-bg:#0e1729;
+  --bg:#0a1020; --bg-soft:#111a2e; --card:#141f38; --border:#25324f;
+  --text:#e9eefb; --muted:#8fa0c2; --input-bg:#0e1729;
   --header-bg:rgba(10,16,32,.88);
-  --primary:#4f7cff;
-  --primary-2:#7c5cff;
-  --danger:#ff4d6d;
-  --ok:#22c98a;
-  --warn:#ffb020;
-  --shadow:0 18px 40px rgba(0,0,0,.45);
-  --radius:18px;
+  --primary:#4f7cff; --primary-2:#7c5cff;
+  --danger:#ff4d6d; --ok:#22c98a; --warn:#ffb020;
+  --shadow:0 18px 40px rgba(0,0,0,.45); --radius:18px;
 }
-
 [data-theme="light"]{
-  --bg:#f2f5fc;
-  --bg-soft:#ffffff;
-  --card:#ffffff;
-  --border:#dce4f4;
-  --text:#0e1a33;
-  --muted:#5b6b8c;
-  --input-bg:#f7f9fe;
+  --bg:#f2f5fc; --bg-soft:#ffffff; --card:#ffffff; --border:#dce4f4;
+  --text:#0e1a33; --muted:#5b6b8c; --input-bg:#f7f9fe;
   --header-bg:rgba(255,255,255,.9);
   --shadow:0 18px 40px rgba(25,50,110,.13);
 }
@@ -54,34 +39,25 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;
 
 body{
   font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  line-height:1.5;
+  background:var(--bg); color:var(--text); min-height:100vh; line-height:1.5;
   -webkit-font-smoothing:antialiased;
   transition:background .3s ease,color .3s ease;
   position:relative;
 }
-
 body::before{
-  content:"";
-  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
   background:
     radial-gradient(620px 420px at 8% -6%,rgba(79,124,255,.22),transparent 62%),
     radial-gradient(620px 420px at 96% 4%,rgba(124,92,255,.18),transparent 62%);
 }
-
 img{max-width:100%;display:block;}
 button,input,select,textarea{font-family:inherit;}
 a{color:inherit;text-decoration:none;}
 .hidden{display:none !important;}
 
-/* ---- CRITICAL FOR MOBILE TAPS ---- */
-/* touch-action:manipulation removes the 300ms tap delay and disables
-   double-tap zoom WITHOUT blocking the click event (unlike preventDefault). */
 button, a, [role="button"], label, .tab, .chip, .quick-card,
 .role-btn, .mood-btn, .qr, .check-pill, .radio-pill, .icon-btn,
-.sos-btn, .item-card, .btn, summary {
+.sos-btn, .item-card, .btn, .admin-stat, .notif-item {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
@@ -89,46 +65,40 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
 /* ============================================================
-   HEADER + TABBAR
+   HEADER
    ============================================================ */
 .header{
   position:sticky;top:0;z-index:90;
   background:var(--header-bg);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--border);
 }
-
 .header-inner{
   display:flex;align-items:center;justify-content:space-between;
-  height:60px;gap:12px;
+  height:60px;gap:10px;
 }
-
 .brand{
   display:flex;align-items:center;gap:10px;flex:none;
   cursor:pointer;background:none;border:none;color:inherit;font:inherit;
 }
-
 .brand-mark{
-  width:36px;height:36px;border-radius:11px;
-  display:grid;place-items:center;
+  width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
   color:#fff;font-weight:800;font-size:14px;
-  box-shadow:0 8px 18px rgba(79,124,255,.4);
-  flex:none;
+  box-shadow:0 8px 18px rgba(79,124,255,.4);flex:none;
 }
-
 .brand-text{font-size:18px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;}
-.brand-text b{background:linear-gradient(135deg,var(--primary),var(--primary-2));-webkit-background-clip:text;background-clip:text;color:transparent;}
-
+.brand-text b{
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
 .header-actions{display:flex;align-items:center;gap:8px;min-width:0;}
 
 .icon-btn{
   width:40px;height:40px;border-radius:12px;
-  border:1px solid var(--border);
-  background:var(--bg-soft);color:var(--text);
-  font-size:17px;cursor:pointer;
-  display:grid;place-items:center;transition:.2s;flex:none;
+  border:1px solid var(--border);background:var(--bg-soft);color:var(--text);
+  font-size:17px;cursor:pointer;display:grid;place-items:center;
+  transition:.2s;flex:none;position:relative;
 }
 .icon-btn:hover{border-color:var(--primary);}
 .icon-btn:active{transform:scale(.94);}
@@ -140,8 +110,7 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   display:flex;align-items:center;gap:8px;
   padding:4px 12px 4px 4px;border-radius:999px;
   border:1px solid var(--border);background:var(--bg-soft);
-  font-size:13px;font-weight:600;cursor:pointer;max-width:180px;
-  transition:.2s;
+  font-size:13px;font-weight:600;cursor:pointer;max-width:180px;transition:.2s;
 }
 .user-chip:hover{border-color:var(--primary);}
 .user-chip .uname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -153,27 +122,32 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   color:#fff;font-size:11px;font-weight:800;letter-spacing:.3px;border:none;
 }
 
+/* Notification bell */
+.notif-btn{position:relative;}
+.notif-badge{
+  position:absolute;top:-5px;right:-5px;
+  min-width:18px;height:18px;border-radius:999px;
+  background:var(--danger);color:#fff;font-size:10px;font-weight:800;
+  display:grid;place-items:center;padding:0 5px;
+  border:2px solid var(--bg);
+  box-shadow:0 4px 10px rgba(255,77,109,.5);
+  animation:pulseBadge 1.8s infinite;
+}
+@keyframes pulseBadge{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+
 /* TABBAR */
 .tabbar{
-  display:flex;gap:8px;
-  overflow-x:auto;
-  padding:0 16px 12px;
+  display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;
   scrollbar-width:none;-ms-overflow-style:none;
-  scroll-snap-type:x proximity;
-  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
 }
 .tabbar::-webkit-scrollbar{display:none;}
-
 .tab{
-  flex:0 0 auto;
-  display:inline-flex;align-items:center;gap:7px;
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;
   padding:9px 15px;border-radius:999px;
-  border:1px solid var(--border);
-  background:var(--bg-soft);color:var(--muted);
-  font-size:13.5px;font-weight:700;
-  cursor:pointer;white-space:nowrap;transition:.2s;
-  scroll-snap-align:start;
-  font-family:inherit;
+  border:1px solid var(--border);background:var(--bg-soft);color:var(--muted);
+  font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+  transition:.2s;scroll-snap-align:start;font-family:inherit;
 }
 .tab:hover{color:var(--text);border-color:var(--primary);}
 .tab.active{
@@ -181,6 +155,57 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   color:#fff;border-color:transparent;
   box-shadow:0 8px 20px rgba(79,124,255,.34);
 }
+
+/* ============================================================
+   NOTIFICATION DROPDOWN
+   ============================================================ */
+.notif-dropdown{
+  position:fixed;top:68px;right:16px;
+  width:min(380px,calc(100vw - 32px));max-height:72vh;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 20px 50px rgba(0,0,0,.5);
+  z-index:150;overflow:hidden;
+  display:flex;flex-direction:column;
+  animation:dropdownIn .22s ease;
+}
+@keyframes dropdownIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+.notif-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  gap:10px;flex-shrink:0;
+}
+.notif-head strong{font-size:15px;font-weight:800;}
+.notif-head button{
+  background:none;border:none;color:var(--primary);
+  font-size:12.5px;font-weight:700;cursor:pointer;
+  padding:5px 9px;border-radius:8px;font-family:inherit;transition:.15s;
+}
+.notif-head button:hover{background:rgba(79,124,255,.12);}
+
+.notif-list{overflow-y:auto;padding:8px;flex:1;-webkit-overflow-scrolling:touch;}
+
+.notif-item{
+  display:flex;gap:10px;padding:11px 12px;border-radius:12px;
+  transition:background .15s;
+}
+.notif-item:hover{background:var(--bg-soft);}
+.notif-item.unread{background:rgba(79,124,255,.08);}
+.notif-item .ni-icon{
+  width:34px;height:34px;flex-shrink:0;border-radius:10px;
+  display:grid;place-items:center;font-size:16px;background:var(--bg-soft);
+}
+.notif-item.emergency .ni-icon{background:rgba(255,45,85,.18);}
+.notif-item.complaint .ni-icon{background:rgba(79,124,255,.18);}
+.notif-item .ni-body{min-width:0;flex:1;}
+.notif-item .ni-msg{
+  font-size:13.5px;font-weight:600;line-height:1.4;
+  margin-bottom:3px;word-break:break-word;
+}
+.notif-item .ni-time{font-size:11.5px;color:var(--muted);font-weight:600;}
+.notif-empty{padding:30px 16px;text-align:center;color:var(--muted);font-size:13.5px;}
+.notif-empty .e-emoji{font-size:32px;display:block;margin-bottom:10px;opacity:.7;}
 
 /* ============================================================
    DRAWER
@@ -193,31 +218,23 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   display:flex;flex-direction:column;padding:18px;overflow-y:auto;
 }
 .drawer.open{transform:translateX(0);}
-
 .drawer-head{
   display:flex;align-items:center;justify-content:space-between;
   padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:14px;
 }
-.drawer-head strong{font-size:16px;letter-spacing:-.2px;}
-
+.drawer-head strong{font-size:16px;}
 .drawer-nav{display:flex;flex-direction:column;gap:6px;}
-
-.drawer-nav a,
-.drawer-nav button{
+.drawer-nav a,.drawer-nav button{
   display:flex;align-items:center;gap:12px;
   padding:13px 14px;border-radius:13px;
   border:1px solid transparent;background:transparent;
   color:var(--text);font-size:15px;font-weight:600;
-  cursor:pointer;text-align:left;width:100%;transition:.18s;
-  font-family:inherit;
+  cursor:pointer;text-align:left;width:100%;transition:.18s;font-family:inherit;
 }
-.drawer-nav a:hover,
-.drawer-nav button:hover{background:var(--bg-soft);border-color:var(--border);}
+.drawer-nav a:hover,.drawer-nav button:hover{background:var(--bg-soft);border-color:var(--border);}
 .drawer-nav .danger{color:var(--danger);}
 .drawer-nav .danger:hover{background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.3);}
-
 .drawer-divider{height:1px;background:var(--border);margin:10px 4px;}
-
 .drawer-user{
   display:flex;align-items:center;gap:12px;
   padding:12px;border-radius:14px;
@@ -227,7 +244,6 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
 .drawer-user-info{min-width:0;}
 .drawer-user-info .n{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .drawer-user-info .r{font-size:12px;color:var(--muted);text-transform:capitalize;}
-
 .drawer-backdrop{
   position:fixed;inset:0;background:rgba(3,7,16,.6);
   opacity:0;pointer-events:none;transition:opacity .3s;z-index:125;
@@ -245,16 +261,13 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   white-space:nowrap;line-height:1.2;font-family:inherit;
 }
 .btn:active{transform:scale(.97);}
-
 .btn-primary{
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
   color:#fff;box-shadow:0 10px 24px rgba(79,124,255,.34);
 }
 .btn-primary:hover{box-shadow:0 12px 30px rgba(79,124,255,.48);}
-
 .btn-ghost{background:var(--bg-soft);border-color:var(--border);color:var(--text);}
 .btn-ghost:hover{border-color:var(--primary);}
-
 .btn-sm{padding:8px 14px;font-size:13px;border-radius:10px;}
 .btn-block{width:100%;}
 
@@ -262,14 +275,12 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
    HERO
    ============================================================ */
 .hero{padding:52px 0 32px;text-align:center;}
-
 .pill{
   display:inline-flex;align-items:center;gap:8px;
   padding:8px 16px;border-radius:999px;
   background:var(--bg-soft);border:1px solid var(--border);
   font-size:13px;font-weight:600;color:var(--muted);margin-bottom:22px;
 }
-
 .hero h1{
   font-size:clamp(30px,7vw,56px);line-height:1.08;
   letter-spacing:-1.6px;font-weight:800;margin-bottom:16px;
@@ -278,14 +289,11 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   background:linear-gradient(135deg,var(--primary),var(--primary-2),#00d4ff);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-
 .hero p{
   color:var(--muted);font-size:clamp(15px,3.6vw,17.5px);
   max-width:620px;margin:0 auto 30px;line-height:1.6;
 }
-
 .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
-
 .trust-badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;}
 .trust-badge{
   display:inline-flex;align-items:center;gap:7px;
@@ -293,11 +301,7 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   background:var(--bg-soft);border:1px solid var(--border);
   font-size:12.5px;font-weight:700;color:var(--muted);
 }
-
-.quick-grid{
-  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px;
-}
-
+.quick-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px;}
 .quick-card{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:10px;padding:22px 12px;border-radius:18px;
@@ -305,20 +309,13 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
   cursor:pointer;transition:.22s;text-align:center;
   box-shadow:var(--shadow);font-family:inherit;color:var(--text);
 }
-.quick-card:hover{
-  transform:translateY(-5px);border-color:var(--primary);
-  box-shadow:0 18px 34px rgba(79,124,255,.24);
-}
+.quick-card:hover{transform:translateY(-5px);border-color:var(--primary);box-shadow:0 18px 34px rgba(79,124,255,.24);}
 .quick-card:active{transform:translateY(-1px) scale(.98);}
 .quick-card .qi{font-size:32px;line-height:1;}
 .quick-card .qt{font-size:13.5px;font-weight:800;letter-spacing:-.1px;line-height:1.3;}
 .quick-card.sos{background:linear-gradient(135deg,rgba(255,45,85,.16),rgba(255,107,61,.1));border-color:rgba(255,77,109,.4);}
-
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
-.step{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:16px;padding:20px 16px;position:relative;overflow:hidden;
-}
+.step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 16px;position:relative;overflow:hidden;}
 .step-num{
   width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
@@ -333,31 +330,16 @@ button, a, [role="button"], label, .tab, .chip, .quick-card,
 .section{padding:40px 0;}
 .section-title{font-size:clamp(22px,5vw,30px);font-weight:800;letter-spacing:-.6px;margin-bottom:8px;}
 .section-sub{color:var(--muted);font-size:15px;margin-bottom:24px;}
-
-.card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);
-}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
 
 /* ============================================================
    FORMS
    ============================================================ */
 .field{margin-bottom:15px;min-width:0;}
-.field label{
-  display:block;font-size:13px;font-weight:700;color:var(--muted);
-  margin-bottom:7px;letter-spacing:.1px;
-}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:7px;letter-spacing:.1px;}
 .field .req{color:var(--danger);}
-
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="password"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-select,
-textarea{
+input[type="text"],input[type="email"],input[type="tel"],input[type="password"],
+input[type="number"],input[type="date"],input[type="time"],select,textarea{
   width:100%;font-size:16px;font-family:inherit;
   padding:12px 14px;border-radius:13px;
   border:1px solid var(--border);background:var(--input-bg);color:var(--text);
@@ -366,36 +348,20 @@ textarea{
 }
 textarea{resize:vertical;min-height:100px;line-height:1.55;}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75;}
-input:focus,select:focus,textarea:focus{
-  border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,124,255,.18);
-}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,124,255,.18);}
 select{
   background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238fa0c2' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 14px center;
-  padding-right:42px;cursor:pointer;
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:42px;cursor:pointer;
 }
 select option,select optgroup{background:var(--card);color:var(--text);}
-
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px;}
-
-.check-line{
-  display:flex;align-items:flex-start;gap:10px;
-  font-size:14px;color:var(--muted);cursor:pointer;line-height:1.45;user-select:none;
-}
-.check-line input[type="checkbox"]{
-  width:18px;height:18px;flex:none;margin-top:1px;
-  accent-color:var(--primary);cursor:pointer;
-}
+.check-line{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--muted);cursor:pointer;line-height:1.45;user-select:none;}
+.check-line input[type="checkbox"]{width:18px;height:18px;flex:none;margin-top:1px;accent-color:var(--primary);cursor:pointer;}
 .check-line a{color:var(--primary);font-weight:600;}
-
 .check-group{margin-bottom:12px;}
-.check-group-title{
-  font-size:12px;font-weight:800;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;
-}
+.check-group-title{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
 .check-row{display:flex;flex-wrap:wrap;gap:8px;}
-
 .check-pill{
   display:inline-flex;align-items:center;gap:7px;
   padding:8px 13px;border:1px solid var(--border);border-radius:999px;
@@ -405,7 +371,6 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 .check-pill input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;flex:none;}
 .check-pill:hover{border-color:var(--primary);}
 .check-pill:has(input:checked){border-color:var(--primary);background:rgba(79,124,255,.13);}
-
 .photo-upload{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
 .photo-preview{
   width:78px;height:78px;border-radius:50%;
@@ -414,13 +379,8 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   color:var(--muted);transition:.2s;
 }
 .photo-preview img{width:100%;height:100%;object-fit:cover;}
-
 .hint{font-size:12px;color:var(--muted);margin-top:6px;}
-
-.form-msg{
-  display:none;padding:11px 14px;border-radius:12px;
-  font-size:13.5px;font-weight:600;margin-bottom:14px;line-height:1.45;
-}
+.form-msg{display:none;padding:11px 14px;border-radius:12px;font-size:13.5px;font-weight:600;margin-bottom:14px;line-height:1.45;}
 .form-msg.show{display:block;}
 .form-msg.error{background:rgba(255,77,109,.13);color:#ff7a94;border:1px solid rgba(255,77,109,.32);}
 .form-msg.success{background:rgba(34,201,138,.13);color:#3ddc9a;border:1px solid rgba(34,201,138,.32);}
@@ -431,58 +391,39 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
 .toolbar .search{flex:1 1 220px;min-width:0;}
 .toolbar select{flex:0 1 190px;}
-
 .filter-chips{display:flex;gap:8px;flex-wrap:wrap;}
 .chip{
   padding:8px 16px;border-radius:999px;
-  border:1px solid var(--border);background:var(--bg-soft);
-  color:var(--muted);font-size:13px;font-weight:700;
-  cursor:pointer;transition:.2s;font-family:inherit;
+  border:1px solid var(--border);background:var(--bg-soft);color:var(--muted);
+  font-size:13px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;
 }
 .chip:hover{color:var(--text);}
-.chip.active{
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  color:#fff;border-color:transparent;
-}
-
-.items-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;
-}
-
+.chip.active{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-color:transparent;}
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
 .item-card{
   background:var(--card);border:1px solid var(--border);
   border-radius:16px;overflow:hidden;display:flex;flex-direction:column;
   transition:.22s;box-shadow:var(--shadow);
 }
 .item-card:hover{transform:translateY(-4px);border-color:var(--primary);}
-
 .item-thumb{
   width:100%;height:150px;background:var(--bg-soft);
   display:grid;place-items:center;font-size:44px;color:var(--muted);
   overflow:hidden;position:relative;flex:none;
 }
 .item-thumb img{width:100%;height:100%;object-fit:cover;}
-
 .item-badges{
   position:absolute;top:10px;left:10px;right:10px;
   display:flex;justify-content:space-between;gap:8px;pointer-events:none;
 }
-.badge-lf{
-  padding:5px 11px;border-radius:999px;font-size:11px;
-  font-weight:900;letter-spacing:.6px;text-transform:uppercase;
-  color:#fff;
-}
+.badge-lf{padding:5px 11px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:#fff;}
 .badge-lf.lost{background:linear-gradient(135deg,#ff2d55,#ff6b3d);}
 .badge-lf.found{background:linear-gradient(135deg,#22c98a,#12a5b8);}
-
 .badge-ai{
-  padding:5px 11px;border-radius:999px;font-size:11px;
-  font-weight:900;letter-spacing:.4px;
-  background:rgba(10,16,32,.72);color:#9db6ff;
-  border:1px solid rgba(124,92,255,.55);
+  padding:5px 11px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.4px;
+  background:rgba(10,16,32,.72);color:#9db6ff;border:1px solid rgba(124,92,255,.55);
   backdrop-filter:blur(6px);
 }
-
 .item-body{padding:15px;display:flex;flex-direction:column;gap:7px;flex:1;}
 .item-name{font-size:15px;font-weight:800;letter-spacing:-.2px;line-height:1.3;}
 .item-info{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px;}
@@ -493,133 +434,53 @@ select option,select optgroup{background:var(--card);color:var(--text);}
    SUKOON AI
    ============================================================ */
 .sukoon-wrap{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;}
-
 .chat-panel{
   background:var(--card);border:1px solid var(--border);
   border-radius:18px;display:flex;flex-direction:column;
   height:560px;overflow:hidden;box-shadow:var(--shadow);
 }
-
-.chat-head{
-  padding:15px 18px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:12px;flex:none;
-}
-.chat-head .cavatar{
-  width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
-  font-size:20px;background:linear-gradient(135deg,var(--primary),var(--primary-2));flex:none;
-}
+.chat-head{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex:none;}
+.chat-head .cavatar{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:20px;background:linear-gradient(135deg,var(--primary),var(--primary-2));flex:none;}
 .chat-head .cinfo .cn{font-size:15px;font-weight:800;letter-spacing:-.2px;}
 .chat-head .cinfo .cs{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;}
-
-.chat-body{
-  flex:1;overflow-y:auto;padding:18px;
-  display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;
-}
-
-.bubble{
-  max-width:82%;padding:12px 15px;border-radius:16px;
-  font-size:14.5px;line-height:1.55;word-wrap:break-word;
-  white-space:pre-wrap;
-  animation:bubbleIn .25s ease;
-}
+.chat-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;}
+.bubble{max-width:82%;padding:12px 15px;border-radius:16px;font-size:14.5px;line-height:1.55;word-wrap:break-word;white-space:pre-wrap;animation:bubbleIn .25s ease;}
 @keyframes bubbleIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-
-.bubble.bot{
-  align-self:flex-start;background:var(--bg-soft);border:1px solid var(--border);
-  border-bottom-left-radius:5px;
-}
-.bubble.user{
-  align-self:flex-end;
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  color:#fff;border-bottom-right-radius:5px;
-}
-
+.bubble.bot{align-self:flex-start;background:var(--bg-soft);border:1px solid var(--border);border-bottom-left-radius:5px;}
+.bubble.user{align-self:flex-end;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-bottom-right-radius:5px;}
 .typing{display:flex;gap:5px;align-items:center;padding:14px 16px;}
 .typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.3s infinite;}
 .typing span:nth-child(2){animation-delay:.18s;}
 .typing span:nth-child(3){animation-delay:.36s;}
 @keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-4px);}}
-
 .quick-replies{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 12px;flex:none;}
-.qr{
-  padding:8px 14px;border-radius:999px;
-  border:1px solid var(--border);background:var(--bg-soft);
-  color:var(--muted);font-size:12.5px;font-weight:700;
-  cursor:pointer;transition:.2s;font-family:inherit;
-}
+.qr{padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--bg-soft);color:var(--muted);font-size:12.5px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;}
 .qr:hover{border-color:var(--primary);color:var(--text);}
-
-.chat-input{
-  display:flex;gap:9px;padding:12px 14px;
-  border-top:1px solid var(--border);flex:none;background:var(--card);
-}
+.chat-input{display:flex;gap:9px;padding:12px 14px;border-top:1px solid var(--border);flex:none;background:var(--card);}
 .chat-input input{flex:1;min-width:0;}
 .chat-input button{
   width:46px;height:46px;flex:none;border-radius:13px;border:none;
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  color:#fff;font-size:18px;cursor:pointer;
-  display:grid;place-items:center;transition:.2s;
+  color:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;transition:.2s;
 }
 .chat-input button:active{transform:scale(.93);}
-
-.crisis-alert{
-  background:linear-gradient(135deg,rgba(255,45,85,.2),rgba(255,107,61,.14));
-  border:1.5px solid rgba(255,77,109,.6);
-  border-radius:15px;padding:16px;margin:4px 0;
-  animation:bubbleIn .3s ease;
-}
-.crisis-alert .ct{
-  font-size:15px;font-weight:900;color:#ff6b87;
-  display:flex;align-items:center;gap:8px;margin-bottom:9px;
-}
+.crisis-alert{background:linear-gradient(135deg,rgba(255,45,85,.2),rgba(255,107,61,.14));border:1.5px solid rgba(255,77,109,.6);border-radius:15px;padding:16px;margin:4px 0;animation:bubbleIn .3s ease;}
+.crisis-alert .ct{font-size:15px;font-weight:900;color:#ff6b87;display:flex;align-items:center;gap:8px;margin-bottom:9px;}
 .crisis-alert p{font-size:13.5px;line-height:1.6;margin-bottom:10px;white-space:pre-wrap;}
-.crisis-alert .helpline{
-  display:block;background:var(--card);border:1px solid rgba(255,77,109,.4);
-  border-radius:12px;padding:12px 14px;font-size:14px;font-weight:800;
-  text-align:center;color:var(--text);margin-bottom:8px;
-}
+.crisis-alert .helpline{display:block;background:var(--card);border:1px solid rgba(255,77,109,.4);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:800;text-align:center;color:var(--text);margin-bottom:8px;}
 .crisis-alert .helpline small{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:3px;}
-
-.mood-panel{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:18px;padding:20px;box-shadow:var(--shadow);
-}
+.mood-panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow);}
 .mood-panel h3{font-size:16px;font-weight:800;margin-bottom:6px;letter-spacing:-.2px;}
 .mood-panel .mp-sub{font-size:13px;color:var(--muted);margin-bottom:16px;}
-
 .mood-row{display:flex;gap:8px;justify-content:space-between;margin-bottom:20px;}
-.mood-btn{
-  flex:1;aspect-ratio:1;max-width:56px;
-  border-radius:15px;border:1.5px solid var(--border);
-  background:var(--bg-soft);font-size:23px;
-  cursor:pointer;transition:.2s;display:grid;place-items:center;
-}
+.mood-btn{flex:1;aspect-ratio:1;max-width:56px;border-radius:15px;border:1.5px solid var(--border);background:var(--bg-soft);font-size:23px;cursor:pointer;transition:.2s;display:grid;place-items:center;}
 .mood-btn:hover{transform:translateY(-4px);border-color:var(--primary);}
-.mood-btn.selected{
-  border-color:var(--primary);background:rgba(79,124,255,.18);
-  transform:translateY(-4px);box-shadow:0 10px 22px rgba(79,124,255,.3);
-}
-
-.chart-title{
-  font-size:12px;font-weight:800;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;
-}
-.chart{
-  display:flex;align-items:flex-end;justify-content:space-between;
-  gap:7px;height:130px;padding-bottom:6px;
-  border-bottom:1px solid var(--border);
-}
-.bar-col{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:flex-end;height:100%;gap:6px;min-width:0;
-}
-.bar{
-  width:100%;max-width:26px;border-radius:7px 7px 3px 3px;
-  background:linear-gradient(180deg,var(--primary),var(--primary-2));
-  transition:height .45s cubic-bezier(.34,1.3,.64,1);
-  min-height:5px;
-}
+.mood-btn.selected{border-color:var(--primary);background:rgba(79,124,255,.18);transform:translateY(-4px);box-shadow:0 10px 22px rgba(79,124,255,.3);}
+.chart-title{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
+.chart{display:flex;align-items:flex-end;justify-content:space-between;gap:7px;height:130px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;min-width:0;}
+.bar{width:100%;max-width:26px;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,var(--primary),var(--primary-2));transition:height .45s cubic-bezier(.34,1.3,.64,1);min-height:5px;}
 .bar.empty{background:var(--border);}
 .bar-col .bd{font-size:10.5px;color:var(--muted);font-weight:700;white-space:nowrap;}
 .bar-col .be{font-size:14px;line-height:1;min-height:16px;}
@@ -628,112 +489,157 @@ select option,select optgroup{background:var(--card);color:var(--text);}
    SCHEDULE
    ============================================================ */
 .sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
-
 .plan-list{display:flex;flex-direction:column;gap:11px;margin-top:16px;}
-
-.plan-day{
-  border:1px solid var(--border);border-radius:14px;
-  padding:14px;background:var(--bg-soft);
-}
-.plan-day .pd-head{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;margin-bottom:9px;flex-wrap:wrap;
-}
+.plan-day{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--bg-soft);}
+.plan-day .pd-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;flex-wrap:wrap;}
 .plan-day .pd-name{font-size:14px;font-weight:800;}
-.plan-day .pd-total{
-  font-size:11.5px;font-weight:800;color:var(--primary);
-  background:rgba(79,124,255,.14);padding:3px 10px;border-radius:999px;
-}
+.plan-day .pd-total{font-size:11.5px;font-weight:800;color:var(--primary);background:rgba(79,124,255,.14);padding:3px 10px;border-radius:999px;}
 .plan-day ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
-.plan-day li{
-  font-size:13.5px;display:flex;align-items:center;gap:9px;
-  color:var(--text);opacity:.9;line-height:1.45;
-}
-.plan-day li::before{
-  content:"";width:6px;height:6px;border-radius:50%;flex:none;
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-}
-
+.plan-day li{font-size:13.5px;display:flex;align-items:center;gap:9px;color:var(--text);opacity:.9;line-height:1.45;}
+.plan-day li::before{content:"";width:6px;height:6px;border-radius:50%;flex:none;background:linear-gradient(135deg,var(--primary),var(--primary-2));}
 .tt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:16px;border-radius:14px;border:1px solid var(--border);}
 table.tt{width:100%;border-collapse:collapse;min-width:620px;font-size:12.5px;}
-table.tt th,table.tt td{
-  padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;
-}
-table.tt th{
-  background:var(--bg-soft);font-weight:800;font-size:11.5px;
-  text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
-}
+table.tt th,table.tt td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+table.tt th{background:var(--bg-soft);font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
 table.tt td:first-child{font-weight:800;color:var(--primary);}
 table.tt tr:last-child td{border-bottom:none;}
 
 /* ============================================================
-   DASHBOARD
+   DASHBOARD (student)
    ============================================================ */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
-.stat{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:15px;padding:16px 14px;text-align:center;
-}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:16px 14px;text-align:center;}
 .stat .num{font-size:24px;font-weight:800;letter-spacing:-.6px;line-height:1.2;}
 .stat .lbl{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-top:4px;}
 .stat.p .num{color:var(--warn);}
 .stat.i .num{color:var(--primary);}
 .stat.r .num{color:var(--ok);}
 .stat.e .num{color:var(--danger);}
-
 .dash-grid{display:grid;grid-template-columns:1fr;gap:16px;}
-.panel{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);
-}
-.panel-title{
-  font-size:16px;font-weight:800;margin-bottom:14px;
-  display:flex;align-items:center;gap:9px;letter-spacing:-.2px;
-}
-
-.item{
-  border:1px solid var(--border);border-radius:14px;
-  padding:14px;margin-bottom:11px;background:var(--bg-soft);
-}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.panel-title{font-size:16px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:9px;letter-spacing:-.2px;flex-wrap:wrap;}
+.item{border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:11px;background:var(--bg-soft);}
 .item:last-child{margin-bottom:0;}
-.item-top{
-  display:flex;justify-content:space-between;align-items:flex-start;
-  gap:10px;margin-bottom:8px;flex-wrap:wrap;
-}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
 .item-title{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .item-meta{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;}
 .item-desc{font-size:13.5px;opacity:.86;line-height:1.55;margin-bottom:8px;word-break:break-word;}
 .item-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-
-.badge{
-  display:inline-block;padding:3px 10px;border-radius:999px;
-  font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;
-}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}
 .badge.pending{background:rgba(255,176,32,.16);color:#ffb020;}
 .badge.progress{background:rgba(79,124,255,.18);color:#7ea0ff;}
 .badge.resolved{background:rgba(34,201,138,.16);color:#3ddc9a;}
-
-.priority{
-  font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:999px;
-  text-transform:uppercase;letter-spacing:.5px;flex:none;
-}
+.priority{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px;flex:none;}
 .priority.low{background:rgba(34,201,138,.15);color:#3ddc9a;}
 .priority.medium{background:rgba(255,176,32,.15);color:#ffb020;}
 .priority.high{background:rgba(255,122,60,.16);color:#ff8a4c;}
 .priority.emergency{background:rgba(255,77,109,.18);color:#ff6b87;}
-
-.alert-item{
-  border:1px solid rgba(255,77,109,.35);background:rgba(255,77,109,.08);
-  border-radius:14px;padding:13px 14px;margin-bottom:10px;
-}
+.alert-item{border:1px solid rgba(255,77,109,.35);background:rgba(255,77,109,.08);border-radius:14px;padding:13px 14px;margin-bottom:10px;}
 .alert-item:last-child{margin-bottom:0;}
 .alert-item .at{font-size:14px;font-weight:800;color:#ff6b87;display:flex;align-items:center;gap:8px;}
-
 .empty{text-align:center;padding:34px 16px;color:var(--muted);font-size:14px;}
 .empty .e-emoji{font-size:38px;display:block;margin-bottom:12px;opacity:.85;}
 
 /* ============================================================
-   SOS (fixed — safely below modals, pointer-events-safe pulse)
+   ADMIN DASHBOARD
+   ============================================================ */
+.admin-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:20px;flex-wrap:wrap;
+}
+.admin-topbar .live-time{font-size:12.5px;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:6px;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;animation:pulseBadge 1.6s infinite;}
+
+.admin-stats-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;
+}
+.admin-stat{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:18px;
+  display:flex;align-items:center;gap:14px;
+  position:relative;overflow:hidden;transition:transform .2s;
+}
+.admin-stat:hover{transform:translateY(-3px);}
+.admin-stat::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--primary);}
+.admin-stat.total::before{background:linear-gradient(90deg,var(--primary),var(--primary-2));}
+.admin-stat.pending::before{background:linear-gradient(90deg,#ffb020,#ff8a4c);}
+.admin-stat.resolved::before{background:linear-gradient(90deg,#22c98a,#12a5b8);}
+.admin-stat.emergency::before{background:linear-gradient(90deg,#ff2d55,#ff6b3d);}
+.admin-stat .as-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:22px;flex-shrink:0;}
+.admin-stat.total .as-icon{background:rgba(79,124,255,.16);color:var(--primary);}
+.admin-stat.pending .as-icon{background:rgba(255,176,32,.16);color:#ffb020;}
+.admin-stat.resolved .as-icon{background:rgba(34,201,138,.16);color:#22c98a;}
+.admin-stat.emergency .as-icon{background:rgba(255,45,85,.16);color:#ff6b87;}
+.admin-stat .as-body{min-width:0;flex:1;}
+.admin-stat .as-num{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1.1;color:var(--text);}
+.admin-stat .as-lbl{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+
+.admin-layout{display:grid;grid-template-columns:1fr;gap:16px;}
+@media (min-width:960px){.admin-layout{grid-template-columns:1fr 340px;}}
+.admin-charts-row{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px;}
+@media (min-width:720px){.admin-charts-row{grid-template-columns:1fr 1fr;}}
+
+.css-bars{display:flex;flex-direction:column;gap:12px;}
+.css-bar-row{display:flex;flex-direction:column;gap:6px;}
+.css-bar-head{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;gap:10px;}
+.css-bar-head .cb-name{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.css-bar-head .cb-val{color:var(--primary);flex-shrink:0;}
+.css-bar-track{height:10px;background:var(--bg-soft);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+.css-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-2));border-radius:999px;transition:width .6s cubic-bezier(.34,1.3,.64,1);min-width:4px;}
+
+.css-vchart{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;height:170px;padding:0 4px;}
+.css-vbar-col{flex:1;height:100%;display:flex;flex-direction:column;gap:6px;min-width:0;}
+.css-vbar-track{flex:1;display:flex;align-items:flex-end;justify-content:center;min-height:0;}
+.css-vbar{
+  width:100%;max-width:36px;
+  background:linear-gradient(180deg,var(--primary),var(--primary-2));
+  border-radius:8px 8px 3px 3px;
+  position:relative;min-height:6px;
+  transition:height .6s cubic-bezier(.34,1.3,.64,1);
+}
+.css-vbar .cb-val{
+  position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+  font-size:11px;font-weight:800;color:var(--primary);white-space:nowrap;
+}
+.css-vbar-label{font-size:11px;font-weight:700;color:var(--muted);text-align:center;}
+
+.admin-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.admin-filters select{flex:1 1 140px;min-width:0;font-size:14px;padding:9px 12px;}
+
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid var(--border);}
+table.admin-table{width:100%;border-collapse:collapse;min-width:820px;font-size:13px;}
+table.admin-table th,table.admin-table td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:middle;}
+table.admin-table th{
+  background:var(--bg-soft);font-size:11.5px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px;color:var(--muted);white-space:nowrap;
+}
+table.admin-table tr:last-child td{border-bottom:none;}
+table.admin-table tr:hover td{background:rgba(79,124,255,.04);}
+table.admin-table .t-id{font-family:ui-monospace,monospace;font-size:11.5px;font-weight:700;color:var(--primary);}
+table.admin-table .t-actions{display:flex;gap:6px;flex-wrap:wrap;}
+table.admin-table .t-actions button{
+  padding:6px 10px;font-size:11.5px;border-radius:8px;
+  border:1px solid var(--border);background:var(--bg-soft);color:var(--text);
+  font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;
+}
+table.admin-table .t-actions .t-approve:hover{border-color:var(--ok);color:var(--ok);}
+table.admin-table .t-actions .t-reject:hover{border-color:var(--danger);color:var(--danger);}
+table.admin-table .t-actions .t-resolve{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-color:transparent;}
+table.admin-table .t-actions .t-resolve:hover{box-shadow:0 6px 16px rgba(79,124,255,.4);}
+
+.live-panel{display:flex;flex-direction:column;max-height:740px;}
+.live-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px;flex:1;-webkit-overflow-scrolling:touch;}
+.live-item{display:flex;gap:10px;padding:11px 12px;border-radius:12px;background:var(--bg-soft);border:1px solid var(--border);animation:liveIn .3s ease;}
+@keyframes liveIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
+.live-item.emergency{border-color:rgba(255,77,109,.4);background:rgba(255,77,109,.08);}
+.live-item .li-icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0;background:var(--card);}
+.live-item.emergency .li-icon{background:rgba(255,45,85,.2);}
+.live-item .li-body{min-width:0;flex:1;}
+.live-item .li-msg{font-size:13px;font-weight:700;line-height:1.4;margin-bottom:3px;word-break:break-word;}
+.live-item .li-meta{font-size:11.5px;color:var(--muted);}
+
+/* ============================================================
+   SOS
    ============================================================ */
 .sos-btn{
   position:fixed;right:16px;bottom:16px;z-index:80;
@@ -741,17 +647,14 @@ table.tt tr:last-child td{border-bottom:none;}
   background:linear-gradient(135deg,#ff2d55,#ff6b3d);
   color:#fff;font-weight:900;font-size:13px;letter-spacing:.6px;
   cursor:pointer;box-shadow:0 12px 30px rgba(255,45,85,.5);
-  display:grid;place-items:center;
-  transition:transform .2s;
+  display:grid;place-items:center;transition:transform .2s;
 }
 .sos-btn:active{transform:scale(.92);}
 .sos-btn::after{
   content:"";position:absolute;inset:0;border-radius:50%;
   border:2px solid rgba(255,45,85,.85);
   animation:sosPulse 2s infinite;
-  /* CRITICAL: pulse ring must not steal taps */
-  pointer-events:none;
-  z-index:-1;
+  pointer-events:none;z-index:-1;
 }
 @keyframes sosPulse{0%{transform:scale(1);opacity:.85;}100%{transform:scale(1.75);opacity:0;}}
 
@@ -761,8 +664,7 @@ table.tt tr:last-child td{border-bottom:none;}
 .toast-wrap{
   position:fixed;top:14px;left:50%;transform:translateX(-50%);
   z-index:300;display:flex;flex-direction:column;gap:8px;
-  width:calc(100% - 28px);max-width:430px;
-  pointer-events:none; /* wrapper never blocks taps */
+  width:calc(100% - 28px);max-width:430px;pointer-events:none;
 }
 .toast{
   padding:13px 16px;border-radius:14px;background:var(--card);
@@ -779,19 +681,10 @@ table.tt tr:last-child td{border-bottom:none;}
 /* ============================================================
    FOOTER
    ============================================================ */
-.footer{
-  border-top:1px solid var(--border);
-  padding:32px 0 110px;margin-top:20px;
-  background:var(--bg-soft);
-}
-.footer-links{
-  display:flex;gap:8px 22px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;
-}
-.footer-links a{
-  font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:.2s;
-}
+.footer{border-top:1px solid var(--border);padding:32px 0 110px;margin-top:20px;background:var(--bg-soft);}
+.footer-links{display:flex;gap:8px 22px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;}
+.footer-links a{font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:.2s;}
 .footer-links a:hover{color:var(--primary);}
-
 .footer-help{display:flex;justify-content:center;margin-bottom:16px;}
 .help-box{
   display:inline-flex;align-items:center;gap:11px;
@@ -800,7 +693,6 @@ table.tt tr:last-child td{border-bottom:none;}
   font-size:13.5px;font-weight:700;flex-wrap:wrap;justify-content:center;text-align:center;
 }
 .help-box .hn{color:var(--danger);font-weight:900;letter-spacing:.3px;}
-
 .footer-copy{text-align:center;font-size:12.5px;color:var(--muted);line-height:1.6;}
 
 /* ============================================================
@@ -813,7 +705,6 @@ table.tt tr:last-child td{border-bottom:none;}
   padding:16px;z-index:200;overflow-y:auto;overscroll-behavior:contain;
 }
 .modal-overlay.open{display:flex;}
-
 .modal{
   width:100%;max-width:560px;margin:auto;
   background:var(--card);border:1px solid var(--border);
@@ -823,31 +714,22 @@ table.tt tr:last-child td{border-bottom:none;}
 }
 .modal.wide{max-width:640px;}
 .modal.narrow{max-width:430px;}
-
 @keyframes modalIn{from{opacity:0;transform:translateY(18px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
-
 .modal-close{
-  position:absolute;top:14px;right:14px;
-  width:36px;height:36px;border-radius:11px;
-  border:1px solid var(--border);background:var(--bg-soft);
-  color:var(--muted);font-size:20px;line-height:1;cursor:pointer;
-  display:grid;place-items:center;transition:.2s;z-index:2;
+  position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:11px;
+  border:1px solid var(--border);background:var(--bg-soft);color:var(--muted);
+  font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:.2s;z-index:2;
 }
 .modal-close:hover{color:var(--danger);border-color:var(--danger);}
-
 .modal-head{margin-bottom:20px;padding-right:40px;}
 .modal-head h3{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px;}
 .modal-head p{font-size:14px;color:var(--muted);}
-
 .modal-foot{margin-top:18px;font-size:14px;color:var(--muted);text-align:center;}
 .modal-foot a{color:var(--primary);font-weight:700;cursor:pointer;}
-
 .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
-
 .role-btn{
-  padding:26px 14px;border-radius:18px;
-  border:2px solid var(--border);background:var(--bg-soft);
-  color:var(--text);cursor:pointer;text-align:center;
+  padding:26px 14px;border-radius:18px;border:2px solid var(--border);
+  background:var(--bg-soft);color:var(--text);cursor:pointer;text-align:center;
   transition:.22s;font-family:inherit;
 }
 .role-btn:hover{border-color:var(--primary);transform:translateY(-4px);box-shadow:0 14px 30px rgba(79,124,255,.24);}
@@ -855,7 +737,6 @@ table.tt tr:last-child td{border-bottom:none;}
 .role-btn .emoji{font-size:40px;display:block;margin-bottom:12px;line-height:1;}
 .role-btn .rname{font-size:17px;font-weight:800;display:block;margin-bottom:4px;}
 .role-btn .rdesc{font-size:12px;color:var(--muted);font-weight:500;display:block;line-height:1.4;}
-
 .radio-row{display:flex;gap:10px;flex-wrap:wrap;}
 .radio-pill{
   display:inline-flex;align-items:center;gap:8px;
@@ -876,7 +757,6 @@ table.tt tr:last-child td{border-bottom:none;}
   .sched-grid{grid-template-columns:1fr;}
   .chat-panel{height:520px;}
 }
-
 @media (max-width:720px){
   .grid-2,.grid-3{grid-template-columns:1fr;}
   .stats{grid-template-columns:1fr 1fr;}
@@ -893,8 +773,19 @@ table.tt tr:last-child td{border-bottom:none;}
   .quick-card .qt{font-size:12.5px;}
   .items-grid{grid-template-columns:1fr;}
   .footer{padding-bottom:120px;}
+  .admin-stats-grid{grid-template-columns:1fr 1fr;}
+  .admin-stat{padding:14px;gap:10px;}
+  .admin-stat .as-icon{width:40px;height:40px;font-size:18px;}
+  .admin-stat .as-num{font-size:22px;}
+  .admin-stat .as-lbl{font-size:10.5px;}
 }
-
+@media (max-width:480px){
+  .icon-btn{width:34px;height:34px;font-size:14px;border-radius:10px;}
+  .header-actions{gap:5px;}
+  .brand-text{font-size:16px;}
+  .brand-mark{width:32px;height:32px;font-size:12px;}
+  .notif-badge{font-size:9px;min-width:16px;height:16px;top:-4px;right:-4px;}
+}
 @media (max-width:400px){
   .role-btn{padding:20px 8px;}
   .role-btn .emoji{font-size:32px;}
@@ -906,6 +797,7 @@ table.tt tr:last-child td{border-bottom:none;}
   .sos-btn{width:60px;height:60px;font-size:12px;}
   .steps{grid-template-columns:1fr;}
   .hero-actions .btn{width:100%;}
+  .admin-stats-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -923,6 +815,10 @@ table.tt tr:last-child td{border-bottom:none;}
     </button>
 
     <div class="header-actions">
+      <button type="button" class="icon-btn" id="soundToggle" aria-label="Toggle sound">🔊</button>
+      <button type="button" class="icon-btn notif-btn" id="notifBell" aria-label="Notifications">
+        🔔<span class="notif-badge hidden" id="notifBadge">0</span>
+      </button>
       <button type="button" class="icon-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
       <button type="button" class="user-chip hidden" id="headerUser" aria-label="Open dashboard"></button>
       <button type="button" class="icon-btn hamburger" id="hamburger" aria-label="Open menu">
@@ -941,6 +837,17 @@ table.tt tr:last-child td{border-bottom:none;}
 </header>
 
 <!-- ============================================================
+     NOTIFICATION DROPDOWN
+     ============================================================ -->
+<div class="notif-dropdown hidden" id="notifDropdown">
+  <div class="notif-head">
+    <strong>🔔 Notifications</strong>
+    <button type="button" id="markAllRead">Mark all as read</button>
+  </div>
+  <div class="notif-list" id="notifList"></div>
+</div>
+
+<!-- ============================================================
      DRAWER
      ============================================================ -->
 <aside class="drawer" id="drawer" aria-hidden="true">
@@ -948,9 +855,7 @@ table.tt tr:last-child td{border-bottom:none;}
     <strong>Menu</strong>
     <button type="button" class="icon-btn" id="drawerClose" aria-label="Close menu">✕</button>
   </div>
-
   <div class="drawer-user hidden" id="drawerUser"></div>
-
   <nav class="drawer-nav">
     <button type="button" data-view="home" data-close>🏠 Home</button>
     <button type="button" data-view="complaints" data-close>📝 Complaints</button>
@@ -958,14 +863,10 @@ table.tt tr:last-child td{border-bottom:none;}
     <button type="button" data-view="sukoon" data-close>🧠 Sukoon AI</button>
     <button type="button" data-view="schedule" data-close>📅 Schedule</button>
     <button type="button" id="drawerDash">📊 Dashboard</button>
-
     <div class="drawer-divider" id="drawerDiv1"></div>
-
     <button type="button" id="drawerSignup">✨ Signup</button>
     <button type="button" id="drawerLogin">🔐 Login</button>
-
     <div class="drawer-divider hidden" id="drawerDiv2"></div>
-
     <button type="button" id="drawerLogout" class="danger hidden">🚪 Logout</button>
   </nav>
 </aside>
@@ -975,18 +876,15 @@ table.tt tr:last-child td{border-bottom:none;}
      VIEW: HOME
      ============================================================ -->
 <main id="view-home">
-
   <section class="hero">
     <div class="wrap">
       <span class="pill">🎓 Smart India Hackathon 2025</span>
       <h1>Your Campus,<br><span class="grad">One Tap Away.</span></h1>
       <p>Complaints, Emergency, Lost &amp; Found, Mental Wellness, and Smart Scheduling — all in one platform.</p>
-
       <div class="hero-actions">
         <button type="button" class="btn btn-primary" id="heroSignup">Get Started Free</button>
         <button type="button" class="btn btn-ghost" data-view="complaints">File a Complaint</button>
       </div>
-
       <div class="trust-badges">
         <span class="trust-badge">🔒 Secure &amp; Encrypted</span>
         <span class="trust-badge">🏫 College Verified</span>
@@ -999,24 +897,19 @@ table.tt tr:last-child td{border-bottom:none;}
     <div class="wrap">
       <div class="quick-grid">
         <button type="button" class="quick-card" data-view="complaints">
-          <span class="qi">📝</span>
-          <span class="qt">File a Complaint</span>
+          <span class="qi">📝</span><span class="qt">File a Complaint</span>
         </button>
         <button type="button" class="quick-card sos" id="quickSos">
-          <span class="qi">🚨</span>
-          <span class="qt">Emergency SOS</span>
+          <span class="qi">🚨</span><span class="qt">Emergency SOS</span>
         </button>
         <button type="button" class="quick-card" data-view="lostfound">
-          <span class="qi">🔍</span>
-          <span class="qt">Lost &amp; Found</span>
+          <span class="qi">🔍</span><span class="qt">Lost &amp; Found</span>
         </button>
         <button type="button" class="quick-card" data-view="sukoon">
-          <span class="qi">🧠</span>
-          <span class="qt">Talk to Sukoon AI</span>
+          <span class="qi">🧠</span><span class="qt">Talk to Sukoon AI</span>
         </button>
         <button type="button" class="quick-card" data-view="schedule">
-          <span class="qi">📅</span>
-          <span class="qt">My Schedule</span>
+          <span class="qi">📅</span><span class="qt">My Schedule</span>
         </button>
       </div>
     </div>
@@ -1026,32 +919,14 @@ table.tt tr:last-child td{border-bottom:none;}
     <div class="wrap">
       <h2 class="section-title">⚙️ How It Works</h2>
       <p class="section-sub">Four simple steps from problem to resolution.</p>
-
       <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <h4>Sign Up</h4>
-          <p>Create your Student or Teacher account in under a minute.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <h4>Report / Use</h4>
-          <p>File complaints, report lost items, chat with Sukoon, or plan your studies.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <h4>Track</h4>
-          <p>Watch your complaint status update live from Pending to In Progress.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <h4>Resolved</h4>
-          <p>Get notified the moment your issue is marked Resolved by faculty.</p>
-        </div>
+        <div class="step"><div class="step-num">1</div><h4>Sign Up</h4><p>Create your Student or Teacher account in under a minute.</p></div>
+        <div class="step"><div class="step-num">2</div><h4>Report / Use</h4><p>File complaints, report lost items, chat with Sukoon, or plan your studies.</p></div>
+        <div class="step"><div class="step-num">3</div><h4>Track</h4><p>Watch your complaint status update live from Pending to In Progress.</p></div>
+        <div class="step"><div class="step-num">4</div><h4>Resolved</h4><p>Get notified the moment your issue is marked Resolved by faculty.</p></div>
       </div>
     </div>
   </section>
-
 </main>
 
 <!-- ============================================================
@@ -1062,2264 +937,7 @@ table.tt tr:last-child td{border-bottom:none;}
     <div class="wrap">
       <h2 class="section-title">📝 File a Complaint</h2>
       <p class="section-sub">Tell us what's wrong and we'll route it to the right teacher.</p>
-
       <form class="card" id="complaintForm" novalidate>
         <div class="form-msg" id="cmpMsg"></div>
-
         <div class="grid-2">
-          <div class="field">
-            <label for="cmpName">Full Name <span class="req">*</span></label>
-            <input type="text" id="cmpName" placeholder="e.g. Aarav Sharma" required>
-          </div>
-          <div class="field">
-            <label for="cmpEmail">College Email <span class="req">*</span></label>
-            <input type="email" id="cmpEmail" placeholder="you@college.edu" required>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="field">
-            <label for="cmpCourse">Course / Class <span class="req">*</span></label>
-            <select id="cmpCourse" required></select>
-          </div>
-          <div class="field">
-            <label for="cmpSection">Section <span class="req">*</span></label>
-            <select id="cmpSection" required>
-              <option value="" disabled selected>Select section</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="field">
-            <label for="cmpCategory">Category <span class="req">*</span></label>
-            <select id="cmpCategory" required>
-              <option value="" disabled selected>Select category</option>
-              <option>Academic</option>
-              <option>Infrastructure</option>
-              <option>Canteen / Food</option>
-              <option>Library</option>
-              <option>Transport</option>
-              <option>Hostel</option>
-              <option>Ragging / Harassment</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="cmpPriority">Priority <span class="req">*</span></label>
-            <select id="cmpPriority" required>
-              <option value="Low">Low</option>
-              <option value="Medium" selected>Medium</option>
-              <option value="High">High</option>
-              <option value="Emergency">Emergency</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="cmpDesc">Describe the issue <span class="req">*</span></label>
-          <textarea id="cmpDesc" placeholder="Give us as much detail as possible…" required></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block">Submit Complaint</button>
-      </form>
-    </div>
-  </section>
-</main>
-
-<!-- ============================================================
-     VIEW: LOST & FOUND
-     ============================================================ -->
-<main id="view-lostfound" class="hidden">
-  <section class="section">
-    <div class="wrap">
-      <h2 class="section-title">🔍 Lost &amp; Found</h2>
-      <p class="section-sub">Report lost items or help reunite someone with theirs. AI matching shows how likely an item is yours.</p>
-
-      <div class="toolbar">
-        <div class="search">
-          <input type="text" id="lfSearch" placeholder="🔍 Search by item name, location…">
-        </div>
-        <select id="lfCategory">
-          <option value="">All Categories</option>
-          <option>Electronics</option>
-          <option>ID Card</option>
-          <option>Books / Notes</option>
-          <option>Bag / Backpack</option>
-          <option>Clothing</option>
-          <option>Keys</option>
-          <option>Water Bottle</option>
-          <option>Jewellery</option>
-          <option>Other</option>
-        </select>
-      </div>
-
-      <div class="toolbar" style="justify-content:space-between;">
-        <div class="filter-chips" id="lfFilters">
-          <button type="button" class="chip active" data-filter="all">All</button>
-          <button type="button" class="chip" data-filter="lost">Lost</button>
-          <button type="button" class="chip" data-filter="found">Found</button>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm" id="lfAddBtn">+ Report New Item</button>
-      </div>
-
-      <div class="items-grid" id="lfGrid"></div>
-    </div>
-  </section>
-</main>
-
-<!-- ============================================================
-     VIEW: SUKOON AI
-     ============================================================ -->
-<main id="view-sukoon" class="hidden">
-  <section class="section">
-    <div class="wrap">
-      <h2 class="section-title">🧠 Sukoon AI</h2>
-      <p class="section-sub">A safe, private space to talk. Sukoon listens without judgement — available 24/7.</p>
-
-      <div class="sukoon-wrap">
-
-        <div class="chat-panel">
-          <div class="chat-head">
-            <div class="cavatar">🧠</div>
-            <div class="cinfo">
-              <div class="cn">Sukoon AI</div>
-              <div class="cs"><span class="dot"></span> Online · Confidential</div>
-            </div>
-          </div>
-
-          <div class="chat-body" id="chatBody"></div>
-
-          <div class="quick-replies" id="quickReplies">
-            <button type="button" class="qr" data-msg="I'm stressed">I'm stressed</button>
-            <button type="button" class="qr" data-msg="Can't sleep">Can't sleep</button>
-            <button type="button" class="qr" data-msg="Exam pressure">Exam pressure</button>
-            <button type="button" class="qr" data-msg="Feeling lonely">Feeling lonely</button>
-          </div>
-
-          <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Type how you feel…" autocomplete="off">
-            <button type="button" id="chatSend" aria-label="Send">➤</button>
-          </div>
-        </div>
-
-        <div class="mood-panel">
-          <h3>Mood Tracker</h3>
-          <p class="mp-sub">How are you feeling today?</p>
-
-          <div class="mood-row" id="moodRow">
-            <button type="button" class="mood-btn" data-mood="5" title="Happy">😊</button>
-            <button type="button" class="mood-btn" data-mood="4" title="Okay">😐</button>
-            <button type="button" class="mood-btn" data-mood="3" title="Sad">😔</button>
-            <button type="button" class="mood-btn" data-mood="2" title="Very Sad">😢</button>
-            <button type="button" class="mood-btn" data-mood="1" title="Angry">😡</button>
-          </div>
-
-          <div class="chart-title">Last 7 Days</div>
-          <div class="chart" id="moodChart"></div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-</main>
-
-<!-- ============================================================
-     VIEW: SCHEDULE
-     ============================================================ -->
-<main id="view-schedule" class="hidden">
-  <section class="section">
-    <div class="wrap">
-      <h2 class="section-title">📅 My Schedule</h2>
-      <p class="section-sub">Plan your studies smartly and generate a weekly timetable in seconds.</p>
-
-      <div class="sched-grid">
-
-        <div class="panel">
-          <div class="panel-title">📚 Study Planner</div>
-
-          <div class="field">
-            <label for="spSubjects">Subjects <span class="req">*</span></label>
-            <input type="text" id="spSubjects" placeholder="e.g. Maths, Physics, Chemistry">
-            <div class="hint">Separate subjects with commas</div>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="spExam">Exam Date <span class="req">*</span></label>
-              <input type="date" id="spExam">
-            </div>
-            <div class="field">
-              <label for="spHours">Free Hours / Day <span class="req">*</span></label>
-              <input type="number" id="spHours" min="1" max="12" value="4" placeholder="4">
-            </div>
-          </div>
-
-          <button type="button" class="btn btn-primary btn-block" id="spGenerate">Generate Study Plan</button>
-
-          <div class="plan-list" id="planList"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title">🗓️ Timetable Generator</div>
-          <p style="font-size:13.5px;color:var(--muted);line-height:1.6;">
-            Generate a demo weekly class timetable based on your course. Perfect for planning your week.
-          </p>
-
-          <div class="field" style="margin-top:14px;">
-            <label for="ttCourse">Course / Class</label>
-            <select id="ttCourse"></select>
-          </div>
-
-          <button type="button" class="btn btn-primary btn-block" id="ttGenerate">Generate Timetable</button>
-
-          <div id="ttResult"></div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-</main>
-
-<!-- ============================================================
-     VIEW: DASHBOARD
-     ============================================================ -->
-<main id="view-dashboard" class="hidden">
-  <section class="section">
-    <div class="wrap">
-      <h2 class="section-title" id="dashTitle">📊 Dashboard</h2>
-      <p class="section-sub" id="dashSub"></p>
-      <div id="dashContent"></div>
-    </div>
-  </section>
-</main>
-
-<!-- ============================================================
-     FOOTER
-     ============================================================ -->
-<footer class="footer">
-  <div class="wrap">
-    <div class="footer-links">
-      <a data-footer="about">About Us</a>
-      <a data-footer="contact">Contact</a>
-      <a data-footer="privacy">Privacy Policy</a>
-      <a data-footer="terms">Terms</a>
-      <a data-footer="help">Help</a>
-    </div>
-
-    <div class="footer-help">
-      <div class="help-box">
-        <span>💙 Mental Health Helpline</span>
-        <span class="hn">KIRAN · 1800-599-0019</span>
-      </div>
-    </div>
-
-    <div class="footer-copy">
-      © 2025 CampusOne — A Student Welfare Initiative
-    </div>
-  </div>
-</footer>
-
-<!-- ============================================================
-     SOS BUTTON
-     ============================================================ -->
-<button type="button" class="sos-btn" id="sosBtn" aria-label="Emergency SOS">SOS</button>
-
-<!-- ============================================================
-     TOASTS
-     ============================================================ -->
-<div class="toast-wrap" id="toastWrap"></div>
-
-<!-- ============================================================
-     MODAL: ROLE SELECTION
-     ============================================================ -->
-<div class="modal-overlay" id="roleModal">
-  <div class="modal narrow">
-    <button type="button" class="modal-close" data-close-modal="roleModal" aria-label="Close">✕</button>
-    <div class="modal-head">
-      <h3>Are you a Student or a Teacher?</h3>
-      <p>Choose your role to continue. This helps us show you the right dashboard.</p>
-    </div>
-    <div class="role-grid">
-      <button type="button" class="role-btn" data-role="student">
-        <span class="emoji">🎓</span>
-        <span class="rname">Student</span>
-        <span class="rdesc">File &amp; track complaints</span>
-      </button>
-      <button type="button" class="role-btn" data-role="teacher">
-        <span class="emoji">👨‍🏫</span>
-        <span class="rname">Teacher</span>
-        <span class="rdesc">Manage class complaints</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================
-     MODAL: STUDENT SIGNUP
-     ============================================================ -->
-<div class="modal-overlay" id="studentModal">
-  <div class="modal wide">
-    <button type="button" class="modal-close" data-close-modal="studentModal" aria-label="Close">✕</button>
-    <div class="modal-head">
-      <h3>🎓 Student Signup</h3>
-      <p>Create your student account to file and track complaints.</p>
-    </div>
-
-    <form id="studentForm" novalidate>
-      <div class="form-msg" id="suMsg"></div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="suName">Full Name <span class="req">*</span></label>
-          <input type="text" id="suName" placeholder="e.g. Aarav Sharma" autocomplete="name" required>
-        </div>
-        <div class="field">
-          <label for="suPhone">Phone Number <span class="req">*</span></label>
-          <input type="tel" id="suPhone" placeholder="10-digit mobile number" inputmode="numeric" autocomplete="tel" required>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="suCollegeId">College ID / Roll Number <span class="req">*</span></label>
-          <input type="text" id="suCollegeId" placeholder="e.g. 21BCA045" required>
-        </div>
-        <div class="field">
-          <label for="suEmail">College Email <span class="req">*</span></label>
-          <input type="email" id="suEmail" placeholder="you@college.edu" autocomplete="email" required>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="suPass">Password <span class="req">*</span></label>
-          <input type="password" id="suPass" placeholder="Minimum 6 characters" autocomplete="new-password" required>
-        </div>
-        <div class="field">
-          <label for="suConfirm">Confirm Password <span class="req">*</span></label>
-          <input type="password" id="suConfirm" placeholder="Re-enter password" autocomplete="new-password" required>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="suCourse">Course <span class="req">*</span></label>
-          <select id="suCourse" required></select>
-        </div>
-        <div class="field">
-          <label for="suSection">Section <span class="req">*</span></label>
-          <select id="suSection" required>
-            <option value="" disabled selected>Select section</option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Profile Photo</label>
-        <div class="photo-upload">
-          <div class="photo-preview" id="suPreview">📷</div>
-          <div>
-            <label class="btn btn-ghost btn-sm" for="suPhoto">Choose Photo</label>
-            <input type="file" id="suPhoto" accept="image/*" hidden>
-            <div class="hint">JPG or PNG · auto-resized</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="field" style="margin-top:16px;">
-        <label class="check-line">
-          <input type="checkbox" id="suTerms" required>
-          <span>I agree to the <a href="#" onclick="return false;">Terms &amp; Conditions</a> and <a href="#" onclick="return false;">Privacy Policy</a> of CampusOne.</span>
-        </label>
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-
-      <div class="modal-foot">
-        Already have an account? <a id="suToLogin">Sign In</a>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- ============================================================
-     MODAL: TEACHER SIGNUP
-     ============================================================ -->
-<div class="modal-overlay" id="teacherModal">
-  <div class="modal wide">
-    <button type="button" class="modal-close" data-close-modal="teacherModal" aria-label="Close">✕</button>
-    <div class="modal-head">
-      <h3>👨‍🏫 Teacher Signup</h3>
-      <p>Create your faculty account to manage your classes.</p>
-    </div>
-
-    <form id="teacherForm" novalidate>
-      <div class="form-msg" id="tuMsg"></div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="tuName">Full Name <span class="req">*</span></label>
-          <input type="text" id="tuName" placeholder="e.g. Dr. Meera Iyer" autocomplete="name" required>
-        </div>
-        <div class="field">
-          <label for="tuPhone">Phone Number <span class="req">*</span></label>
-          <input type="tel" id="tuPhone" placeholder="10-digit mobile number" inputmode="numeric" autocomplete="tel" required>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="tuEmpId">Employee ID <span class="req">*</span></label>
-          <input type="text" id="tuEmpId" placeholder="e.g. EMP-2041" required>
-        </div>
-        <div class="field">
-          <label for="tuEmail">College Email <span class="req">*</span></label>
-          <input type="email" id="tuEmail" placeholder="you@college.edu" autocomplete="email" required>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="tuPass">Password <span class="req">*</span></label>
-        <input type="password" id="tuPass" placeholder="Minimum 6 characters" autocomplete="new-password" required>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="tuDesignation">Designation <span class="req">*</span></label>
-          <select id="tuDesignation" required>
-            <option value="" disabled selected>Select designation</option>
-            <option>Professor</option>
-            <option>Assistant Professor</option>
-            <option>HOD</option>
-            <option>Class Teacher</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="tuDept">Department <span class="req">*</span></label>
-          <select id="tuDept" required>
-            <option value="" disabled selected>Select department</option>
-            <option>Science</option>
-            <option>Commerce</option>
-            <option>Arts</option>
-            <option>BCA</option>
-            <option>BSC</option>
-            <option>Pharmacy</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Classes you teach <span class="req">*</span></label>
-        <div id="tuClasses"></div>
-      </div>
-
-      <div class="field">
-        <label for="tuClassTeacher">Class Teacher of <span class="hint" style="display:inline;margin:0;">(optional)</span></label>
-        <select id="tuClassTeacher"></select>
-      </div>
-
-      <div class="field">
-        <label>Profile Photo</label>
-        <div class="photo-upload">
-          <div class="photo-preview" id="tuPreview">📷</div>
-          <div>
-            <label class="btn btn-ghost btn-sm" for="tuPhoto">Choose Photo</label>
-            <input type="file" id="tuPhoto" accept="image/*" hidden>
-            <div class="hint">JPG or PNG · auto-resized</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="field" style="margin-top:16px;">
-        <label class="check-line">
-          <input type="checkbox" id="tuTerms" required>
-          <span>I agree to the <a href="#" onclick="return false;">Terms &amp; Conditions</a> and <a href="#" onclick="return false;">Privacy Policy</a> of CampusOne.</span>
-        </label>
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-
-      <div class="modal-foot">
-        Already have an account? <a id="tuToLogin">Sign In</a>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- ============================================================
-     MODAL: LOGIN
-     ============================================================ -->
-<div class="modal-overlay" id="loginModal">
-  <div class="modal narrow">
-    <button type="button" class="modal-close" data-close-modal="loginModal" aria-label="Close">✕</button>
-    <div class="modal-head">
-      <h3>🔐 Welcome back</h3>
-      <p>Sign in to your CampusOne account.</p>
-    </div>
-
-    <form id="loginForm" novalidate>
-      <div class="form-msg" id="liMsg"></div>
-
-      <div class="field">
-        <label for="liEmail">College Email <span class="req">*</span></label>
-        <input type="email" id="liEmail" placeholder="you@college.edu" autocomplete="email" required>
-      </div>
-
-      <div class="field">
-        <label for="liPass">Password <span class="req">*</span></label>
-        <input type="password" id="liPass" placeholder="Your password" autocomplete="current-password" required>
-      </div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
-        <label class="check-line" style="font-size:13.5px;">
-          <input type="checkbox" id="liRemember" checked>
-          <span>Remember Me</span>
-        </label>
-        <a id="forgotLink" style="font-size:13.5px;color:var(--primary);font-weight:700;cursor:pointer;">Forgot Password?</a>
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-
-      <div class="modal-foot">
-        New to CampusOne? <a id="liToSignup">Create an account</a>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- ============================================================
-     MODAL: FORGOT PASSWORD
-     ============================================================ -->
-<div class="modal-overlay" id="forgotModal">
-  <div class="modal narrow">
-    <button type="button" class="modal-close" data-close-modal="forgotModal" aria-label="Close">✕</button>
-    <div class="modal-head">
-      <h3>🔑 Reset Password</h3>
-      <p>Enter your college email and choose a new password.</p>
-    </div>
-
-    <form id="forgotForm" novalidate>
-      <div class="form-msg" id="fpMsg"></div>
-
-      <div class="field">
-        <label for="fpEmail">College Email <span class="req">*</span></label>
-        <input type="email" id="fpEmail" placeholder="you@college.edu" required>
-      </div>
-
-      <div class="field">
-        <label for="fpPass">New Password <span class="req">*</span></label>
-        <input type="password" id="fpPass" placeholder="Minimum 6 characters" required>
-      </div>
-
-      <div class="field">
-        <label for="fpConfirm">Confirm New Password <span class="req">*</span></label>
-        <input type="password" id="fpConfirm" placeholder="Re-enter new password" required>
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block">Update Password</button>
-    </form>
-  </div>
-</div>
-
-<!-- ============================================================
-     MODAL: REPORT LOST/FOUND ITEM
-     ============================================================ -->
-<div class="modal-overlay" id="itemModal">
-  <div class="modal wide">
-    <button type="button" class="modal-close" data-close-modal="itemModal" aria-label="Close">✕</button>
-    <div class="modal-head">
-      <h3>📦 Report New Item</h3>
-      <p>Help your campus community by reporting a lost or found item.</p>
-    </div>
-
-    <form id="itemForm" novalidate>
-      <div class="form-msg" id="itMsg"></div>
-
-      <div class="field">
-        <label>Type <span class="req">*</span></label>
-        <div class="radio-row">
-          <label class="radio-pill">
-            <input type="radio" name="itType" value="lost" checked>
-            <span>😟 I Lost This</span>
-          </label>
-          <label class="radio-pill">
-            <input type="radio" name="itType" value="found">
-            <span>🎉 I Found This</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="itName">Item Name <span class="req">*</span></label>
-          <input type="text" id="itName" placeholder="e.g. Black Wallet" required>
-        </div>
-        <div class="field">
-          <label for="itCategory">Category <span class="req">*</span></label>
-          <select id="itCategory" required>
-            <option value="" disabled selected>Select category</option>
-            <option>Electronics</option>
-            <option>ID Card</option>
-            <option>Books / Notes</option>
-            <option>Bag / Backpack</option>
-            <option>Clothing</option>
-            <option>Keys</option>
-            <option>Water Bottle</option>
-            <option>Jewellery</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label for="itLocation">Location <span class="req">*</span></label>
-          <input type="text" id="itLocation" placeholder="e.g. Library, 2nd Floor" required>
-        </div>
-        <div class="field">
-          <label for="itDate">Date <span class="req">*</span></label>
-          <input type="date" id="itDate" required>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="itDesc">Description <span class="req">*</span></label>
-        <textarea id="itDesc" placeholder="Colour, brand, distinguishing marks, contents…" required></textarea>
-      </div>
-
-      <div class="field">
-        <label>Item Photo</label>
-        <div class="photo-upload">
-          <div class="photo-preview" id="itPreview" style="border-radius:14px;">🖼️</div>
-          <div>
-            <label class="btn btn-ghost btn-sm" for="itPhoto">Choose Photo</label>
-            <input type="file" id="itPhoto" accept="image/*" hidden>
-            <div class="hint">JPG or PNG · auto-resized</div>
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block">Post Item</button>
-    </form>
-  </div>
-</div>
-
-<!-- ============================================================
-     SCRIPT
-     ============================================================ -->
-<script>
-/* ============================================================
-   CampusOne — main script
-   Wrapped in DOMContentLoaded to be extra-safe on mobile.
-   NOTE: we intentionally DO NOT use touchend + preventDefault()
-   anywhere — that pattern was blocking all mobile taps.
-   Double-tap zoom is prevented via CSS touch-action:manipulation.
-   ============================================================ */
-document.addEventListener("DOMContentLoaded", function () {
-  "use strict";
-
-  /* ---------- HELPERS ---------- */
-  const $  = (sel, root) => (root || document).querySelector(sel);
-  const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
-
-  const esc = (str) => String(str == null ? "" : str)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-
-  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  const phoneRe = /^[0-9]{10,15}$/;
-
-  /* ---------- STORAGE KEYS ---------- */
-  const K = {
-    users:      "campusone_users",
-    session:    "campusone_session",
-    complaints: "campusone_complaints",
-    alerts:     "campusone_alerts",
-    items:      "campusone_items",
-    moods:      "campusone_moods",
-    chat:       "campusone_chat",
-    plan:       "campusone_plan",
-    theme:      "campusone_theme"
-  };
-
-  function readLS(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch (e) { return fallback; }
-  }
-
-  function writeLS(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (e) {
-      toast("Storage is full. Try a smaller image.", "error");
-      return false;
-    }
-  }
-
-  /* ---------- TOASTS ---------- */
-  const toastWrap = $("#toastWrap");
-
-  function toast(message, type, duration) {
-    type = type || "info";
-    duration = duration || 3200;
-    const el = document.createElement("div");
-    el.className = "toast " + type;
-    el.textContent = message;
-    toastWrap.appendChild(el);
-    setTimeout(function () {
-      el.style.transition = "opacity .25s, transform .25s";
-      el.style.opacity = "0";
-      el.style.transform = "translateY(-10px)";
-      setTimeout(function () { el.remove(); }, 260);
-    }, duration);
-  }
-
-  /* ---------- THEME ---------- */
-  const themeToggle = $("#themeToggle");
-
-  function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    themeToggle.textContent = theme === "dark" ? "🌙" : "☀️";
-    try { localStorage.setItem(K.theme, theme); } catch (e) {}
-  }
-
-  applyTheme(document.documentElement.getAttribute("data-theme") || "dark");
-
-  themeToggle.addEventListener("click", function () {
-    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    applyTheme(next);
-  });
-
-  /* ---------- VIEW / TAB SYSTEM ---------- */
-  const VIEWS = ["home", "complaints", "lostfound", "sukoon", "schedule", "dashboard"];
-
-  function showView(name) {
-    if (VIEWS.indexOf(name) === -1) name = "home";
-
-    VIEWS.forEach(function (v) {
-      const el = document.getElementById("view-" + v);
-      if (el) el.classList.toggle("hidden", v !== name);
-    });
-
-    $$(".tab").forEach(function (t) {
-      const isActive = t.getAttribute("data-view") === name;
-      t.classList.toggle("active", isActive);
-      if (isActive) {
-        try { t.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }); } catch (e) {}
-      }
-    });
-
-    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
-
-    if (name === "sukoon") {
-      setTimeout(function () {
-        const body = $("#chatBody");
-        if (body) body.scrollTop = body.scrollHeight;
-      }, 80);
-    }
-  }
-
-  /* Delegated: any element with data-view navigates */
-  document.addEventListener("click", function (e) {
-    const target = e.target.closest("[data-view]");
-    if (!target) return;
-    const view = target.getAttribute("data-view");
-    if (!view) return;
-    e.preventDefault();
-    if (target.hasAttribute("data-close")) closeDrawer();
-    showView(view);
-  });
-
-  /* ---------- MODAL SYSTEM ---------- */
-  function openModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove("open");
-    if (!document.querySelector(".modal-overlay.open")) {
-      document.body.style.overflow = "";
-    }
-  }
-
-  function closeAllModals() {
-    $$(".modal-overlay.open").forEach(function (m) { m.classList.remove("open"); });
-    document.body.style.overflow = "";
-  }
-
-  /* Close buttons — delegated so it always works */
-  document.addEventListener("click", function (e) {
-    const btn = e.target.closest("[data-close-modal]");
-    if (!btn) return;
-    e.preventDefault();
-    closeModal(btn.getAttribute("data-close-modal"));
-  });
-
-  /* Click the dark backdrop → close. Use click (not mousedown) for touch. */
-  $$(".modal-overlay").forEach(function (overlay) {
-    overlay.addEventListener("click", function (e) {
-      if (e.target === overlay) closeModal(overlay.id);
-    });
-  });
-
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { closeAllModals(); closeDrawer(); }
-  });
-
-  function formMsg(id, text, type) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = text;
-    el.className = "form-msg show " + type;
-    if (type === "success") {
-      setTimeout(function () { el.className = "form-msg"; }, 5000);
-    }
-  }
-
-  function clearMsg(id) {
-    const el = document.getElementById(id);
-    if (el) el.className = "form-msg";
-  }
-
-  /* ---------- COURSE DATA ---------- */
-  const COURSES = {
-    "Class 11":    ["Science", "Commerce", "Arts"],
-    "Class 12":    ["Science", "Commerce", "Arts"],
-    "BSC":         ["1st Year", "2nd Year", "3rd Year"],
-    "BCA":         ["1st Year", "2nd Year", "3rd Year"],
-    "BCS":         ["1st Year", "2nd Year", "3rd Year"],
-    "D.Pharmacy":  ["1st Year", "2nd Year"],
-    "B.Pharmacy":  ["1st Year", "2nd Year", "3rd Year", "4th Year"]
-  };
-
-  function fillCourseSelect(selectEl, placeholder, allowEmpty) {
-    if (!selectEl) return;
-    selectEl.innerHTML = "";
-
-    if (allowEmpty) {
-      const empty = document.createElement("option");
-      empty.value = "";
-      empty.textContent = placeholder || "None";
-      selectEl.appendChild(empty);
-    } else {
-      const ph = document.createElement("option");
-      ph.value = ""; ph.disabled = true; ph.selected = true;
-      ph.textContent = placeholder || "Select course";
-      selectEl.appendChild(ph);
-    }
-
-    Object.keys(COURSES).forEach(function (group) {
-      const og = document.createElement("optgroup");
-      og.label = group;
-      COURSES[group].forEach(function (opt) {
-        const o = document.createElement("option");
-        o.value = group + " - " + opt;
-        o.textContent = opt;
-        og.appendChild(o);
-      });
-      selectEl.appendChild(og);
-    });
-  }
-
-  function renderTeacherClassCheckboxes(container) {
-    if (!container) return;
-    container.innerHTML = "";
-
-    Object.keys(COURSES).forEach(function (group) {
-      const box = document.createElement("div");
-      box.className = "check-group";
-
-      const title = document.createElement("div");
-      title.className = "check-group-title";
-      title.textContent = group;
-      box.appendChild(title);
-
-      const row = document.createElement("div");
-      row.className = "check-row";
-
-      COURSES[group].forEach(function (opt) {
-        const value = group + " - " + opt;
-        const label = document.createElement("label");
-        label.className = "check-pill";
-
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.name = "tu-classes";
-        cb.value = value;
-
-        const span = document.createElement("span");
-        span.textContent = opt;
-
-        label.appendChild(cb);
-        label.appendChild(span);
-        row.appendChild(label);
-      });
-
-      box.appendChild(row);
-      container.appendChild(box);
-    });
-  }
-
-  /* ---------- IMAGE HELPERS ---------- */
-  function readAndResizeImage(file, maxSize, callback) {
-    if (!file) return;
-    if (!/^image\//.test(file.type)) { toast("Please choose an image file.", "error"); return; }
-    if (file.size > 5 * 1024 * 1024) { toast("Image is too large (max 5MB).", "error"); return; }
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const img = new Image();
-      img.onload = function () {
-        let w = img.width, h = img.height;
-        const scale = Math.min(1, maxSize / Math.max(w, h));
-        w = Math.round(w * scale); h = Math.round(h * scale);
-
-        const canvas = document.createElement("canvas");
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-
-        let dataUrl;
-        try { dataUrl = canvas.toDataURL("image/jpeg", 0.82); }
-        catch (err) { dataUrl = e.target.result; }
-        callback(dataUrl);
-      };
-      img.onerror = function () { toast("Could not read that image.", "error"); };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function setPreview(previewEl, dataUrl) {
-    if (!previewEl) return;
-    previewEl.innerHTML = "";
-    const img = document.createElement("img");
-    img.src = dataUrl;
-    img.alt = "Preview";
-    previewEl.appendChild(img);
-  }
-
-  /* ---------- USERS + SESSION ---------- */
-  function getUsers() { return readLS(K.users, []); }
-  function saveUsers(list) { writeLS(K.users, list); }
-
-  function findUserByEmail(email) {
-    const target = String(email || "").trim().toLowerCase();
-    return getUsers().find(function (u) { return u.email === target; }) || null;
-  }
-
-  function sanitizeUser(user) {
-    const copy = Object.assign({}, user);
-    delete copy.password;
-    return copy;
-  }
-
-  function saveSession(user, remember) {
-    const payload = JSON.stringify(sanitizeUser(user));
-    try {
-      if (remember) {
-        localStorage.setItem(K.session, payload);
-        sessionStorage.removeItem(K.session);
-      } else {
-        sessionStorage.setItem(K.session, payload);
-        localStorage.removeItem(K.session);
-      }
-    } catch (e) {}
-  }
-
-  function getSession() {
-    try {
-      const a = localStorage.getItem(K.session);
-      if (a) return JSON.parse(a);
-      const b = sessionStorage.getItem(K.session);
-      if (b) return JSON.parse(b);
-    } catch (e) {}
-    return null;
-  }
-
-  function clearSession() {
-    try {
-      localStorage.removeItem(K.session);
-      sessionStorage.removeItem(K.session);
-    } catch (e) {}
-  }
-
-  /* ---------- AVATAR ---------- */
-  function avatarHTML(user, extraClass) {
-    const cls = "avatar " + (extraClass || "");
-    if (user && user.photo) {
-      return '<img class="' + cls + '" src="' + esc(user.photo) + '" alt="">';
-    }
-    const name = (user && user.fullName) ? user.fullName : "?";
-    const initials = name.trim().split(/\s+/).map(function (w) { return w.charAt(0); })
-      .slice(0, 2).join("").toUpperCase() || "?";
-    return '<span class="' + cls + ' avatar-initials">' + esc(initials) + "</span>";
-  }
-
-  /* ---------- DRAWER ---------- */
-  const drawer = $("#drawer");
-  const drawerBackdrop = $("#drawerBackdrop");
-
-  function openDrawer() {
-    drawer.classList.add("open");
-    drawerBackdrop.classList.add("open");
-    drawer.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeDrawer() {
-    drawer.classList.remove("open");
-    drawerBackdrop.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-    if (!document.querySelector(".modal-overlay.open")) {
-      document.body.style.overflow = "";
-    }
-  }
-
-  $("#hamburger").addEventListener("click", openDrawer);
-  $("#drawerClose").addEventListener("click", closeDrawer);
-  drawerBackdrop.addEventListener("click", closeDrawer);
-
-  /* ---------- AUTH UI ---------- */
-  function updateAuthUI() {
-    const user = getSession();
-    const headerUser = $("#headerUser");
-    const drawerUser = $("#drawerUser");
-    const drawerSignup = $("#drawerSignup");
-    const drawerLogin = $("#drawerLogin");
-    const drawerLogout = $("#drawerLogout");
-    const drawerDiv2 = $("#drawerDiv2");
-
-    if (user) {
-      headerUser.classList.remove("hidden");
-      headerUser.innerHTML =
-        avatarHTML(user, "") +
-        '<span class="uname">' + esc(user.fullName.split(" ")[0]) + "</span>";
-
-      drawerUser.classList.remove("hidden");
-      drawerUser.innerHTML =
-        avatarHTML(user, "") +
-        '<div class="drawer-user-info">' +
-          '<div class="n">' + esc(user.fullName) + "</div>" +
-          '<div class="r">' + esc(user.role) + "</div>" +
-        "</div>";
-
-      drawerSignup.classList.add("hidden");
-      drawerLogin.classList.add("hidden");
-      drawerLogout.classList.remove("hidden");
-      drawerDiv2.classList.remove("hidden");
-    } else {
-      headerUser.classList.add("hidden");
-      headerUser.innerHTML = "";
-      drawerUser.classList.add("hidden");
-      drawerUser.innerHTML = "";
-      drawerSignup.classList.remove("hidden");
-      drawerLogin.classList.remove("hidden");
-      drawerLogout.classList.add("hidden");
-      drawerDiv2.classList.add("hidden");
-    }
-
-    prefillComplaintForm();
-  }
-
-  /* ---------- ROLE FLOW ---------- */
-  let pendingRoleAction = null;
-
-  function startRoleFlow(action) {
-    pendingRoleAction = action;
-    closeDrawer();
-    openModal("roleModal");
-  }
-
-  /* Delegated role buttons */
-  document.addEventListener("click", function (e) {
-    const btn = e.target.closest(".role-btn[data-role]");
-    if (!btn) return;
-    e.preventDefault();
-
-    const role = btn.getAttribute("data-role");
-    closeModal("roleModal");
-
-    if (pendingRoleAction === "signup") {
-      if (role === "student") { resetStudentForm(); openModal("studentModal"); }
-      else { resetTeacherForm(); openModal("teacherModal"); }
-    } else if (pendingRoleAction === "login") {
-      resetLoginForm();
-      openModal("loginModal");
-      formMsg("liMsg",
-        role === "student" ? "Signing in as a Student 🎓" : "Signing in as a Teacher 👨‍🏫",
-        "success");
-    }
-    pendingRoleAction = null;
-  });
-
-  $("#drawerSignup").addEventListener("click", function () { startRoleFlow("signup"); });
-  $("#drawerLogin").addEventListener("click", function () { startRoleFlow("login"); });
-  $("#heroSignup").addEventListener("click", function () { startRoleFlow("signup"); });
-
-  $("#suToLogin").addEventListener("click", function (e) {
-    e.preventDefault();
-    closeModal("studentModal"); resetLoginForm(); openModal("loginModal");
-  });
-  $("#tuToLogin").addEventListener("click", function (e) {
-    e.preventDefault();
-    closeModal("teacherModal"); resetLoginForm(); openModal("loginModal");
-  });
-  $("#liToSignup").addEventListener("click", function (e) {
-    e.preventDefault();
-    closeModal("loginModal"); startRoleFlow("signup");
-  });
-  $("#forgotLink").addEventListener("click", function (e) {
-    e.preventDefault();
-    closeModal("loginModal");
-    $("#fpEmail").value = $("#liEmail").value.trim();
-    clearMsg("fpMsg");
-    openModal("forgotModal");
-  });
-
-  /* ---------- FORM RESET ---------- */
-  function resetStudentForm() {
-    const f = $("#studentForm");
-    f.reset();
-    clearMsg("suMsg");
-    $("#suPreview").innerHTML = "📷";
-    f.dataset.photo = "";
-  }
-
-  function resetTeacherForm() {
-    const f = $("#teacherForm");
-    f.reset();
-    clearMsg("tuMsg");
-    $("#tuPreview").innerHTML = "📷";
-    f.dataset.photo = "";
-  }
-
-  function resetLoginForm() {
-    $("#loginForm").reset();
-    $("#liRemember").checked = true;
-    clearMsg("liMsg");
-  }
-
-  /* ---------- INIT STATIC SELECTS ---------- */
-  fillCourseSelect($("#suCourse"), "Select your course");
-  fillCourseSelect($("#cmpCourse"), "Select course / class");
-  fillCourseSelect($("#tuClassTeacher"), "Not a class teacher", true);
-  fillCourseSelect($("#ttCourse"), "Select course");
-  renderTeacherClassCheckboxes($("#tuClasses"));
-
-  /* ---------- PHOTO UPLOADS ---------- */
-  $("#suPhoto").addEventListener("change", function () {
-    const file = this.files && this.files[0];
-    if (!file) return;
-    readAndResizeImage(file, 260, function (dataUrl) {
-      $("#studentForm").dataset.photo = dataUrl;
-      setPreview($("#suPreview"), dataUrl);
-    });
-  });
-
-  $("#tuPhoto").addEventListener("change", function () {
-    const file = this.files && this.files[0];
-    if (!file) return;
-    readAndResizeImage(file, 260, function (dataUrl) {
-      $("#teacherForm").dataset.photo = dataUrl;
-      setPreview($("#tuPreview"), dataUrl);
-    });
-  });
-
-  $("#itPhoto").addEventListener("change", function () {
-    const file = this.files && this.files[0];
-    if (!file) return;
-    readAndResizeImage(file, 800, function (dataUrl) {
-      $("#itemForm").dataset.photo = dataUrl;
-      setPreview($("#itPreview"), dataUrl);
-    });
-  });
-
-  /* ---------- STUDENT SIGNUP ---------- */
-  $("#studentForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearMsg("suMsg");
-
-    const fullName = $("#suName").value.trim();
-    const phone = $("#suPhone").value.trim();
-    const collegeId = $("#suCollegeId").value.trim();
-    const email = $("#suEmail").value.trim().toLowerCase();
-    const password = $("#suPass").value;
-    const confirm = $("#suConfirm").value;
-    const course = $("#suCourse").value;
-    const section = $("#suSection").value;
-    const terms = $("#suTerms").checked;
-    const photo = this.dataset.photo || "";
-
-    if (!fullName || fullName.length < 3) return formMsg("suMsg", "Please enter your full name (min 3 characters).", "error");
-    if (!phoneRe.test(phone)) return formMsg("suMsg", "Please enter a valid phone number (10–15 digits).", "error");
-    if (!collegeId) return formMsg("suMsg", "Please enter your College ID / Roll Number.", "error");
-    if (!emailRe.test(email)) return formMsg("suMsg", "Please enter a valid college email address.", "error");
-    if (password.length < 6) return formMsg("suMsg", "Password must be at least 6 characters long.", "error");
-    if (password !== confirm) return formMsg("suMsg", "Passwords do not match.", "error");
-    if (!course) return formMsg("suMsg", "Please select your course.", "error");
-    if (!section) return formMsg("suMsg", "Please select your section.", "error");
-    if (!terms) return formMsg("suMsg", "You must agree to the Terms & Conditions.", "error");
-    if (findUserByEmail(email)) return formMsg("suMsg", "An account with this email already exists. Try logging in.", "error");
-
-    const user = {
-      id: "USR" + Date.now().toString(36).toUpperCase(),
-      role: "student", fullName: fullName, phone: phone, collegeId: collegeId,
-      email: email, password: password, course: course, section: section,
-      photo: photo, createdAt: new Date().toISOString()
-    };
-
-    const users = getUsers();
-    users.push(user);
-    if (!saveUsers(users)) return;
-
-    formMsg("suMsg", "Account created successfully! Signing you in…", "success");
-
-    setTimeout(function () {
-      saveSession(user, true);
-      closeModal("studentModal");
-      updateAuthUI();
-      refreshDashboard();
-      toast("Welcome to CampusOne, " + fullName.split(" ")[0] + "! 🎉", "success");
-      showDashboard();
-    }, 700);
-  });
-
-  /* ---------- TEACHER SIGNUP ---------- */
-  $("#teacherForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearMsg("tuMsg");
-
-    const fullName = $("#tuName").value.trim();
-    const phone = $("#tuPhone").value.trim();
-    const empId = $("#tuEmpId").value.trim();
-    const email = $("#tuEmail").value.trim().toLowerCase();
-    const password = $("#tuPass").value;
-    const designation = $("#tuDesignation").value;
-    const department = $("#tuDept").value;
-    const classTeacherOf = $("#tuClassTeacher").value || "";
-    const photo = this.dataset.photo || "";
-    const terms = $("#tuTerms").checked;
-    const classes = $$('input[name="tu-classes"]:checked').map(function (cb) { return cb.value; });
-
-    if (!fullName || fullName.length < 3) return formMsg("tuMsg", "Please enter your full name (min 3 characters).", "error");
-    if (!phoneRe.test(phone)) return formMsg("tuMsg", "Please enter a valid phone number (10–15 digits).", "error");
-    if (!empId) return formMsg("tuMsg", "Please enter your Employee ID.", "error");
-    if (!emailRe.test(email)) return formMsg("tuMsg", "Please enter a valid college email address.", "error");
-    if (password.length < 6) return formMsg("tuMsg", "Password must be at least 6 characters long.", "error");
-    if (!designation) return formMsg("tuMsg", "Please select your designation.", "error");
-    if (!department) return formMsg("tuMsg", "Please select your department.", "error");
-    if (classes.length === 0) return formMsg("tuMsg", "Please select at least one class you teach.", "error");
-    if (!terms) return formMsg("tuMsg", "You must agree to the Terms & Conditions.", "error");
-    if (findUserByEmail(email)) return formMsg("tuMsg", "An account with this email already exists. Try logging in.", "error");
-
-    const user = {
-      id: "USR" + Date.now().toString(36).toUpperCase(),
-      role: "teacher", fullName: fullName, phone: phone, employeeId: empId,
-      email: email, password: password, designation: designation,
-      department: department, classes: classes, classTeacherOf: classTeacherOf,
-      photo: photo, createdAt: new Date().toISOString()
-    };
-
-    const users = getUsers();
-    users.push(user);
-    if (!saveUsers(users)) return;
-
-    formMsg("tuMsg", "Account created successfully! Signing you in…", "success");
-
-    setTimeout(function () {
-      saveSession(user, true);
-      closeModal("teacherModal");
-      updateAuthUI();
-      refreshDashboard();
-      toast("Welcome aboard, " + fullName.split(" ")[0] + "! 🎉", "success");
-      showDashboard();
-    }, 700);
-  });
-
-  /* ---------- LOGIN ---------- */
-  $("#loginForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearMsg("liMsg");
-
-    const email = $("#liEmail").value.trim().toLowerCase();
-    const password = $("#liPass").value;
-    const remember = $("#liRemember").checked;
-
-    if (!emailRe.test(email)) return formMsg("liMsg", "Please enter a valid email address.", "error");
-    if (!password) return formMsg("liMsg", "Please enter your password.", "error");
-
-    const user = findUserByEmail(email);
-    if (!user) return formMsg("liMsg", "No account found with this email. Please sign up first.", "error");
-    if (user.password !== password) return formMsg("liMsg", "Incorrect password. Please try again.", "error");
-
-    saveSession(user, remember);
-    closeModal("loginModal");
-    updateAuthUI();
-    refreshDashboard();
-
-    toast("Signed in as " + (user.role === "student" ? "Student" : "Teacher") + " · " + user.fullName, "success");
-    showDashboard();
-  });
-
-  /* ---------- FORGOT PASSWORD ---------- */
-  $("#forgotForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearMsg("fpMsg");
-
-    const email = $("#fpEmail").value.trim().toLowerCase();
-    const pass = $("#fpPass").value;
-    const confirm = $("#fpConfirm").value;
-
-    if (!emailRe.test(email)) return formMsg("fpMsg", "Please enter a valid email address.", "error");
-    if (pass.length < 6) return formMsg("fpMsg", "Password must be at least 6 characters.", "error");
-    if (pass !== confirm) return formMsg("fpMsg", "Passwords do not match.", "error");
-
-    const users = getUsers();
-    const idx = users.findIndex(function (u) { return u.email === email; });
-    if (idx === -1) return formMsg("fpMsg", "No account found with this email.", "error");
-
-    users[idx].password = pass;
-    saveUsers(users);
-
-    formMsg("fpMsg", "Password updated! You can now sign in.", "success");
-    const self = this;
-    setTimeout(function () {
-      closeModal("forgotModal");
-      self.reset();
-      clearMsg("fpMsg");
-      resetLoginForm();
-      $("#liEmail").value = email;
-      openModal("loginModal");
-    }, 1200);
-  });
-
-  /* ---------- LOGOUT ---------- */
-  function logout() {
-    clearSession();
-    updateAuthUI();
-    closeDrawer();
-    showView("home");
-    toast("You have been logged out.", "info");
-  }
-
-  $("#drawerLogout").addEventListener("click", logout);
-  $("#headerUser").addEventListener("click", function () {
-    if (getSession()) showDashboard();
-  });
-
-  $("#drawerDash").addEventListener("click", function (e) {
-    e.preventDefault();
-    closeDrawer();
-    if (!getSession()) {
-      toast("Please log in to view your dashboard.", "error");
-      startRoleFlow("login");
-      return;
-    }
-    showDashboard();
-  });
-
-  /* ---------- COMPLAINTS ---------- */
-  function getComplaints() { return readLS(K.complaints, []); }
-  function saveComplaints(list) { writeLS(K.complaints, list); }
-
-  function getAlerts() { return readLS(K.alerts, []); }
-  function saveAlerts(list) { writeLS(K.alerts, list); }
-
-  function prefillComplaintForm() {
-    const u = getSession();
-    if (!u) return;
-
-    if (u.role === "student") {
-      if (!$("#cmpName").value) $("#cmpName").value = u.fullName || "";
-      if (!$("#cmpEmail").value) $("#cmpEmail").value = u.email || "";
-      if (u.course && !$("#cmpCourse").value) $("#cmpCourse").value = u.course;
-      if (u.section && !$("#cmpSection").value) $("#cmpSection").value = u.section;
-    } else {
-      if (!$("#cmpName").value) $("#cmpName").value = u.fullName || "";
-      if (!$("#cmpEmail").value) $("#cmpEmail").value = u.email || "";
-    }
-  }
-
-  $("#complaintForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearMsg("cmpMsg");
-
-    const name = $("#cmpName").value.trim();
-    const email = $("#cmpEmail").value.trim().toLowerCase();
-    const course = $("#cmpCourse").value;
-    const section = $("#cmpSection").value;
-    const category = $("#cmpCategory").value;
-    const priority = $("#cmpPriority").value;
-    const desc = $("#cmpDesc").value.trim();
-
-    if (!name) return formMsg("cmpMsg", "Please enter your full name.", "error");
-    if (!emailRe.test(email)) return formMsg("cmpMsg", "Please enter a valid email address.", "error");
-    if (!course) return formMsg("cmpMsg", "Please select your course / class.", "error");
-    if (!section) return formMsg("cmpMsg", "Please select your section.", "error");
-    if (!category) return formMsg("cmpMsg", "Please select a category.", "error");
-    if (desc.length < 10) return formMsg("cmpMsg", "Please describe the issue (min 10 characters).", "error");
-
-    const session = getSession();
-
-    const complaint = {
-      id: "CMP" + Date.now().toString(36).toUpperCase(),
-      name: name, email: email, course: course, section: section,
-      category: category, priority: priority, description: desc,
-      status: "Pending",
-      userEmail: session ? session.email : email,
-      createdAt: new Date().toISOString()
-    };
-
-    const list = getComplaints();
-    list.unshift(complaint);
-    saveComplaints(list);
-
-    if (priority === "Emergency") {
-      addAlert({
-        type: "Emergency Complaint", name: name, email: email,
-        course: course, section: section,
-        message: category + " — " + desc.slice(0, 120),
-        createdAt: new Date().toISOString()
-      });
-    }
-
-    formMsg("cmpMsg", "Complaint submitted successfully! Reference ID: " + complaint.id, "success");
-    toast("Complaint submitted ✅", "success");
-
-    $("#cmpDesc").value = "";
-    $("#cmpCategory").value = "";
-    $("#cmpPriority").value = "Medium";
-
-    refreshDashboard();
-  });
-
-  /* ---------- ALERTS + SOS ---------- */
-  function addAlert(alert) {
-    alert.id = alert.id || "ALT" + Date.now().toString(36).toUpperCase();
-    const list = getAlerts();
-    list.unshift(alert);
-    if (list.length > 60) list.length = 60;
-    saveAlerts(list);
-    refreshDashboard();
-  }
-
-  function triggerSOS() {
-    const user = getSession();
-    const confirmed = window.confirm(
-      "🚨 EMERGENCY SOS\n\nThis will immediately alert campus security and your teachers.\n\nSend SOS alert now?"
-    );
-    if (!confirmed) return;
-
-    addAlert({
-      type: "SOS Emergency",
-      name: user ? user.fullName : "Anonymous",
-      email: user ? user.email : "—",
-      course: user && user.course ? user.course : "",
-      section: user && user.section ? user.section : "",
-      message: "SOS triggered from the CampusOne app.",
-      createdAt: new Date().toISOString()
-    });
-
-    toast("🚨 SOS alert sent to campus security!", "error", 5000);
-  }
-
-  $("#sosBtn").addEventListener("click", triggerSOS);
-  $("#quickSos").addEventListener("click", triggerSOS);
-
-  /* ---------- LOST & FOUND ---------- */
-  const DEFAULT_ITEMS = [
-    {
-      id: "LF1", type: "lost", name: "Black Leather Wallet",
-      category: "Other", location: "Canteen, near counter 2",
-      date: "2025-01-12", description: "Black leather wallet with a blue stripe. Contains my ID card and library card.",
-      photo: "", reporter: "aarav@college.edu", createdAt: "2025-01-12T10:20:00.000Z"
-    },
-    {
-      id: "LF2", type: "found", name: "Blue Water Bottle",
-      category: "Water Bottle", location: "Lab 204, under desk",
-      date: "2025-01-13", description: "Blue Milton bottle with a small dent near the cap. Found after the chemistry lab.",
-      photo: "", reporter: "meera@college.edu", createdAt: "2025-01-13T14:05:00.000Z"
-    },
-    {
-      id: "LF3", type: "lost", name: "College ID Card",
-      category: "ID Card", location: "Library, 2nd Floor",
-      date: "2025-01-14", description: "Student ID card. Name: Rohan Verma. BCA 2nd Year, Section B.",
-      photo: "", reporter: "rohan@college.edu", createdAt: "2025-01-14T09:00:00.000Z"
-    },
-    {
-      id: "LF4", type: "found", name: "Wireless Earbuds (White)",
-      category: "Electronics", location: "Auditorium, Row 7",
-      date: "2025-01-15", description: "White TWS earbuds in a charging case. Brand appears to be boAt.",
-      photo: "", reporter: "sara@college.edu", createdAt: "2025-01-15T17:40:00.000Z"
-    }
-  ];
-
-  function getItems() {
-    let items = readLS(K.items, null);
-    if (!items || !Array.isArray(items)) {
-      items = DEFAULT_ITEMS.slice();
-      writeLS(K.items, items);
-    }
-    return items;
-  }
-  function saveItems(list) { writeLS(K.items, list); }
-
-  function aiMatchScore(item) {
-    let hash = 0;
-    const s = String(item.id || "") + String(item.name || "");
-    for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) % 100000;
-    const base = 62 + (hash % 34);
-    return Math.min(98, base);
-  }
-
-  let lfFilter = "all";
-
-  function formatDate(d) {
-    if (!d) return "—";
-    const dt = new Date(d);
-    if (isNaN(dt.getTime())) return d;
-    return dt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
-  }
-
-  function renderItems() {
-    const grid = $("#lfGrid");
-    if (!grid) return;
-
-    const q = ($("#lfSearch").value || "").trim().toLowerCase();
-    const cat = $("#lfCategory").value;
-
-    let items = getItems();
-
-    if (lfFilter !== "all") items = items.filter(function (i) { return i.type === lfFilter; });
-    if (cat) items = items.filter(function (i) { return i.category === cat; });
-    if (q) {
-      items = items.filter(function (i) {
-        return (i.name || "").toLowerCase().indexOf(q) !== -1 ||
-               (i.location || "").toLowerCase().indexOf(q) !== -1 ||
-               (i.description || "").toLowerCase().indexOf(q) !== -1;
-      });
-    }
-
-    if (items.length === 0) {
-      grid.innerHTML =
-        '<div class="empty" style="grid-column:1/-1;">' +
-          '<span class="e-emoji">🔍</span>' +
-          "No items match your search. Try a different filter." +
-        "</div>";
-      return;
-    }
-
-    grid.innerHTML = items.map(function (item) {
-      const isLost = item.type === "lost";
-      const badgeClass = isLost ? "lost" : "found";
-      const badgeText = isLost ? "LOST" : "FOUND";
-      const score = aiMatchScore(item);
-      const btnLabel = isLost ? "This is Mine" : "I Found This";
-      const emojiMap = {
-        "Electronics": "🎧", "ID Card": "🪪", "Books / Notes": "📚",
-        "Bag / Backpack": "🎒", "Clothing": "👕", "Keys": "🔑",
-        "Water Bottle": "🚰", "Jewellery": "💍", "Other": "📦"
-      };
-      const emoji = emojiMap[item.category] || "📦";
-      const thumb = item.photo
-        ? '<img src="' + esc(item.photo) + '" alt="">'
-        : emoji;
-
-      return (
-        '<div class="item-card">' +
-          '<div class="item-thumb">' +
-            thumb +
-            '<div class="item-badges">' +
-              '<span class="badge-lf ' + badgeClass + '">' + badgeText + "</span>" +
-              '<span class="badge-ai">🤖 ' + score + "% match</span>" +
-            "</div>" +
-          "</div>" +
-          '<div class="item-body">' +
-            '<div class="item-name">' + esc(item.name) + "</div>" +
-            '<div class="item-info">' +
-              "<span>📍 " + esc(item.location) + "</span>" +
-              "<span>🗓️ " + esc(formatDate(item.date)) + "</span>" +
-              "<span>🏷️ " + esc(item.category) + "</span>" +
-            "</div>" +
-            '<div class="item-actions-row">' +
-              '<button type="button" class="btn btn-primary btn-sm" data-claim="' + esc(item.id) + '">' + btnLabel + "</button>" +
-              '<button type="button" class="btn btn-ghost btn-sm" data-detail="' + esc(item.id) + '">Details</button>' +
-            "</div>" +
-          "</div>" +
-        "</div>"
-      );
-    }).join("");
-  }
-
-  /* Lost & Found filter chips (delegated) */
-  document.addEventListener("click", function (e) {
-    const chip = e.target.closest("#lfFilters .chip");
-    if (!chip) return;
-    e.preventDefault();
-    $$("#lfFilters .chip").forEach(function (c) { c.classList.remove("active"); });
-    chip.classList.add("active");
-    lfFilter = chip.getAttribute("data-filter");
-    renderItems();
-  });
-
-  $("#lfSearch").addEventListener("input", renderItems);
-  $("#lfCategory").addEventListener("change", renderItems);
-
-  $("#lfAddBtn").addEventListener("click", function () {
-    resetItemForm();
-    const today = new Date().toISOString().slice(0, 10);
-    $("#itDate").value = today;
-    openModal("itemModal");
-  });
-
-  function resetItemForm() {
-    const f = $("#itemForm");
-    f.reset();
-    clearMsg("itMsg");
-    $("#itPreview").innerHTML = "🖼️";
-    f.dataset.photo = "";
-  }
-
-  $("#itemForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearMsg("itMsg");
-
-    const typeInput = $$('input[name="itType"]').find(function (r) { return r.checked; });
-    const type = typeInput ? typeInput.value : "lost";
-    const name = $("#itName").value.trim();
-    const category = $("#itCategory").value;
-    const location = $("#itLocation").value.trim();
-    const date = $("#itDate").value;
-    const description = $("#itDesc").value.trim();
-    const photo = this.dataset.photo || "";
-
-    if (!name) return formMsg("itMsg", "Please enter the item name.", "error");
-    if (!category) return formMsg("itMsg", "Please select a category.", "error");
-    if (!location) return formMsg("itMsg", "Please enter the location.", "error");
-    if (!date) return formMsg("itMsg", "Please select the date.", "error");
-    if (description.length < 5) return formMsg("itMsg", "Please add a short description.", "error");
-
-    const session = getSession();
-
-    const item = {
-      id: "LF" + Date.now().toString(36).toUpperCase(),
-      type: type, name: name, category: category, location: location,
-      date: date, description: description, photo: photo,
-      reporter: session ? session.email : "anonymous@college.edu",
-      createdAt: new Date().toISOString()
-    };
-
-    const list = getItems();
-    list.unshift(item);
-    saveItems(list);
-
-    formMsg("itMsg", "Item posted successfully!", "success");
-    toast("Item reported ✅", "success");
-
-    setTimeout(function () {
-      closeModal("itemModal");
-      renderItems();
-    }, 600);
-  });
-
-  /* Claim / Details (delegated) */
-  $("#lfGrid").addEventListener("click", function (e) {
-    const claimBtn = e.target.closest("[data-claim]");
-    const detailBtn = e.target.closest("[data-detail]");
-
-    if (claimBtn) {
-      e.preventDefault();
-      const id = claimBtn.getAttribute("data-claim");
-      const item = getItems().find(function (i) { return i.id === id; });
-      if (!item) return;
-      toast("📩 Request sent for \"" + item.name + "\". The reporter will contact you.", "success", 4200);
-      return;
-    }
-
-    if (detailBtn) {
-      e.preventDefault();
-      const id = detailBtn.getAttribute("data-detail");
-      const item = getItems().find(function (i) { return i.id === id; });
-      if (!item) return;
-      window.alert(
-        "📦 " + item.name + "\n\n" +
-        "Type: " + item.type.toUpperCase() + "\n" +
-        "Category: " + item.category + "\n" +
-        "Location: " + item.location + "\n" +
-        "Date: " + formatDate(item.date) + "\n" +
-        "AI Match: " + aiMatchScore(item) + "%\n\n" +
-        "Description:\n" + item.description
-      );
-    }
-  });
-
-  /* ---------- SUKOON AI ---------- */
-  const chatBody = $("#chatBody");
-  const chatInput = $("#chatInput");
-
-  const CRISIS_WORDS = [
-    "suicide", "kill myself", "end my life", "self harm", "self-harm",
-    "want to die", "no reason to live", "end it all"
-  ];
-
-  const RESPONSES = {
-    stress: "I hear you — stress can feel really heavy. 💙\n\nTry the 4-7-8 breathing technique:\n• Breathe in for 4 seconds\n• Hold for 7 seconds\n• Breathe out for 8 seconds\n\nRepeat 4 times. It slows your heart rate and calms your nervous system. You've got this.",
-    sleep: "Sleep troubles are really common during college. 🌙\n\nA few things that genuinely help:\n• Put your phone away 30 minutes before bed\n• Keep your room cool and dark\n• Avoid caffeine after 4 PM\n• Try writing down tomorrow's tasks so your mind can let go\n\nIf it persists for weeks, please talk to a counsellor.",
-    exam: "Exam pressure is real, and it doesn't mean you're failing. 📚\n\nTry this:\n• Break your syllabus into small daily chunks\n• Use the Pomodoro method — 25 min focus, 5 min break\n• Teach a topic aloud to test yourself\n• Sleep is a study tool, not a waste of time\n\nYou are more than your marks. 💙",
-    lonely: "Feeling lonely is painful, and it's okay to admit it. 🤝\n\nYou're not alone in feeling this way — many students do.\n\nTry:\n• Message one old friend today, even just \"hey\"\n• Join one club or study group this week\n• Sit in a common area instead of your room\n\nAnd remember — Sukoon is always here to listen.",
-    anxious: "Anxiety can make everything feel urgent. 🌿\n\nGround yourself with the 5-4-3-2-1 technique:\n• 5 things you can see\n• 4 things you can touch\n• 3 things you can hear\n• 2 things you can smell\n• 1 thing you can taste\n\nThis pulls your mind back to the present. You're safe right now.",
-    sad: "I'm sorry you're feeling this way. 💙\n\nSadness is valid, and it doesn't need to be fixed immediately.\n\nBe gentle with yourself today:\n• Drink some water\n• Step outside for 5 minutes\n• Talk to someone you trust\n\nIf this feeling lasts more than two weeks, please reach out to a counsellor. You deserve support.",
-    "default": "Thank you for sharing that with me. 💙\n\nI'm here to listen. Can you tell me a bit more about what's going on?\n\nYou can also try one of the quick replies below, or type how you're feeling."
-  };
-
-  function detectCrisis(text) {
-    const lower = text.toLowerCase();
-    for (let i = 0; i < CRISIS_WORDS.length; i++) {
-      if (lower.indexOf(CRISIS_WORDS[i]) !== -1) return true;
-    }
-    return false;
-  }
-
-  function getResponse(text) {
-    const lower = text.toLowerCase();
-    if (/(stress|stressed|overwhelm|pressure|too much)/.test(lower)) return RESPONSES.stress;
-    if (/(sleep|insomnia|can't sleep|cannot sleep|awake|tired)/.test(lower)) return RESPONSES.sleep;
-    if (/(exam|test|study|marks|grades|result|fail)/.test(lower)) return RESPONSES.exam;
-    if (/(lonely|alone|no friends|isolated|left out)/.test(lower)) return RESPONSES.lonely;
-    if (/(anxious|anxiety|panic|nervous|worried)/.test(lower)) return RESPONSES.anxious;
-    if (/(sad|depress|down|cry|hopeless|empty)/.test(lower)) return RESPONSES.sad;
-    return RESPONSES["default"];
-  }
-
-  function addBubble(text, who) {
-    const div = document.createElement("div");
-    div.className = "bubble " + who;
-    div.textContent = text;
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
-
-  function addCrisisAlert() {
-    const div = document.createElement("div");
-    div.className = "crisis-alert";
-    div.innerHTML =
-      '<div class="ct">🚨 You are not alone</div>' +
-      "<p>What you're feeling is serious, and you deserve immediate support. Please reach out right now — talking to someone can make a real difference.</p>" +
-      '<span class="helpline">📞 KIRAN Helpline · 1800-599-0019<small>Free · 24/7 · Confidential · Govt. of India</small></span>' +
-      '<span class="helpline">📞 AASRA · 9820466726<small>24/7 Crisis Support</small></span>' +
-      "<p style='margin-bottom:0;'>If you are in immediate danger, please call <b>112</b> or go to your nearest emergency room.</p>";
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
-
-  function showTyping() {
-    const div = document.createElement("div");
-    div.className = "bubble bot typing";
-    div.id = "typingIndicator";
-    div.innerHTML = "<span></span><span></span><span></span>";
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-    return div;
-  }
-
-  function sendMessage(text) {
-    const msg = String(text || "").trim();
-    if (!msg) return;
-
-    addBubble(msg, "user");
-    chatInput.value = "";
-
-    if (detectCrisis(msg)) {
-      const typing = showTyping();
-      setTimeout(function () {
-        typing.remove();
-        addCrisisAlert();
-        saveChatHistory();
-      }, 900);
-      return;
-    }
-
-    const typing = showTyping();
-    setTimeout(function () {
-      typing.remove();
-      addBubble(getResponse(msg), "bot");
-      saveChatHistory();
-    }, 850 + Math.random() * 500);
-  }
-
-  function saveChatHistory() {
-    const bubbles = $$(".bubble", chatBody).slice(-40).map(function (b) {
-      return {
-        who: b.classList.contains("user") ? "user" : "bot",
-        text: b.textContent
-      };
-    });
-    writeLS(K.chat, bubbles);
-  }
-
-  function loadChatHistory() {
-    const history = readLS(K.chat, null);
-    if (history && history.length) {
-      history.forEach(function (m) { addBubble(m.text, m.who); });
-      return true;
-    }
-    return false;
-  }
-
-  function initChat() {
-    const had = loadChatHistory();
-    if (!had) {
-      addBubble(
-        "Hi, I'm Sukoon 🧠\n\nI'm here to listen — no judgement, no records, completely private.\n\nHow are you feeling today?",
-        "bot"
-      );
-    }
-  }
-
-  $("#chatSend").addEventListener("click", function () { sendMessage(chatInput.value); });
-  chatInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") { e.preventDefault(); sendMessage(chatInput.value); }
-  });
-
-  $$(".qr").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      sendMessage(btn.getAttribute("data-msg"));
-    });
-  });
-
-  /* ---------- MOOD TRACKER ---------- */
-  function todayKey() {
-    const d = new Date();
-    return d.getFullYear() + "-" +
-      String(d.getMonth() + 1).padStart(2, "0") + "-" +
-      String(d.getDate()).padStart(2, "0");
-  }
-
-  function getMoods() { return readLS(K.moods, {}); }
-
-  function setMood(value) {
-    const moods = getMoods();
-    moods[todayKey()] = value;
-    writeLS(K.moods, moods);
-    renderMoodChart();
-    renderMoodSelection();
-    toast("Mood saved for today 💙", "success");
-  }
-
-  function renderMoodSelection() {
-    const moods = getMoods();
-    const today = moods[todayKey()];
-    $$("#moodRow .mood-btn").forEach(function (b) {
-      b.classList.toggle("selected", Number(b.getAttribute("data-mood")) === today);
-    });
-  }
-
-  function renderMoodChart() {
-    const chart = $("#moodChart");
-    if (!chart) return;
-
-    const moods = getMoods();
-    const emojis = { 5: "😊", 4: "😐", 3: "😔", 2: "😢", 1: "😡" };
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-    let html = "";
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-
-      const key = d.getFullYear() + "-" +
-        String(d.getMonth() + 1).padStart(2, "0") + "-" +
-        String(d.getDate()).padStart(2, "0");
-
-      const value = moods[key] || 0;
-      const heightPx = value ? Math.round((value / 5) * 80) + 10 : 6;
-      const emoji = value ? emojis[value] : "";
-      const dayName = days[d.getDay()];
-      const barClass = value ? "bar" : "bar empty";
-
-      html +=
-        '<div class="bar-col">' +
-          '<div class="be">' + (emoji || "&nbsp;") + "</div>" +
-          '<div class="' + barClass + '" style="height:' + heightPx + 'px"></div>' +
-          '<div class="bd">' + dayName + "</div>" +
-        "</div>";
-    }
-    chart.innerHTML = html;
-  }
-
-  /* Delegated mood buttons */
-  document.addEventListener("click", function (e) {
-    const btn = e.target.closest("#moodRow .mood-btn");
-    if (!btn) return;
-    e.preventDefault();
-    setMood(Number(btn.getAttribute("data-mood")));
-  });
-
-  /* ---------- SCHEDULE ---------- */
-  $("#spGenerate").addEventListener("click", function () {
-    const rawSubs = $("#spSubjects").value.trim();
-    const examDate = $("#spExam").value;
-    const hours = parseInt($("#spHours").value, 10) || 4;
-
-    if (!rawSubs) return toast("Please enter at least one subject.", "error");
-    if (!examDate) return toast("Please select an exam date.", "error");
-
-    const subjects = rawSubs.split(",").map(function (s) { return s.trim(); })
-      .filter(function (s) { return s.length > 0; });
-
-    if (subjects.length === 0) return toast("Please enter at least one subject.", "error");
-
-    const exam = new Date(examDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const daysLeft = Math.max(1, Math.ceil((exam - today) / 86400000));
-    const perDay = Math.max(1, Math.floor(hours / subjects.length));
-    const extra = hours - (perDay * subjects.length);
-
-    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-    let html = "";
-    html += '<div class="plan-day">' +
-      '<div class="pd-head">' +
-        '<span class="pd-name">📌 Plan Overview</span>' +
-        '<span class="pd-total">' + daysLeft + " days left</span>" +
-      "</div>" +
-      "<ul>" +
-        "<li>" + subjects.length + " subjects · " + hours + " hours/day</li>" +
-        "<li>≈ " + perDay + "h per subject each day</li>" +
-        "<li>Exam on " + esc(formatDate(examDate)) + "</li>" +
-      "</ul>" +
-    "</div>";
-
-    for (let d = 0; d < Math.min(7, daysLeft); d++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() + d);
-      const dayName = dayNames[date.getDay()];
-
-      let list = "";
-      for (let s = 0; s < subjects.length; s++) {
-        const slot = perDay + (s < extra ? 1 : 0);
-        list += "<li>" + esc(subjects[s]) + " — " + slot + "h</li>";
-      }
-
-      html +=
-        '<div class="plan-day">' +
-          '<div class="pd-head">' +
-            '<span class="pd-name">' + esc(dayName) + " · " + esc(formatDate(date.toISOString().slice(0, 10))) + "</span>" +
-            '<span class="pd-total">' + hours + "h</span>" +
-          "</div>" +
-          "<ul>" + list + "</ul>" +
-        "</div>";
-    }
-
-    $("#planList").innerHTML = html;
-    toast("Study plan generated ✅", "success");
-  });
-
-  $("#ttGenerate").addEventListener("click", function () {
-    const course = $("#ttCourse").value;
-    if (!course) return toast("Please select a course.", "error");
-
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-    const slots = ["9:00 – 10:00", "10:00 – 11:00", "11:15 – 12:15", "12:15 – 1:15", "2:00 – 3:00"];
-
-    const pool = [
-      "Mathematics", "Physics", "Chemistry", "English", "Computer Science",
-      "Biology", "Economics", "Accountancy", "Business Studies", "History",
-      "Geography", "Political Science", "Lab Session", "Library / Self Study"
-    ];
-
-    let seed = 0;
-    for (let i = 0; i < course.length; i++) seed = (seed * 31 + course.charCodeAt(i)) % 9999;
-
-    function pick(offset) {
-      return pool[(seed + offset) % pool.length];
-    }
-
-    let html = '<div class="tt-wrap"><table class="tt"><thead><tr><th>Time</th>';
-    days.forEach(function (d) { html += "<th>" + d + "</th>"; });
-    html += "</tr></thead><tbody>";
-
-    slots.forEach(function (slot, si) {
-      html += "<tr><td>" + slot + "</td>";
-      days.forEach(function (_, di) {
-        html += "<td>" + pick(si * 3 + di * 7) + "</td>";
-      });
-      html += "</tr>";
-    });
-
-    html += "</tbody></table></div>";
-    html += '<p class="hint" style="margin-top:12px;">Timetable for <b>' + esc(course) + "</b> · demo schedule</p>";
-
-    $("#ttResult").innerHTML = html;
-    toast("Timetable generated ✅", "success");
-  });
-
-  /* ---------- DASHBOARD ---------- */
-  function showDashboard() {
-    showView("dashboard");
-    refreshDashboard();
-  }
-
-  function statusClass(status) {
-    if (status === "Resolved") return "resolved";
-    if (status === "In Progress") return "progress";
-    return "pending";
-  }
-
-  function priorityClass(p) {
-    return String(p || "Low").toLowerCase();
-  }
-
-  function timeAgo(iso) {
-    const then = new Date(iso).getTime();
-    const diff = Math.max(0, Date.now() - then);
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return mins + "m ago";
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return hrs + "h ago";
-    const days = Math.floor(hrs / 24);
-    if (days < 30) return days + "d ago";
-    return new Date(iso).toLocaleDateString();
-  }
-
-  function complaintCardHTML(c, isTeacher) {
-    return (
-      '<div class="item">' +
-        '<div class="item-top">' +
-          "<div>" +
-            '<div class="item-title">' +
-              esc(c.category) +
-              ' <span class="badge ' + statusClass(c.status) + '">' + esc(c.status) + "</span>" +
-            "</div>" +
-            '<div class="item-meta">' +
-              esc(c.course || "—") +
-              (c.section ? " • Section " + esc(c.section) : "") +
-              " • " + esc(timeAgo(c.createdAt)) +
-              " • ID: " + esc(c.id) +
-            "</div>" +
-          "</div>" +
-          '<span class="priority ' + priorityClass(c.priority) + '">' + esc(c.priority) + "</span>" +
-        "</div>" +
-        '<p class="item-desc">' + esc(c.description) + "</p>" +
-        (isTeacher
-          ? '<div class="item-meta">👤 ' + esc(c.name) + " • " + esc(c.email) + "</div>" +
-            '<div class="item-actions">' +
-              '<button type="button" class="btn btn-ghost btn-sm" data-status="In Progress" data-id="' + esc(c.id) + '">Mark In Progress</button>' +
-              '<button type="button" class="btn btn-primary btn-sm" data-status="Resolved" data-id="' + esc(c.id) + '">Mark Resolved</button>' +
-            "</div>"
-          : "") +
-      "</div>"
-    );
-  }
-
-  function alertCardHTML(a) {
-    return (
-      '<div class="alert-item">' +
-        '<div class="at">🚨 ' + esc(a.type) + "</div>" +
-        '<div class="item-meta" style="margin-top:6px;">' +
-          "👤 " + esc(a.name) + " • " + esc(a.email) +
-          (a.course ? " • " + esc(a.course) : "") +
-          (a.section ? " • Sec " + esc(a.section) : "") +
-          " • " + esc(timeAgo(a.createdAt)) +
-        "</div>" +
-        '<p class="item-desc" style="margin-top:8px;margin-bottom:0;">' + esc(a.message) + "</p>" +
-      "</div>"
-    );
-  }
-
-  function refreshDashboard() {
-    const user = getSession();
-    if (!user) return;
-
-    const complaints = getComplaints();
-    const alerts = getAlerts();
-
-    if (user.role === "student") {
-      renderStudentDashboard(user, complaints);
-    } else {
-      renderTeacherDashboard(user, complaints, alerts);
-    }
-  }
-
-  function renderStudentDashboard(user, complaints) {
-    const mine = complaints.filter(function (c) {
-      return c.userEmail === user.email || c.email === user.email;
-    });
-
-    const total = mine.length;
-    const pending = mine.filter(function (c) { return c.status === "Pending"; }).length;
-    const progress = mine.filter(function (c) { return c.status === "In Progress"; }).length;
-    const resolved = mine.filter(function (c) { return c.status === "Resolved"; }).length;
-
-    $("#dashTitle").innerHTML = "🎓 " + esc(user.fullName.split(" ")[0]) + "'s Dashboard";
-    $("#dashSub").textContent =
-      (user.course || "") +
-      (user.section ? " · Section " + user.section : "") +
-      (user.collegeId ? " · " + user.collegeId : "");
-
-    let html = "";
-    html +=
-      '<div class="stats">' +
-        '<div class="stat"><div class="num">' + total + '</div><div class="lbl">Total</div></div>' +
-        '<div class="stat p"><div class="num">' + pending + '</div><div class="lbl">Pending</div></div>' +
-        '<div class="stat i"><div class="num">' + progress + '</div><div class="lbl">In Progress</div></div>' +
-        '<div class="stat r"><div class="num">' + resolved + '</div><div class="lbl">Resolved</div></div>' +
-      "</div>";
-
-    html += '<div class="panel">';
-    html += '<div class="panel-title">📋 My Complaints</div>';
-
-    if (mine.length === 0) {
-      html +=
-        '<div class="empty">' +
-          '<span class="e-emoji">📭</span>' +
-          "You haven't filed any complaints yet." +
-        "</div>";
-    } else {
-      mine.forEach(function (c) { html += complaintCardHTML(c, false); });
-    }
-    html += "</div>";
-
-    $("#dashContent").innerHTML = html;
-  }
-
-  function renderTeacherDashboard(user, complaints, alerts) {
-    const myClasses = Array.isArray(user.classes) ? user.classes : [];
-
-    let relevant;
-    if (myClasses.length === 0) {
-      relevant = complaints.slice();
-    } else {
-      relevant = complaints.filter(function (c) { return myClasses.indexOf(c.course) !== -1; });
-    }
-
-    const relevantAlerts = alerts.filter(function (a) {
-      if (!a.course) return true;
-      if (myClasses.length === 0) return true;
-      return myClasses.indexOf(a.course) !== -1;
-    });
-
-    const total = relevant.length;
-    const pending = relevant.filter(function (c) { return c.status === "Pending"; }).length;
-    const progress = relevant.filter(function (c) { return c.status === "In Progress"; }).length;
-    const resolved = relevant.filter(function (c) { return c.status === "Resolved"; }).length;
-
-    $("#dashTitle").innerHTML = "👨‍🏫 " + esc(user.fullName.split(" ")[0]) + "'s Dashboard";
-    $("#dashSub").textContent =
-      (user.designation || "") +
-      (user.department ? " · " + user.department + " Dept." : "") +
-      (myClasses.length ? " · " + myClasses.length + " class(es)" : "");
-
-    let html = "";
-    html +=
-      '<div class="stats">' +
-        '<div class="stat"><div class="num">' + total + '</div><div class="lbl">Total</div></div>' +
-        '<div class="stat p"><div class="num">' + pending + '</div><div class="lbl">Pending</div></div>' +
-        '<div class="stat i"><div class="num">' + progress + '</div><div class="lbl">In Progress</div></div>' +
-        '<div class="stat r"><div class="num">' + resolved + '</div><div class="lbl">Resolved</div></div>' +
-      "</div>";
-
-    html += '<div class="dash-grid">';
-
-    html += '<div class="panel">';
-    html += '<div class="panel-title">🚨 Emergency Alerts' +
-            (relevantAlerts.length ? ' <span class="badge pending">' + relevantAlerts.length + "</span>" : "") +
-            "</div>";
-
-    if (relevantAlerts.length === 0) {
-      html += '<div class="empty"><span class="e-emoji">✅</span>No emergency alerts right now.</div>';
-    } else {
-      relevantAlerts.slice(0, 12).forEach(function (a) { html += alertCardHTML(a); });
-    }
-    html += "</div>";
-
-    html += '<div class="panel">';
-    html += '<div class="panel-title">📚 Complaints from Your Classes</div>';
-
-    if (myClasses.length === 0) {
-      html +=
-        '<div class="form-msg show error" style="margin-bottom:14px;">' +
-          "You haven't selected any classes. Showing all complaints instead." +
-        "</div>";
-    }
-
-    if (relevant.length === 0) {
-      html += '<div class="empty"><span class="e-emoji">📭</span>No complaints from your classes yet.</div>';
-    } else {
-      relevant.forEach(function (c) { html += complaintCardHTML(c, true); });
-    }
-
-    html += "</div>";
-    html += "</div>";
-
-    $("#dashContent").innerHTML = html;
-  }
-
-  function updateComplaintStatus(id, status) {
-    const list = getComplaints();
-    const idx = list.findIndex(function (c) { return c.id === id; });
-    if (idx === -1) return;
-    list[idx].status = status;
-    saveComplaints(list);
-    refreshDashboard();
-    toast("Complaint " + id + " marked as " + status + ".", "success");
-  }
-
-  /* Delegated status buttons (works after dashboard re-render) */
-  document.addEventListener("click", function (e) {
-    const btn = e.target.closest("[data-status][data-id]");
-    if (!btn) return;
-    e.preventDefault();
-    updateComplaintStatus(btn.getAttribute("data-id"), btn.getAttribute("data-status"));
-  });
-
-  /* ---------- FOOTER LINKS ---------- */
-  $$(".footer-links a").forEach(function (a) {
-    a.addEventListener("click", function (e) {
-      e.preventDefault();
-      const which = a.getAttribute("data-footer");
-      const msgs = {
-        about: "CampusOne is a student welfare initiative built for Smart India Hackathon 2025. It brings complaints, emergency SOS, lost & found, mental wellness, and scheduling into one platform.",
-        contact: "📧 support@campusone.app\n📞 +91 9022516317 (Mon–Sat, 9 AM – 6 PM)",
-        privacy: "We store your data locally in your browser. We never upload it to any server. Photos and complaints stay on your device.",
-        terms: "Use CampusOne responsibly. False emergency reports may lead to disciplinary action. Content must follow your college's code of conduct.",
-        help: "Need help? Email support@campusone.app or use the Sukoon AI chat for immediate mental-health support."
-      };
-      window.alert(msgs[which] || "CampusOne");
-    });
-  });
-
-  /* ---------- INIT ---------- */
-  updateAuthUI();
-  initChat();
-  renderMoodChart();
-  renderMoodSelection();
-  renderItems();
-
-  /* If already logged in on load, stay on home but keep session ready */
-  if (getSession()) {
-    refreshDashboard();
-  }
-});
-</script>
-
-</body>
-</html>
+          <div class="field"><label for="cmpName">Full Name <span class="req">*</span></label><input type="text" id="cmpName" placeholder="e.g. Aar

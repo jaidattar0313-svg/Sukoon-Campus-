@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0a1020">
 <title>CampusOne — Your Campus, One Tap Away</title>
 
@@ -60,6 +60,7 @@ body{
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
   transition:background .3s ease,color .3s ease;
+  position:relative;
 }
 
 body::before{
@@ -74,6 +75,16 @@ img{max-width:100%;display:block;}
 button,input,select,textarea{font-family:inherit;}
 a{color:inherit;text-decoration:none;}
 .hidden{display:none !important;}
+
+/* ---- CRITICAL FOR MOBILE TAPS ---- */
+/* touch-action:manipulation removes the 300ms tap delay and disables
+   double-tap zoom WITHOUT blocking the click event (unlike preventDefault). */
+button, a, [role="button"], label, .tab, .chip, .quick-card,
+.role-btn, .mood-btn, .qr, .check-pill, .radio-pill, .icon-btn,
+.sos-btn, .item-card, .btn, summary {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
 
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
@@ -93,7 +104,10 @@ a{color:inherit;text-decoration:none;}
   height:60px;gap:12px;
 }
 
-.brand{display:flex;align-items:center;gap:10px;flex:none;}
+.brand{
+  display:flex;align-items:center;gap:10px;flex:none;
+  cursor:pointer;background:none;border:none;color:inherit;font:inherit;
+}
 
 .brand-mark{
   width:36px;height:36px;border-radius:11px;
@@ -115,7 +129,6 @@ a{color:inherit;text-decoration:none;}
   background:var(--bg-soft);color:var(--text);
   font-size:17px;cursor:pointer;
   display:grid;place-items:center;transition:.2s;flex:none;
-  -webkit-tap-highlight-color:transparent;
 }
 .icon-btn:hover{border-color:var(--primary);}
 .icon-btn:active{transform:scale(.94);}
@@ -128,7 +141,7 @@ a{color:inherit;text-decoration:none;}
   padding:4px 12px 4px 4px;border-radius:999px;
   border:1px solid var(--border);background:var(--bg-soft);
   font-size:13px;font-weight:600;cursor:pointer;max-width:180px;
-  transition:.2s;-webkit-tap-highlight-color:transparent;
+  transition:.2s;
 }
 .user-chip:hover{border-color:var(--primary);}
 .user-chip .uname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -160,7 +173,7 @@ a{color:inherit;text-decoration:none;}
   font-size:13.5px;font-weight:700;
   cursor:pointer;white-space:nowrap;transition:.2s;
   scroll-snap-align:start;
-  -webkit-tap-highlight-color:transparent;
+  font-family:inherit;
 }
 .tab:hover{color:var(--text);border-color:var(--primary);}
 .tab.active{
@@ -196,7 +209,7 @@ a{color:inherit;text-decoration:none;}
   border:1px solid transparent;background:transparent;
   color:var(--text);font-size:15px;font-weight:600;
   cursor:pointer;text-align:left;width:100%;transition:.18s;
-  -webkit-tap-highlight-color:transparent;
+  font-family:inherit;
 }
 .drawer-nav a:hover,
 .drawer-nav button:hover{background:var(--bg-soft);border-color:var(--border);}
@@ -229,7 +242,7 @@ a{color:inherit;text-decoration:none;}
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   font-size:15px;font-weight:700;padding:12px 20px;border-radius:13px;
   border:1px solid transparent;cursor:pointer;transition:.2s;
-  white-space:nowrap;-webkit-tap-highlight-color:transparent;line-height:1.2;
+  white-space:nowrap;line-height:1.2;font-family:inherit;
 }
 .btn:active{transform:scale(.97);}
 
@@ -241,11 +254,6 @@ a{color:inherit;text-decoration:none;}
 
 .btn-ghost{background:var(--bg-soft);border-color:var(--border);color:var(--text);}
 .btn-ghost:hover{border-color:var(--primary);}
-
-.btn-danger{
-  background:linear-gradient(135deg,#ff2d55,#ff6b3d);
-  color:#fff;box-shadow:0 10px 24px rgba(255,45,85,.35);
-}
 
 .btn-sm{padding:8px 14px;font-size:13px;border-radius:10px;}
 .btn-block{width:100%;}
@@ -278,9 +286,7 @@ a{color:inherit;text-decoration:none;}
 
 .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
 
-.trust-badges{
-  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;
-}
+.trust-badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;}
 .trust-badge{
   display:inline-flex;align-items:center;gap:7px;
   padding:8px 14px;border-radius:999px;
@@ -288,12 +294,8 @@ a{color:inherit;text-decoration:none;}
   font-size:12.5px;font-weight:700;color:var(--muted);
 }
 
-/* QUICK ACTIONS */
 .quick-grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:14px;
-  margin-top:8px;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px;
 }
 
 .quick-card{
@@ -301,12 +303,10 @@ a{color:inherit;text-decoration:none;}
   gap:10px;padding:22px 12px;border-radius:18px;
   background:var(--card);border:1px solid var(--border);
   cursor:pointer;transition:.22s;text-align:center;
-  -webkit-tap-highlight-color:transparent;
-  box-shadow:var(--shadow);
+  box-shadow:var(--shadow);font-family:inherit;color:var(--text);
 }
 .quick-card:hover{
-  transform:translateY(-5px);
-  border-color:var(--primary);
+  transform:translateY(-5px);border-color:var(--primary);
   box-shadow:0 18px 34px rgba(79,124,255,.24);
 }
 .quick-card:active{transform:translateY(-1px) scale(.98);}
@@ -314,17 +314,13 @@ a{color:inherit;text-decoration:none;}
 .quick-card .qt{font-size:13.5px;font-weight:800;letter-spacing:-.1px;line-height:1.3;}
 .quick-card.sos{background:linear-gradient(135deg,rgba(255,45,85,.16),rgba(255,107,61,.1));border-color:rgba(255,77,109,.4);}
 
-/* HOW IT WORKS */
-.steps{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
-}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
 .step{
   background:var(--card);border:1px solid var(--border);
   border-radius:16px;padding:20px 16px;position:relative;overflow:hidden;
 }
 .step-num{
-  width:32px;height:32px;border-radius:10px;
-  display:grid;place-items:center;
+  width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
   color:#fff;font-size:14px;font-weight:800;margin-bottom:12px;
 }
@@ -404,7 +400,7 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   display:inline-flex;align-items:center;gap:7px;
   padding:8px 13px;border:1px solid var(--border);border-radius:999px;
   background:var(--bg-soft);font-size:13px;font-weight:600;
-  cursor:pointer;transition:.18s;-webkit-tap-highlight-color:transparent;user-select:none;
+  cursor:pointer;transition:.18s;user-select:none;
 }
 .check-pill input{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;flex:none;}
 .check-pill:hover{border-color:var(--primary);}
@@ -432,9 +428,7 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 /* ============================================================
    LOST & FOUND
    ============================================================ */
-.toolbar{
-  display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;
-}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
 .toolbar .search{flex:1 1 220px;min-width:0;}
 .toolbar select{flex:0 1 190px;}
 
@@ -443,7 +437,7 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   padding:8px 16px;border-radius:999px;
   border:1px solid var(--border);background:var(--bg-soft);
   color:var(--muted);font-size:13px;font-weight:700;
-  cursor:pointer;transition:.2s;-webkit-tap-highlight-color:transparent;
+  cursor:pointer;transition:.2s;font-family:inherit;
 }
 .chip:hover{color:var(--text);}
 .chip.active{
@@ -511,10 +505,8 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   display:flex;align-items:center;gap:12px;flex:none;
 }
 .chat-head .cavatar{
-  width:40px;height:40px;border-radius:13px;
-  display:grid;place-items:center;font-size:20px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  flex:none;
+  width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+  font-size:20px;background:linear-gradient(135deg,var(--primary),var(--primary-2));flex:none;
 }
 .chat-head .cinfo .cn{font-size:15px;font-weight:800;letter-spacing:-.2px;}
 .chat-head .cinfo .cs{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;}
@@ -522,20 +514,19 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 
 .chat-body{
   flex:1;overflow-y:auto;padding:18px;
-  display:flex;flex-direction:column;gap:12px;
-  -webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;
 }
 
 .bubble{
   max-width:82%;padding:12px 15px;border-radius:16px;
   font-size:14.5px;line-height:1.55;word-wrap:break-word;
+  white-space:pre-wrap;
   animation:bubbleIn .25s ease;
 }
 @keyframes bubbleIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
 .bubble.bot{
-  align-self:flex-start;
-  background:var(--bg-soft);border:1px solid var(--border);
+  align-self:flex-start;background:var(--bg-soft);border:1px solid var(--border);
   border-bottom-left-radius:5px;
 }
 .bubble.user{
@@ -545,22 +536,17 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 }
 
 .typing{display:flex;gap:5px;align-items:center;padding:14px 16px;}
-.typing span{
-  width:7px;height:7px;border-radius:50%;background:var(--muted);
-  animation:blink 1.3s infinite;
-}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.3s infinite;}
 .typing span:nth-child(2){animation-delay:.18s;}
 .typing span:nth-child(3){animation-delay:.36s;}
 @keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-4px);}}
 
-.quick-replies{
-  display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 12px;flex:none;
-}
+.quick-replies{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 12px;flex:none;}
 .qr{
   padding:8px 14px;border-radius:999px;
   border:1px solid var(--border);background:var(--bg-soft);
   color:var(--muted);font-size:12.5px;font-weight:700;
-  cursor:pointer;transition:.2s;-webkit-tap-highlight-color:transparent;
+  cursor:pointer;transition:.2s;font-family:inherit;
 }
 .qr:hover{border-color:var(--primary);color:var(--text);}
 
@@ -574,7 +560,6 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
   color:#fff;font-size:18px;cursor:pointer;
   display:grid;place-items:center;transition:.2s;
-  -webkit-tap-highlight-color:transparent;
 }
 .chat-input button:active{transform:scale(.93);}
 
@@ -588,7 +573,7 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   font-size:15px;font-weight:900;color:#ff6b87;
   display:flex;align-items:center;gap:8px;margin-bottom:9px;
 }
-.crisis-alert p{font-size:13.5px;line-height:1.6;margin-bottom:10px;}
+.crisis-alert p{font-size:13.5px;line-height:1.6;margin-bottom:10px;white-space:pre-wrap;}
 .crisis-alert .helpline{
   display:block;background:var(--card);border:1px solid rgba(255,77,109,.4);
   border-radius:12px;padding:12px 14px;font-size:14px;font-weight:800;
@@ -596,7 +581,6 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 }
 .crisis-alert .helpline small{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:3px;}
 
-/* MOOD TRACKER */
 .mood-panel{
   background:var(--card);border:1px solid var(--border);
   border-radius:18px;padding:20px;box-shadow:var(--shadow);
@@ -610,7 +594,6 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   border-radius:15px;border:1.5px solid var(--border);
   background:var(--bg-soft);font-size:23px;
   cursor:pointer;transition:.2s;display:grid;place-items:center;
-  -webkit-tap-highlight-color:transparent;
 }
 .mood-btn:hover{transform:translateY(-4px);border-color:var(--primary);}
 .mood-btn.selected{
@@ -637,8 +620,9 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   transition:height .45s cubic-bezier(.34,1.3,.64,1);
   min-height:5px;
 }
+.bar.empty{background:var(--border);}
 .bar-col .bd{font-size:10.5px;color:var(--muted);font-weight:700;white-space:nowrap;}
-.bar-col .be{font-size:14px;line-height:1;}
+.bar-col .be{font-size:14px;line-height:1;min-height:16px;}
 
 /* ============================================================
    SCHEDULE
@@ -670,19 +654,14 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
 }
 
-/* TIMETABLE */
 .tt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:16px;border-radius:14px;border:1px solid var(--border);}
-table.tt{
-  width:100%;border-collapse:collapse;min-width:620px;font-size:12.5px;
-}
+table.tt{width:100%;border-collapse:collapse;min-width:620px;font-size:12.5px;}
 table.tt th,table.tt td{
-  padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);
-  white-space:nowrap;
+  padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;
 }
 table.tt th{
   background:var(--bg-soft);font-weight:800;font-size:11.5px;
   text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
-  position:sticky;top:0;
 }
 table.tt td:first-child{font-weight:800;color:var(--primary);}
 table.tt tr:last-child td{border-bottom:none;}
@@ -754,7 +733,7 @@ table.tt tr:last-child td{border-bottom:none;}
 .empty .e-emoji{font-size:38px;display:block;margin-bottom:12px;opacity:.85;}
 
 /* ============================================================
-   SOS
+   SOS (fixed — safely below modals, pointer-events-safe pulse)
    ============================================================ */
 .sos-btn{
   position:fixed;right:16px;bottom:16px;z-index:80;
@@ -762,14 +741,17 @@ table.tt tr:last-child td{border-bottom:none;}
   background:linear-gradient(135deg,#ff2d55,#ff6b3d);
   color:#fff;font-weight:900;font-size:13px;letter-spacing:.6px;
   cursor:pointer;box-shadow:0 12px 30px rgba(255,45,85,.5);
-  display:grid;place-items:center;-webkit-tap-highlight-color:transparent;
+  display:grid;place-items:center;
   transition:transform .2s;
 }
 .sos-btn:active{transform:scale(.92);}
 .sos-btn::after{
   content:"";position:absolute;inset:0;border-radius:50%;
   border:2px solid rgba(255,45,85,.85);
-  animation:sosPulse 2s infinite;pointer-events:none;
+  animation:sosPulse 2s infinite;
+  /* CRITICAL: pulse ring must not steal taps */
+  pointer-events:none;
+  z-index:-1;
 }
 @keyframes sosPulse{0%{transform:scale(1);opacity:.85;}100%{transform:scale(1.75);opacity:0;}}
 
@@ -779,13 +761,15 @@ table.tt tr:last-child td{border-bottom:none;}
 .toast-wrap{
   position:fixed;top:14px;left:50%;transform:translateX(-50%);
   z-index:300;display:flex;flex-direction:column;gap:8px;
-  width:calc(100% - 28px);max-width:430px;pointer-events:none;
+  width:calc(100% - 28px);max-width:430px;
+  pointer-events:none; /* wrapper never blocks taps */
 }
 .toast{
   padding:13px 16px;border-radius:14px;background:var(--card);
   border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.32);
   font-size:14px;font-weight:600;
   animation:toastIn .28s cubic-bezier(.34,1.4,.64,1);word-break:break-word;
+  pointer-events:auto;
 }
 .toast.success{border-left:4px solid var(--ok);}
 .toast.error{border-left:4px solid var(--danger);}
@@ -801,30 +785,23 @@ table.tt tr:last-child td{border-bottom:none;}
   background:var(--bg-soft);
 }
 .footer-links{
-  display:flex;gap:8px 22px;flex-wrap:wrap;justify-content:center;
-  margin-bottom:18px;
+  display:flex;gap:8px 22px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;
 }
 .footer-links a{
-  font-size:13.5px;font-weight:700;color:var(--muted);
-  cursor:pointer;transition:.2s;
+  font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:.2s;
 }
 .footer-links a:hover{color:var(--primary);}
 
-.footer-help{
-  display:flex;justify-content:center;margin-bottom:16px;
-}
+.footer-help{display:flex;justify-content:center;margin-bottom:16px;}
 .help-box{
   display:inline-flex;align-items:center;gap:11px;
   padding:12px 18px;border-radius:14px;
   background:var(--card);border:1px solid var(--border);
-  font-size:13.5px;font-weight:700;flex-wrap:wrap;justify-content:center;
-  text-align:center;
+  font-size:13.5px;font-weight:700;flex-wrap:wrap;justify-content:center;text-align:center;
 }
 .help-box .hn{color:var(--danger);font-weight:900;letter-spacing:.3px;}
 
-.footer-copy{
-  text-align:center;font-size:12.5px;color:var(--muted);line-height:1.6;
-}
+.footer-copy{text-align:center;font-size:12.5px;color:var(--muted);line-height:1.6;}
 
 /* ============================================================
    MODALS
@@ -871,7 +848,7 @@ table.tt tr:last-child td{border-bottom:none;}
   padding:26px 14px;border-radius:18px;
   border:2px solid var(--border);background:var(--bg-soft);
   color:var(--text);cursor:pointer;text-align:center;
-  transition:.22s;-webkit-tap-highlight-color:transparent;font-family:inherit;
+  transition:.22s;font-family:inherit;
 }
 .role-btn:hover{border-color:var(--primary);transform:translateY(-4px);box-shadow:0 14px 30px rgba(79,124,255,.24);}
 .role-btn:active{transform:translateY(-1px) scale(.98);}
@@ -884,8 +861,7 @@ table.tt tr:last-child td{border-bottom:none;}
   display:inline-flex;align-items:center;gap:8px;
   padding:11px 18px;border-radius:13px;
   border:1.5px solid var(--border);background:var(--bg-soft);
-  font-size:14px;font-weight:700;cursor:pointer;transition:.2s;
-  -webkit-tap-highlight-color:transparent;user-select:none;
+  font-size:14px;font-weight:700;cursor:pointer;transition:.2s;user-select:none;
 }
 .radio-pill input{accent-color:var(--primary);cursor:pointer;width:16px;height:16px;}
 .radio-pill:has(input:checked){border-color:var(--primary);background:rgba(79,124,255,.13);}
@@ -941,27 +917,26 @@ table.tt tr:last-child td{border-bottom:none;}
      ============================================================ -->
 <header class="header">
   <div class="wrap header-inner">
-    <a href="#" class="brand" data-view="home">
+    <button type="button" class="brand" data-view="home" aria-label="Go to home">
       <span class="brand-mark">C1</span>
       <span class="brand-text">Campus<b>One</b></span>
-    </a>
+    </button>
 
     <div class="header-actions">
-      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
-      <div class="user-chip hidden" id="headerUser" title="Open dashboard"></div>
-      <button class="icon-btn hamburger" id="hamburger" aria-label="Open menu">
+      <button type="button" class="icon-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
+      <button type="button" class="user-chip hidden" id="headerUser" aria-label="Open dashboard"></button>
+      <button type="button" class="icon-btn hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
 
-  <!-- TAB BAR -->
   <nav class="tabbar" id="tabbar">
-    <button class="tab active" data-view="home">🏠 Home</button>
-    <button class="tab" data-view="complaints">📝 Complaints</button>
-    <button class="tab" data-view="lostfound">🔍 Lost &amp; Found</button>
-    <button class="tab" data-view="sukoon">🧠 Sukoon AI</button>
-    <button class="tab" data-view="schedule">📅 Schedule</button>
+    <button type="button" class="tab active" data-view="home">🏠 Home</button>
+    <button type="button" class="tab" data-view="complaints">📝 Complaints</button>
+    <button type="button" class="tab" data-view="lostfound">🔍 Lost &amp; Found</button>
+    <button type="button" class="tab" data-view="sukoon">🧠 Sukoon AI</button>
+    <button type="button" class="tab" data-view="schedule">📅 Schedule</button>
   </nav>
 </header>
 
@@ -971,27 +946,27 @@ table.tt tr:last-child td{border-bottom:none;}
 <aside class="drawer" id="drawer" aria-hidden="true">
   <div class="drawer-head">
     <strong>Menu</strong>
-    <button class="icon-btn" id="drawerClose" aria-label="Close menu">✕</button>
+    <button type="button" class="icon-btn" id="drawerClose" aria-label="Close menu">✕</button>
   </div>
 
   <div class="drawer-user hidden" id="drawerUser"></div>
 
   <nav class="drawer-nav">
-    <a href="#" data-view="home" data-close>🏠 Home</a>
-    <a href="#" data-view="complaints" data-close>📝 Complaints</a>
-    <a href="#" data-view="lostfound" data-close>🔍 Lost &amp; Found</a>
-    <a href="#" data-view="sukoon" data-close>🧠 Sukoon AI</a>
-    <a href="#" data-view="schedule" data-close>📅 Schedule</a>
-    <a href="#" id="drawerDash">📊 Dashboard</a>
+    <button type="button" data-view="home" data-close>🏠 Home</button>
+    <button type="button" data-view="complaints" data-close>📝 Complaints</button>
+    <button type="button" data-view="lostfound" data-close>🔍 Lost &amp; Found</button>
+    <button type="button" data-view="sukoon" data-close>🧠 Sukoon AI</button>
+    <button type="button" data-view="schedule" data-close>📅 Schedule</button>
+    <button type="button" id="drawerDash">📊 Dashboard</button>
 
     <div class="drawer-divider" id="drawerDiv1"></div>
 
-    <button id="drawerSignup">✨ Signup</button>
-    <button id="drawerLogin">🔐 Login</button>
+    <button type="button" id="drawerSignup">✨ Signup</button>
+    <button type="button" id="drawerLogin">🔐 Login</button>
 
     <div class="drawer-divider hidden" id="drawerDiv2"></div>
 
-    <button id="drawerLogout" class="danger hidden">🚪 Logout</button>
+    <button type="button" id="drawerLogout" class="danger hidden">🚪 Logout</button>
   </nav>
 </aside>
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
@@ -1008,8 +983,8 @@ table.tt tr:last-child td{border-bottom:none;}
       <p>Complaints, Emergency, Lost &amp; Found, Mental Wellness, and Smart Scheduling — all in one platform.</p>
 
       <div class="hero-actions">
-        <button class="btn btn-primary" id="heroSignup">Get Started Free</button>
-        <button class="btn btn-ghost" data-view="complaints">File a Complaint</button>
+        <button type="button" class="btn btn-primary" id="heroSignup">Get Started Free</button>
+        <button type="button" class="btn btn-ghost" data-view="complaints">File a Complaint</button>
       </div>
 
       <div class="trust-badges">
@@ -1023,23 +998,23 @@ table.tt tr:last-child td{border-bottom:none;}
   <section class="section" style="padding-top:14px;">
     <div class="wrap">
       <div class="quick-grid">
-        <button class="quick-card" data-view="complaints">
+        <button type="button" class="quick-card" data-view="complaints">
           <span class="qi">📝</span>
           <span class="qt">File a Complaint</span>
         </button>
-        <button class="quick-card sos" id="quickSos">
+        <button type="button" class="quick-card sos" id="quickSos">
           <span class="qi">🚨</span>
           <span class="qt">Emergency SOS</span>
         </button>
-        <button class="quick-card" data-view="lostfound">
+        <button type="button" class="quick-card" data-view="lostfound">
           <span class="qi">🔍</span>
           <span class="qt">Lost &amp; Found</span>
         </button>
-        <button class="quick-card" data-view="sukoon">
+        <button type="button" class="quick-card" data-view="sukoon">
           <span class="qi">🧠</span>
           <span class="qt">Talk to Sukoon AI</span>
         </button>
-        <button class="quick-card" data-view="schedule">
+        <button type="button" class="quick-card" data-view="schedule">
           <span class="qi">📅</span>
           <span class="qt">My Schedule</span>
         </button>
@@ -1184,11 +1159,11 @@ table.tt tr:last-child td{border-bottom:none;}
 
       <div class="toolbar" style="justify-content:space-between;">
         <div class="filter-chips" id="lfFilters">
-          <button class="chip active" data-filter="all">All</button>
-          <button class="chip" data-filter="lost">Lost</button>
-          <button class="chip" data-filter="found">Found</button>
+          <button type="button" class="chip active" data-filter="all">All</button>
+          <button type="button" class="chip" data-filter="lost">Lost</button>
+          <button type="button" class="chip" data-filter="found">Found</button>
         </div>
-        <button class="btn btn-primary btn-sm" id="lfAddBtn">+ Report New Item</button>
+        <button type="button" class="btn btn-primary btn-sm" id="lfAddBtn">+ Report New Item</button>
       </div>
 
       <div class="items-grid" id="lfGrid"></div>
@@ -1219,15 +1194,15 @@ table.tt tr:last-child td{border-bottom:none;}
           <div class="chat-body" id="chatBody"></div>
 
           <div class="quick-replies" id="quickReplies">
-            <button class="qr" data-msg="I'm stressed">I'm stressed</button>
-            <button class="qr" data-msg="Can't sleep">Can't sleep</button>
-            <button class="qr" data-msg="Exam pressure">Exam pressure</button>
-            <button class="qr" data-msg="Feeling lonely">Feeling lonely</button>
+            <button type="button" class="qr" data-msg="I'm stressed">I'm stressed</button>
+            <button type="button" class="qr" data-msg="Can't sleep">Can't sleep</button>
+            <button type="button" class="qr" data-msg="Exam pressure">Exam pressure</button>
+            <button type="button" class="qr" data-msg="Feeling lonely">Feeling lonely</button>
           </div>
 
           <div class="chat-input">
             <input type="text" id="chatInput" placeholder="Type how you feel…" autocomplete="off">
-            <button id="chatSend" aria-label="Send">➤</button>
+            <button type="button" id="chatSend" aria-label="Send">➤</button>
           </div>
         </div>
 
@@ -1236,11 +1211,11 @@ table.tt tr:last-child td{border-bottom:none;}
           <p class="mp-sub">How are you feeling today?</p>
 
           <div class="mood-row" id="moodRow">
-            <button class="mood-btn" data-mood="5" title="Happy">😊</button>
-            <button class="mood-btn" data-mood="4" title="Okay">😐</button>
-            <button class="mood-btn" data-mood="3" title="Sad">😔</button>
-            <button class="mood-btn" data-mood="2" title="Very Sad">😢</button>
-            <button class="mood-btn" data-mood="1" title="Angry">😡</button>
+            <button type="button" class="mood-btn" data-mood="5" title="Happy">😊</button>
+            <button type="button" class="mood-btn" data-mood="4" title="Okay">😐</button>
+            <button type="button" class="mood-btn" data-mood="3" title="Sad">😔</button>
+            <button type="button" class="mood-btn" data-mood="2" title="Very Sad">😢</button>
+            <button type="button" class="mood-btn" data-mood="1" title="Angry">😡</button>
           </div>
 
           <div class="chart-title">Last 7 Days</div>
@@ -1263,7 +1238,6 @@ table.tt tr:last-child td{border-bottom:none;}
 
       <div class="sched-grid">
 
-        <!-- STUDY PLANNER -->
         <div class="panel">
           <div class="panel-title">📚 Study Planner</div>
 
@@ -1284,12 +1258,11 @@ table.tt tr:last-child td{border-bottom:none;}
             </div>
           </div>
 
-          <button class="btn btn-primary btn-block" id="spGenerate">Generate Study Plan</button>
+          <button type="button" class="btn btn-primary btn-block" id="spGenerate">Generate Study Plan</button>
 
           <div class="plan-list" id="planList"></div>
         </div>
 
-        <!-- TIMETABLE -->
         <div class="panel">
           <div class="panel-title">🗓️ Timetable Generator</div>
           <p style="font-size:13.5px;color:var(--muted);line-height:1.6;">
@@ -1301,7 +1274,7 @@ table.tt tr:last-child td{border-bottom:none;}
             <select id="ttCourse"></select>
           </div>
 
-          <button class="btn btn-primary btn-block" id="ttGenerate">Generate Timetable</button>
+          <button type="button" class="btn btn-primary btn-block" id="ttGenerate">Generate Timetable</button>
 
           <div id="ttResult"></div>
         </div>
@@ -1353,7 +1326,7 @@ table.tt tr:last-child td{border-bottom:none;}
 <!-- ============================================================
      SOS BUTTON
      ============================================================ -->
-<button class="sos-btn" id="sosBtn" aria-label="Emergency SOS">SOS</button>
+<button type="button" class="sos-btn" id="sosBtn" aria-label="Emergency SOS">SOS</button>
 
 <!-- ============================================================
      TOASTS
@@ -1365,18 +1338,18 @@ table.tt tr:last-child td{border-bottom:none;}
      ============================================================ -->
 <div class="modal-overlay" id="roleModal">
   <div class="modal narrow">
-    <button class="modal-close" data-close-modal="roleModal" aria-label="Close">✕</button>
+    <button type="button" class="modal-close" data-close-modal="roleModal" aria-label="Close">✕</button>
     <div class="modal-head">
       <h3>Are you a Student or a Teacher?</h3>
       <p>Choose your role to continue. This helps us show you the right dashboard.</p>
     </div>
     <div class="role-grid">
-      <button class="role-btn" data-role="student">
+      <button type="button" class="role-btn" data-role="student">
         <span class="emoji">🎓</span>
         <span class="rname">Student</span>
         <span class="rdesc">File &amp; track complaints</span>
       </button>
-      <button class="role-btn" data-role="teacher">
+      <button type="button" class="role-btn" data-role="teacher">
         <span class="emoji">👨‍🏫</span>
         <span class="rname">Teacher</span>
         <span class="rdesc">Manage class complaints</span>
@@ -1390,7 +1363,7 @@ table.tt tr:last-child td{border-bottom:none;}
      ============================================================ -->
 <div class="modal-overlay" id="studentModal">
   <div class="modal wide">
-    <button class="modal-close" data-close-modal="studentModal" aria-label="Close">✕</button>
+    <button type="button" class="modal-close" data-close-modal="studentModal" aria-label="Close">✕</button>
     <div class="modal-head">
       <h3>🎓 Student Signup</h3>
       <p>Create your student account to file and track complaints.</p>
@@ -1481,7 +1454,7 @@ table.tt tr:last-child td{border-bottom:none;}
      ============================================================ -->
 <div class="modal-overlay" id="teacherModal">
   <div class="modal wide">
-    <button class="modal-close" data-close-modal="teacherModal" aria-label="Close">✕</button>
+    <button type="button" class="modal-close" data-close-modal="teacherModal" aria-label="Close">✕</button>
     <div class="modal-head">
       <h3>👨‍🏫 Teacher Signup</h3>
       <p>Create your faculty account to manage your classes.</p>
@@ -1585,7 +1558,7 @@ table.tt tr:last-child td{border-bottom:none;}
      ============================================================ -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal narrow">
-    <button class="modal-close" data-close-modal="loginModal" aria-label="Close">✕</button>
+    <button type="button" class="modal-close" data-close-modal="loginModal" aria-label="Close">✕</button>
     <div class="modal-head">
       <h3>🔐 Welcome back</h3>
       <p>Sign in to your CampusOne account.</p>
@@ -1626,7 +1599,7 @@ table.tt tr:last-child td{border-bottom:none;}
      ============================================================ -->
 <div class="modal-overlay" id="forgotModal">
   <div class="modal narrow">
-    <button class="modal-close" data-close-modal="forgotModal" aria-label="Close">✕</button>
+    <button type="button" class="modal-close" data-close-modal="forgotModal" aria-label="Close">✕</button>
     <div class="modal-head">
       <h3>🔑 Reset Password</h3>
       <p>Enter your college email and choose a new password.</p>
@@ -1660,7 +1633,7 @@ table.tt tr:last-child td{border-bottom:none;}
      ============================================================ -->
 <div class="modal-overlay" id="itemModal">
   <div class="modal wide">
-    <button class="modal-close" data-close-modal="itemModal" aria-label="Close">✕</button>
+    <button type="button" class="modal-close" data-close-modal="itemModal" aria-label="Close">✕</button>
     <div class="modal-head">
       <h3>📦 Report New Item</h3>
       <p>Help your campus community by reporting a lost or found item.</p>
@@ -1742,14 +1715,19 @@ table.tt tr:last-child td{border-bottom:none;}
      SCRIPT
      ============================================================ -->
 <script>
-(function () {
+/* ============================================================
+   CampusOne — main script
+   Wrapped in DOMContentLoaded to be extra-safe on mobile.
+   NOTE: we intentionally DO NOT use touchend + preventDefault()
+   anywhere — that pattern was blocking all mobile taps.
+   Double-tap zoom is prevented via CSS touch-action:manipulation.
+   ============================================================ */
+document.addEventListener("DOMContentLoaded", function () {
   "use strict";
 
-  /* ==========================================================
-     HELPERS
-     ========================================================== */
-  const $  = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.prototype.slice.call(root.querySelectorAll(sel));
+  /* ---------- HELPERS ---------- */
+  const $  = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
 
   const esc = (str) => String(str == null ? "" : str)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -1758,9 +1736,7 @@ table.tt tr:last-child td{border-bottom:none;}
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const phoneRe = /^[0-9]{10,15}$/;
 
-  /* ==========================================================
-     STORAGE KEYS
-     ========================================================== */
+  /* ---------- STORAGE KEYS ---------- */
   const K = {
     users:      "campusone_users",
     session:    "campusone_session",
@@ -1790,27 +1766,25 @@ table.tt tr:last-child td{border-bottom:none;}
     }
   }
 
-  /* ==========================================================
-     TOASTS
-     ========================================================== */
+  /* ---------- TOASTS ---------- */
   const toastWrap = $("#toastWrap");
 
-  function toast(message, type = "info", duration = 3200) {
+  function toast(message, type, duration) {
+    type = type || "info";
+    duration = duration || 3200;
     const el = document.createElement("div");
     el.className = "toast " + type;
     el.textContent = message;
     toastWrap.appendChild(el);
-    setTimeout(() => {
+    setTimeout(function () {
       el.style.transition = "opacity .25s, transform .25s";
       el.style.opacity = "0";
       el.style.transform = "translateY(-10px)";
-      setTimeout(() => el.remove(), 260);
+      setTimeout(function () { el.remove(); }, 260);
     }, duration);
   }
 
-  /* ==========================================================
-     THEME
-     ========================================================== */
+  /* ---------- THEME ---------- */
   const themeToggle = $("#themeToggle");
 
   function applyTheme(theme) {
@@ -1821,42 +1795,42 @@ table.tt tr:last-child td{border-bottom:none;}
 
   applyTheme(document.documentElement.getAttribute("data-theme") || "dark");
 
-  themeToggle.addEventListener("click", () => {
+  themeToggle.addEventListener("click", function () {
     const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
     applyTheme(next);
   });
 
-  /* ==========================================================
-     VIEW / TAB SYSTEM
-     ========================================================== */
+  /* ---------- VIEW / TAB SYSTEM ---------- */
   const VIEWS = ["home", "complaints", "lostfound", "sukoon", "schedule", "dashboard"];
 
   function showView(name) {
     if (VIEWS.indexOf(name) === -1) name = "home";
 
-    VIEWS.forEach((v) => {
+    VIEWS.forEach(function (v) {
       const el = document.getElementById("view-" + v);
       if (el) el.classList.toggle("hidden", v !== name);
     });
 
-    $$(".tab").forEach((t) => {
+    $$(".tab").forEach(function (t) {
       const isActive = t.getAttribute("data-view") === name;
       t.classList.toggle("active", isActive);
-      if (isActive && t.scrollIntoView) {
+      if (isActive) {
         try { t.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }); } catch (e) {}
       }
     });
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+
+    if (name === "sukoon") {
+      setTimeout(function () {
+        const body = $("#chatBody");
+        if (body) body.scrollTop = body.scrollHeight;
+      }, 80);
+    }
   }
 
-  // Tab clicks
-  $$(".tab").forEach((t) => {
-    t.addEventListener("click", () => showView(t.getAttribute("data-view")));
-  });
-
-  // Any element with data-view
-  document.addEventListener("click", (e) => {
+  /* Delegated: any element with data-view navigates */
+  document.addEventListener("click", function (e) {
     const target = e.target.closest("[data-view]");
     if (!target) return;
     const view = target.getAttribute("data-view");
@@ -1866,17 +1840,7 @@ table.tt tr:last-child td{border-bottom:none;}
     showView(view);
   });
 
-  // Brand logo
-  $$(".brand").forEach((b) => {
-    b.addEventListener("click", (e) => {
-      e.preventDefault();
-      showView("home");
-    });
-  });
-
-  /* ==========================================================
-     MODAL SYSTEM
-     ========================================================== */
+  /* ---------- MODAL SYSTEM ---------- */
   function openModal(id) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1894,21 +1858,26 @@ table.tt tr:last-child td{border-bottom:none;}
   }
 
   function closeAllModals() {
-    $$(".modal-overlay.open").forEach((m) => m.classList.remove("open"));
+    $$(".modal-overlay.open").forEach(function (m) { m.classList.remove("open"); });
     document.body.style.overflow = "";
   }
 
-  $$("[data-close-modal]").forEach((btn) => {
-    btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close-modal")));
+  /* Close buttons — delegated so it always works */
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-close-modal]");
+    if (!btn) return;
+    e.preventDefault();
+    closeModal(btn.getAttribute("data-close-modal"));
   });
 
-  $$(".modal-overlay").forEach((overlay) => {
-    overlay.addEventListener("mousedown", (e) => {
+  /* Click the dark backdrop → close. Use click (not mousedown) for touch. */
+  $$(".modal-overlay").forEach(function (overlay) {
+    overlay.addEventListener("click", function (e) {
       if (e.target === overlay) closeModal(overlay.id);
     });
   });
 
-  document.addEventListener("keydown", (e) => {
+  document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { closeAllModals(); closeDrawer(); }
   });
 
@@ -1917,7 +1886,9 @@ table.tt tr:last-child td{border-bottom:none;}
     if (!el) return;
     el.textContent = text;
     el.className = "form-msg show " + type;
-    if (type === "success") setTimeout(() => { el.className = "form-msg"; }, 5000);
+    if (type === "success") {
+      setTimeout(function () { el.className = "form-msg"; }, 5000);
+    }
   }
 
   function clearMsg(id) {
@@ -1925,9 +1896,7 @@ table.tt tr:last-child td{border-bottom:none;}
     if (el) el.className = "form-msg";
   }
 
-  /* ==========================================================
-     COURSE DATA
-     ========================================================== */
+  /* ---------- COURSE DATA ---------- */
   const COURSES = {
     "Class 11":    ["Science", "Commerce", "Arts"],
     "Class 12":    ["Science", "Commerce", "Arts"],
@@ -1954,10 +1923,10 @@ table.tt tr:last-child td{border-bottom:none;}
       selectEl.appendChild(ph);
     }
 
-    Object.keys(COURSES).forEach((group) => {
+    Object.keys(COURSES).forEach(function (group) {
       const og = document.createElement("optgroup");
       og.label = group;
-      COURSES[group].forEach((opt) => {
+      COURSES[group].forEach(function (opt) {
         const o = document.createElement("option");
         o.value = group + " - " + opt;
         o.textContent = opt;
@@ -1971,7 +1940,7 @@ table.tt tr:last-child td{border-bottom:none;}
     if (!container) return;
     container.innerHTML = "";
 
-    Object.keys(COURSES).forEach((group) => {
+    Object.keys(COURSES).forEach(function (group) {
       const box = document.createElement("div");
       box.className = "check-group";
 
@@ -1983,7 +1952,7 @@ table.tt tr:last-child td{border-bottom:none;}
       const row = document.createElement("div");
       row.className = "check-row";
 
-      COURSES[group].forEach((opt) => {
+      COURSES[group].forEach(function (opt) {
         const value = group + " - " + opt;
         const label = document.createElement("label");
         label.className = "check-pill";
@@ -2006,9 +1975,7 @@ table.tt tr:last-child td{border-bottom:none;}
     });
   }
 
-  /* ==========================================================
-     IMAGE HELPERS
-     ========================================================== */
+  /* ---------- IMAGE HELPERS ---------- */
   function readAndResizeImage(file, maxSize, callback) {
     if (!file) return;
     if (!/^image\//.test(file.type)) { toast("Please choose an image file.", "error"); return; }
@@ -2046,15 +2013,13 @@ table.tt tr:last-child td{border-bottom:none;}
     previewEl.appendChild(img);
   }
 
-  /* ==========================================================
-     USERS + SESSION
-     ========================================================== */
+  /* ---------- USERS + SESSION ---------- */
   function getUsers() { return readLS(K.users, []); }
   function saveUsers(list) { writeLS(K.users, list); }
 
   function findUserByEmail(email) {
     const target = String(email || "").trim().toLowerCase();
-    return getUsers().find((u) => u.email === target) || null;
+    return getUsers().find(function (u) { return u.email === target; }) || null;
   }
 
   function sanitizeUser(user) {
@@ -2093,22 +2058,19 @@ table.tt tr:last-child td{border-bottom:none;}
     } catch (e) {}
   }
 
-  /* ==========================================================
-     AVATAR
-     ========================================================== */
+  /* ---------- AVATAR ---------- */
   function avatarHTML(user, extraClass) {
     const cls = "avatar " + (extraClass || "");
     if (user && user.photo) {
       return '<img class="' + cls + '" src="' + esc(user.photo) + '" alt="">';
     }
     const name = (user && user.fullName) ? user.fullName : "?";
-    const initials = name.trim().split(/\s+/).map((w) => w.charAt(0)).slice(0, 2).join("").toUpperCase() || "?";
+    const initials = name.trim().split(/\s+/).map(function (w) { return w.charAt(0); })
+      .slice(0, 2).join("").toUpperCase() || "?";
     return '<span class="' + cls + ' avatar-initials">' + esc(initials) + "</span>";
   }
 
-  /* ==========================================================
-     DRAWER
-     ========================================================== */
+  /* ---------- DRAWER ---------- */
   const drawer = $("#drawer");
   const drawerBackdrop = $("#drawerBackdrop");
 
@@ -2132,9 +2094,7 @@ table.tt tr:last-child td{border-bottom:none;}
   $("#drawerClose").addEventListener("click", closeDrawer);
   drawerBackdrop.addEventListener("click", closeDrawer);
 
-  /* ==========================================================
-     AUTH UI
-     ========================================================== */
+  /* ---------- AUTH UI ---------- */
   function updateAuthUI() {
     const user = getSession();
     const headerUser = $("#headerUser");
@@ -2176,9 +2136,7 @@ table.tt tr:last-child td{border-bottom:none;}
     prefillComplaintForm();
   }
 
-  /* ==========================================================
-     ROLE FLOW
-     ========================================================== */
+  /* ---------- ROLE FLOW ---------- */
   let pendingRoleAction = null;
 
   function startRoleFlow(action) {
@@ -2187,46 +2145,53 @@ table.tt tr:last-child td{border-bottom:none;}
     openModal("roleModal");
   }
 
-  $$(".role-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const role = btn.getAttribute("data-role");
-      closeModal("roleModal");
+  /* Delegated role buttons */
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".role-btn[data-role]");
+    if (!btn) return;
+    e.preventDefault();
 
-      if (pendingRoleAction === "signup") {
-        if (role === "student") { resetStudentForm(); openModal("studentModal"); }
-        else { resetTeacherForm(); openModal("teacherModal"); }
-      } else if (pendingRoleAction === "login") {
-        resetLoginForm();
-        openModal("loginModal");
-        formMsg("liMsg", role === "student" ? "Signing in as a Student 🎓" : "Signing in as a Teacher 👨‍🏫", "success");
-      }
-      pendingRoleAction = null;
-    });
+    const role = btn.getAttribute("data-role");
+    closeModal("roleModal");
+
+    if (pendingRoleAction === "signup") {
+      if (role === "student") { resetStudentForm(); openModal("studentModal"); }
+      else { resetTeacherForm(); openModal("teacherModal"); }
+    } else if (pendingRoleAction === "login") {
+      resetLoginForm();
+      openModal("loginModal");
+      formMsg("liMsg",
+        role === "student" ? "Signing in as a Student 🎓" : "Signing in as a Teacher 👨‍🏫",
+        "success");
+    }
+    pendingRoleAction = null;
   });
 
-  $("#drawerSignup").addEventListener("click", () => startRoleFlow("signup"));
-  $("#drawerLogin").addEventListener("click", () => startRoleFlow("login"));
-  $("#heroSignup").addEventListener("click", () => startRoleFlow("signup"));
+  $("#drawerSignup").addEventListener("click", function () { startRoleFlow("signup"); });
+  $("#drawerLogin").addEventListener("click", function () { startRoleFlow("login"); });
+  $("#heroSignup").addEventListener("click", function () { startRoleFlow("signup"); });
 
-  $("#suToLogin").addEventListener("click", () => {
+  $("#suToLogin").addEventListener("click", function (e) {
+    e.preventDefault();
     closeModal("studentModal"); resetLoginForm(); openModal("loginModal");
   });
-  $("#tuToLogin").addEventListener("click", () => {
+  $("#tuToLogin").addEventListener("click", function (e) {
+    e.preventDefault();
     closeModal("teacherModal"); resetLoginForm(); openModal("loginModal");
   });
-  $("#liToSignup").addEventListener("click", () => {
+  $("#liToSignup").addEventListener("click", function (e) {
+    e.preventDefault();
     closeModal("loginModal"); startRoleFlow("signup");
   });
-  $("#forgotLink").addEventListener("click", () => {
+  $("#forgotLink").addEventListener("click", function (e) {
+    e.preventDefault();
     closeModal("loginModal");
     $("#fpEmail").value = $("#liEmail").value.trim();
     clearMsg("fpMsg");
     openModal("forgotModal");
   });
 
-  /* ==========================================================
-     RESET FORMS
-     ========================================================== */
+  /* ---------- FORM RESET ---------- */
   function resetStudentForm() {
     const f = $("#studentForm");
     f.reset();
@@ -2249,22 +2214,18 @@ table.tt tr:last-child td{border-bottom:none;}
     clearMsg("liMsg");
   }
 
-  /* ==========================================================
-     INIT STATIC SELECTS
-     ========================================================== */
+  /* ---------- INIT STATIC SELECTS ---------- */
   fillCourseSelect($("#suCourse"), "Select your course");
   fillCourseSelect($("#cmpCourse"), "Select course / class");
   fillCourseSelect($("#tuClassTeacher"), "Not a class teacher", true);
   fillCourseSelect($("#ttCourse"), "Select course");
   renderTeacherClassCheckboxes($("#tuClasses"));
 
-  /* ==========================================================
-     PHOTO UPLOADS
-     ========================================================== */
+  /* ---------- PHOTO UPLOADS ---------- */
   $("#suPhoto").addEventListener("change", function () {
     const file = this.files && this.files[0];
     if (!file) return;
-    readAndResizeImage(file, 260, (dataUrl) => {
+    readAndResizeImage(file, 260, function (dataUrl) {
       $("#studentForm").dataset.photo = dataUrl;
       setPreview($("#suPreview"), dataUrl);
     });
@@ -2273,7 +2234,7 @@ table.tt tr:last-child td{border-bottom:none;}
   $("#tuPhoto").addEventListener("change", function () {
     const file = this.files && this.files[0];
     if (!file) return;
-    readAndResizeImage(file, 260, (dataUrl) => {
+    readAndResizeImage(file, 260, function (dataUrl) {
       $("#teacherForm").dataset.photo = dataUrl;
       setPreview($("#tuPreview"), dataUrl);
     });
@@ -2282,15 +2243,13 @@ table.tt tr:last-child td{border-bottom:none;}
   $("#itPhoto").addEventListener("change", function () {
     const file = this.files && this.files[0];
     if (!file) return;
-    readAndResizeImage(file, 800, (dataUrl) => {
+    readAndResizeImage(file, 800, function (dataUrl) {
       $("#itemForm").dataset.photo = dataUrl;
       setPreview($("#itPreview"), dataUrl);
     });
   });
 
-  /* ==========================================================
-     STUDENT SIGNUP
-     ========================================================== */
+  /* ---------- STUDENT SIGNUP ---------- */
   $("#studentForm").addEventListener("submit", function (e) {
     e.preventDefault();
     clearMsg("suMsg");
@@ -2319,8 +2278,9 @@ table.tt tr:last-child td{border-bottom:none;}
 
     const user = {
       id: "USR" + Date.now().toString(36).toUpperCase(),
-      role: "student", fullName, phone, collegeId, email, password,
-      course, section, photo, createdAt: new Date().toISOString()
+      role: "student", fullName: fullName, phone: phone, collegeId: collegeId,
+      email: email, password: password, course: course, section: section,
+      photo: photo, createdAt: new Date().toISOString()
     };
 
     const users = getUsers();
@@ -2329,7 +2289,7 @@ table.tt tr:last-child td{border-bottom:none;}
 
     formMsg("suMsg", "Account created successfully! Signing you in…", "success");
 
-    setTimeout(() => {
+    setTimeout(function () {
       saveSession(user, true);
       closeModal("studentModal");
       updateAuthUI();
@@ -2339,9 +2299,7 @@ table.tt tr:last-child td{border-bottom:none;}
     }, 700);
   });
 
-  /* ==========================================================
-     TEACHER SIGNUP
-     ========================================================== */
+  /* ---------- TEACHER SIGNUP ---------- */
   $("#teacherForm").addEventListener("submit", function (e) {
     e.preventDefault();
     clearMsg("tuMsg");
@@ -2356,7 +2314,7 @@ table.tt tr:last-child td{border-bottom:none;}
     const classTeacherOf = $("#tuClassTeacher").value || "";
     const photo = this.dataset.photo || "";
     const terms = $("#tuTerms").checked;
-    const classes = $$('input[name="tu-classes"]:checked').map((cb) => cb.value);
+    const classes = $$('input[name="tu-classes"]:checked').map(function (cb) { return cb.value; });
 
     if (!fullName || fullName.length < 3) return formMsg("tuMsg", "Please enter your full name (min 3 characters).", "error");
     if (!phoneRe.test(phone)) return formMsg("tuMsg", "Please enter a valid phone number (10–15 digits).", "error");
@@ -2371,9 +2329,10 @@ table.tt tr:last-child td{border-bottom:none;}
 
     const user = {
       id: "USR" + Date.now().toString(36).toUpperCase(),
-      role: "teacher", fullName, phone, employeeId: empId, email, password,
-      designation, department, classes, classTeacherOf, photo,
-      createdAt: new Date().toISOString()
+      role: "teacher", fullName: fullName, phone: phone, employeeId: empId,
+      email: email, password: password, designation: designation,
+      department: department, classes: classes, classTeacherOf: classTeacherOf,
+      photo: photo, createdAt: new Date().toISOString()
     };
 
     const users = getUsers();
@@ -2382,7 +2341,7 @@ table.tt tr:last-child td{border-bottom:none;}
 
     formMsg("tuMsg", "Account created successfully! Signing you in…", "success");
 
-    setTimeout(() => {
+    setTimeout(function () {
       saveSession(user, true);
       closeModal("teacherModal");
       updateAuthUI();
@@ -2392,9 +2351,7 @@ table.tt tr:last-child td{border-bottom:none;}
     }, 700);
   });
 
-  /* ==========================================================
-     LOGIN
-     ========================================================== */
+  /* ---------- LOGIN ---------- */
   $("#loginForm").addEventListener("submit", function (e) {
     e.preventDefault();
     clearMsg("liMsg");
@@ -2419,9 +2376,7 @@ table.tt tr:last-child td{border-bottom:none;}
     showDashboard();
   });
 
-  /* ==========================================================
-     FORGOT PASSWORD
-     ========================================================== */
+  /* ---------- FORGOT PASSWORD ---------- */
   $("#forgotForm").addEventListener("submit", function (e) {
     e.preventDefault();
     clearMsg("fpMsg");
@@ -2435,16 +2390,17 @@ table.tt tr:last-child td{border-bottom:none;}
     if (pass !== confirm) return formMsg("fpMsg", "Passwords do not match.", "error");
 
     const users = getUsers();
-    const idx = users.findIndex((u) => u.email === email);
+    const idx = users.findIndex(function (u) { return u.email === email; });
     if (idx === -1) return formMsg("fpMsg", "No account found with this email.", "error");
 
     users[idx].password = pass;
     saveUsers(users);
 
     formMsg("fpMsg", "Password updated! You can now sign in.", "success");
-    setTimeout(() => {
+    const self = this;
+    setTimeout(function () {
       closeModal("forgotModal");
-      this.reset();
+      self.reset();
       clearMsg("fpMsg");
       resetLoginForm();
       $("#liEmail").value = email;
@@ -2452,9 +2408,7 @@ table.tt tr:last-child td{border-bottom:none;}
     }, 1200);
   });
 
-  /* ==========================================================
-     LOGOUT
-     ========================================================== */
+  /* ---------- LOGOUT ---------- */
   function logout() {
     clearSession();
     updateAuthUI();
@@ -2464,11 +2418,11 @@ table.tt tr:last-child td{border-bottom:none;}
   }
 
   $("#drawerLogout").addEventListener("click", logout);
-  $("#headerUser").addEventListener("click", () => {
+  $("#headerUser").addEventListener("click", function () {
     if (getSession()) showDashboard();
   });
 
-  $("#drawerDash").addEventListener("click", (e) => {
+  $("#drawerDash").addEventListener("click", function (e) {
     e.preventDefault();
     closeDrawer();
     if (!getSession()) {
@@ -2479,9 +2433,7 @@ table.tt tr:last-child td{border-bottom:none;}
     showDashboard();
   });
 
-  /* ==========================================================
-     COMPLAINTS
-     ========================================================== */
+  /* ---------- COMPLAINTS ---------- */
   function getComplaints() { return readLS(K.complaints, []); }
   function saveComplaints(list) { writeLS(K.complaints, list); }
 
@@ -2526,8 +2478,9 @@ table.tt tr:last-child td{border-bottom:none;}
 
     const complaint = {
       id: "CMP" + Date.now().toString(36).toUpperCase(),
-      name, email, course, section, category, priority,
-      description: desc, status: "Pending",
+      name: name, email: email, course: course, section: section,
+      category: category, priority: priority, description: desc,
+      status: "Pending",
       userEmail: session ? session.email : email,
       createdAt: new Date().toISOString()
     };
@@ -2538,7 +2491,8 @@ table.tt tr:last-child td{border-bottom:none;}
 
     if (priority === "Emergency") {
       addAlert({
-        type: "Emergency Complaint", name, email, course, section,
+        type: "Emergency Complaint", name: name, email: email,
+        course: course, section: section,
         message: category + " — " + desc.slice(0, 120),
         createdAt: new Date().toISOString()
       });
@@ -2554,9 +2508,7 @@ table.tt tr:last-child td{border-bottom:none;}
     refreshDashboard();
   });
 
-  /* ==========================================================
-     ALERTS + SOS
-     ========================================================== */
+  /* ---------- ALERTS + SOS ---------- */
   function addAlert(alert) {
     alert.id = alert.id || "ALT" + Date.now().toString(36).toUpperCase();
     const list = getAlerts();
@@ -2580,407 +2532,4 @@ table.tt tr:last-child td{border-bottom:none;}
       course: user && user.course ? user.course : "",
       section: user && user.section ? user.section : "",
       message: "SOS triggered from the CampusOne app.",
-      createdAt: new Date().toISOString()
-    });
-
-    toast("🚨 SOS alert sent to campus security!", "error", 5000);
-  }
-
-  $("#sosBtn").addEventListener("click", triggerSOS);
-  $("#quickSos").addEventListener("click", triggerSOS);
-
-  /* ==========================================================
-     LOST & FOUND
-     ========================================================== */
-  const DEFAULT_ITEMS = [
-    {
-      id: "LF1", type: "lost", name: "Black Leather Wallet",
-      category: "Other", location: "Canteen, near counter 2",
-      date: "2025-01-12", description: "Black leather wallet with a blue stripe. Contains my ID card and library card.",
-      photo: "", reporter: "aarav@college.edu", createdAt: "2025-01-12T10:20:00.000Z"
-    },
-    {
-      id: "LF2", type: "found", name: "Blue Water Bottle",
-      category: "Water Bottle", location: "Lab 204, under desk",
-      date: "2025-01-13", description: "Blue Milton bottle with a small dent near the cap. Found after the chemistry lab.",
-      photo: "", reporter: "meera@college.edu", createdAt: "2025-01-13T14:05:00.000Z"
-    },
-    {
-      id: "LF3", type: "lost", name: "College ID Card",
-      category: "ID Card", location: "Library, 2nd Floor",
-      date: "2025-01-14", description: "Student ID card. Name: Rohan Verma. BCA 2nd Year, Section B.",
-      photo: "", reporter: "rohan@college.edu", createdAt: "2025-01-14T09:00:00.000Z"
-    },
-    {
-      id: "LF4", type: "found", name: "Wireless Earbuds (White)",
-      category: "Electronics", location: "Auditorium, Row 7",
-      date: "2025-01-15", description: "White TWS earbuds in a charging case. Brand appears to be boAt.",
-      photo: "", reporter: "sara@college.edu", createdAt: "2025-01-15T17:40:00.000Z"
-    }
-  ];
-
-  function getItems() {
-    let items = readLS(K.items, null);
-    if (!items || !Array.isArray(items)) {
-      items = DEFAULT_ITEMS.slice();
-      writeLS(K.items, items);
-    }
-    return items;
-  }
-  function saveItems(list) { writeLS(K.items, list); }
-
-  function aiMatchScore(item) {
-    let hash = 0;
-    const s = String(item.id || "") + String(item.name || "");
-    for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) % 100000;
-    const base = 62 + (hash % 34);
-    return Math.min(98, base);
-  }
-
-  let lfFilter = "all";
-
-  function renderItems() {
-    const grid = $("#lfGrid");
-    if (!grid) return;
-
-    const q = ($("#lfSearch").value || "").trim().toLowerCase();
-    const cat = $("#lfCategory").value;
-
-    let items = getItems();
-
-    if (lfFilter !== "all") items = items.filter((i) => i.type === lfFilter);
-    if (cat) items = items.filter((i) => i.category === cat);
-    if (q) {
-      items = items.filter((i) =>
-        (i.name || "").toLowerCase().indexOf(q) !== -1 ||
-        (i.location || "").toLowerCase().indexOf(q) !== -1 ||
-        (i.description || "").toLowerCase().indexOf(q) !== -1
-      );
-    }
-
-    if (items.length === 0) {
-      grid.innerHTML =
-        '<div class="empty" style="grid-column:1/-1;">' +
-          '<span class="e-emoji">🔍</span>' +
-          "No items match your search. Try a different filter." +
-        "</div>";
-      return;
-    }
-
-    grid.innerHTML = items.map((item) => {
-      const isLost = item.type === "lost";
-      const badgeClass = isLost ? "lost" : "found";
-      const badgeText = isLost ? "LOST" : "FOUND";
-      const score = aiMatchScore(item);
-      const btnLabel = isLost ? "This is Mine" : "I Found This";
-      const emoji = {
-        "Electronics": "🎧", "ID Card": "🪪", "Books / Notes": "📚",
-        "Bag / Backpack": "🎒", "Clothing": "👕", "Keys": "🔑",
-        "Water Bottle": "🚰", "Jewellery": "💍", "Other": "📦"
-      }[item.category] || "📦";
-
-      const thumb = item.photo
-        ? '<img src="' + esc(item.photo) + '" alt="">'
-        : emoji;
-
-      return (
-        '<div class="item-card">' +
-          '<div class="item-thumb">' +
-            thumb +
-            '<div class="item-badges">' +
-              '<span class="badge-lf ' + badgeClass + '">' + badgeText + "</span>" +
-              '<span class="badge-ai">🤖 ' + score + "% match</span>" +
-            "</div>" +
-          "</div>" +
-          '<div class="item-body">' +
-            '<div class="item-name">' + esc(item.name) + "</div>" +
-            '<div class="item-info">' +
-              "<span>📍 " + esc(item.location) + "</span>" +
-              "<span>🗓️ " + esc(formatDate(item.date)) + "</span>" +
-              "<span>🏷️ " + esc(item.category) + "</span>" +
-            "</div>" +
-            '<div class="item-actions-row">' +
-              '<button class="btn btn-primary btn-sm" data-claim="' + esc(item.id) + '">' + btnLabel + "</button>" +
-              '<button class="btn btn-ghost btn-sm" data-detail="' + esc(item.id) + '">Details</button>' +
-            "</div>" +
-          "</div>" +
-        "</div>"
-      );
-    }).join("");
-  }
-
-  function formatDate(d) {
-    if (!d) return "—";
-    const dt = new Date(d);
-    if (isNaN(dt.getTime())) return d;
-    return dt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
-  }
-
-  // Filters
-  $$("#lfFilters .chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      $$("#lfFilters .chip").forEach((c) => c.classList.remove("active"));
-      chip.classList.add("active");
-      lfFilter = chip.getAttribute("data-filter");
-      renderItems();
-    });
-  });
-
-  $("#lfSearch").addEventListener("input", renderItems);
-  $("#lfCategory").addEventListener("change", renderItems);
-
-  // Report new item
-  $("#lfAddBtn").addEventListener("click", () => {
-    resetItemForm();
-    const today = new Date().toISOString().slice(0, 10);
-    $("#itDate").value = today;
-    openModal("itemModal");
-  });
-
-  function resetItemForm() {
-    const f = $("#itemForm");
-    f.reset();
-    clearMsg("itMsg");
-    $("#itPreview").innerHTML = "🖼️";
-    f.dataset.photo = "";
-  }
-
-  $("#itemForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    clearMsg("itMsg");
-
-    const type = ($$('input[name="itType"]').find((r) => r.checked) || {}).value || "lost";
-    const name = $("#itName").value.trim();
-    const category = $("#itCategory").value;
-    const location = $("#itLocation").value.trim();
-    const date = $("#itDate").value;
-    const description = $("#itDesc").value.trim();
-    const photo = this.dataset.photo || "";
-
-    if (!name) return formMsg("itMsg", "Please enter the item name.", "error");
-    if (!category) return formMsg("itMsg", "Please select a category.", "error");
-    if (!location) return formMsg("itMsg", "Please enter the location.", "error");
-    if (!date) return formMsg("itMsg", "Please select the date.", "error");
-    if (description.length < 5) return formMsg("itMsg", "Please add a short description.", "error");
-
-    const session = getSession();
-
-    const item = {
-      id: "LF" + Date.now().toString(36).toUpperCase(),
-      type, name, category, location, date, description, photo,
-      reporter: session ? session.email : "anonymous@college.edu",
-      createdAt: new Date().toISOString()
-    };
-
-    const list = getItems();
-    list.unshift(item);
-    saveItems(list);
-
-    formMsg("itMsg", "Item posted successfully!", "success");
-    toast("Item reported ✅", "success");
-
-    setTimeout(() => {
-      closeModal("itemModal");
-      renderItems();
-    }, 600);
-  });
-
-  // Claim / Details
-  $("#lfGrid").addEventListener("click", (e) => {
-    const claimBtn = e.target.closest("[data-claim]");
-    const detailBtn = e.target.closest("[data-detail]");
-
-    if (claimBtn) {
-      const id = claimBtn.getAttribute("data-claim");
-      const item = getItems().find((i) => i.id === id);
-      if (!item) return;
-      toast("📩 Request sent for \"" + item.name + "\". The reporter will contact you.", "success", 4200);
-      return;
-    }
-
-    if (detailBtn) {
-      const id = detailBtn.getAttribute("data-detail");
-      const item = getItems().find((i) => i.id === id);
-      if (!item) return;
-      window.alert(
-        "📦 " + item.name + "\n\n" +
-        "Type: " + item.type.toUpperCase() + "\n" +
-        "Category: " + item.category + "\n" +
-        "Location: " + item.location + "\n" +
-        "Date: " + formatDate(item.date) + "\n" +
-        "AI Match: " + aiMatchScore(item) + "%\n\n" +
-        "Description:\n" + item.description
-      );
-    }
-  });
-
-  /* ==========================================================
-     SUKOON AI
-     ========================================================== */
-  const chatBody = $("#chatBody");
-  const chatInput = $("#chatInput");
-
-  const CRISIS_WORDS = ["suicide", "kill myself", "end my life", "self harm", "self-harm", "want to die", "no reason to live"];
-
-  const RESPONSES = {
-    stress: "I hear you — stress can feel really heavy. 💙\n\nTry the 4-7-8 breathing technique:\n• Breathe in for 4 seconds\n• Hold for 7 seconds\n• Breathe out for 8 seconds\n\nRepeat 4 times. It slows your heart rate and calms your nervous system. You've got this.",
-    sleep: "Sleep troubles are really common during college. 🌙\n\nA few things that genuinely help:\n• Put your phone away 30 minutes before bed\n• Keep your room cool and dark\n• Avoid caffeine after 4 PM\n• Try writing down tomorrow's tasks so your mind can let go\n\nIf it persists for weeks, please talk to a counsellor.",
-    exam: "Exam pressure is real, and it doesn't mean you're failing. 📚\n\nTry this:\n• Break your syllabus into small daily chunks\n• Use the Pomodoro method — 25 min focus, 5 min break\n• Teach a topic aloud to test yourself\n• Sleep is a study tool, not a waste of time\n\nYou are more than your marks. 💙",
-    lonely: "Feeling lonely is painful, and it's okay to admit it. 🤝\n\nYou're not alone in feeling this way — many students do.\n\nTry:\n• Message one old friend today, even just \"hey\"\n• Join one club or study group this week\n• Sit in a common area instead of your room\n\nAnd remember — Sukoon is always here to listen.",
-    anxious: "Anxiety can make everything feel urgent. 🌿\n\nGround yourself with the 5-4-3-2-1 technique:\n• 5 things you can see\n• 4 things you can touch\n• 3 things you can hear\n• 2 things you can smell\n• 1 thing you can taste\n\nThis pulls your mind back to the present. You're safe right now.",
-    sad: "I'm sorry you're feeling this way. 💙\n\nSadness is valid, and it doesn't need to be fixed immediately.\n\nBe gentle with yourself today:\n• Drink some water\n• Step outside for 5 minutes\n• Talk to someone you trust\n\nIf this feeling lasts more than two weeks, please reach out to a counsellor. You deserve support.",
-    default: "Thank you for sharing that with me. 💙\n\nI'm here to listen. Can you tell me a bit more about what's going on?\n\nYou can also try one of the quick replies below, or type how you're feeling."
-  };
-
-  function detectCrisis(text) {
-    const lower = text.toLowerCase();
-    return CRISIS_WORDS.some((w) => lower.indexOf(w) !== -1);
-  }
-
-  function getResponse(text) {
-    const lower = text.toLowerCase();
-    if (/(stress|stressed|overwhelm|pressure|too much)/.test(lower)) return RESPONSES.stress;
-    if (/(sleep|insomnia|can't sleep|cannot sleep|awake|tired)/.test(lower)) return RESPONSES.sleep;
-    if (/(exam|test|study|marks|grades|result|fail)/.test(lower)) return RESPONSES.exam;
-    if (/(lonely|alone|no friends|isolated|left out)/.test(lower)) return RESPONSES.lonely;
-    if (/(anxious|anxiety|panic|nervous|worried)/.test(lower)) return RESPONSES.anxious;
-    if (/(sad|depress|down|cry|hopeless|empty)/.test(lower)) return RESPONSES.sad;
-    return RESPONSES.default;
-  }
-
-  function addBubble(text, who) {
-    const div = document.createElement("div");
-    div.className = "bubble " + who;
-    div.textContent = text;
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
-
-  function addCrisisAlert() {
-    const div = document.createElement("div");
-    div.className = "crisis-alert";
-    div.innerHTML =
-      '<div class="ct">🚨 You are not alone</div>' +
-      "<p>What you're feeling is serious, and you deserve immediate support. Please reach out right now — talking to someone can make a real difference.</p>" +
-      '<span class="helpline">📞 KIRAN Helpline · 1800-599-0019<small>Free · 24/7 · Confidential · Govt. of India</small></span>' +
-      '<span class="helpline">📞 AASRA · 9820466726<small>24/7 Crisis Support</small></span>' +
-      "<p style='margin-bottom:0;'>If you are in immediate danger, please call <b>112</b> or go to your nearest emergency room.</p>";
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
-
-  function showTyping() {
-    const div = document.createElement("div");
-    div.className = "bubble bot typing";
-    div.id = "typingIndicator";
-    div.innerHTML = "<span></span><span></span><span></span>";
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-    return div;
-  }
-
-  function sendMessage(text) {
-    const msg = String(text || "").trim();
-    if (!msg) return;
-
-    addBubble(msg, "user");
-    chatInput.value = "";
-
-    if (detectCrisis(msg)) {
-      const typing = showTyping();
-      setTimeout(() => {
-        typing.remove();
-        addCrisisAlert();
-        saveChatHistory();
-      }, 900);
-      return;
-    }
-
-    const typing = showTyping();
-    setTimeout(() => {
-      typing.remove();
-      addBubble(getResponse(msg), "bot");
-      saveChatHistory();
-    }, 850 + Math.random() * 500);
-  }
-
-  function saveChatHistory() {
-    const bubbles = $$(".bubble", chatBody).slice(-40).map((b) => ({
-      who: b.classList.contains("user") ? "user" : "bot",
-      text: b.textContent
-    }));
-    writeLS(K.chat, bubbles);
-  }
-
-  function loadChatHistory() {
-    const history = readLS(K.chat, null);
-    if (history && history.length) {
-      history.forEach((m) => addBubble(m.text, m.who));
-      return true;
-    }
-    return false;
-  }
-
-  function initChat() {
-    const had = loadChatHistory();
-    if (!had) {
-      addBubble(
-        "Hi, I'm Sukoon 🧠\n\nI'm here to listen — no judgement, no records, completely private.\n\nHow are you feeling today?",
-        "bot"
-      );
-    }
-  }
-
-  $("#chatSend").addEventListener("click", () => sendMessage(chatInput.value));
-  chatInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); sendMessage(chatInput.value); }
-  });
-
-  $$(".qr").forEach((btn) => {
-    btn.addEventListener("click", () => sendMessage(btn.getAttribute("data-msg")));
-  });
-
-  /* ==========================================================
-     MOOD TRACKER
-     ========================================================== */
-  function todayKey() {
-    const d = new Date();
-    return d.getFullYear() + "-" +
-      String(d.getMonth() + 1).padStart(2, "0") + "-" +
-      String(d.getDate()).padStart(2, "0");
-  }
-
-  function getMoods() { return readLS(K.moods, {}); }
-
-  function setMood(value) {
-    const moods = getMoods();
-    moods[todayKey()] = value;
-    writeLS(K.moods, moods);
-    renderMoodChart();
-    renderMoodSelection();
-    toast("Mood saved for today 💙", "success");
-  }
-
-  function renderMoodSelection() {
-    const moods = getMoods();
-    const today = moods[todayKey()];
-    $$("#moodRow .mood-btn").forEach((b) => {
-      b.classList.toggle("selected", Number(b.getAttribute("data-mood")) === today);
-    });
-  }
-
-  function renderMoodChart() {
-    const chart = $("#moodChart");
-    if (!chart) return;
-
-    const moods = getMoods();
-    const emojis = { 5: "😊", 4: "😐", 3: "😔", 2: "😢", 1: "😡" };
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-    let html = "";
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-
-      const key = d.getFullYear() + "-" +
-        String(d.getMonth() + 1).padStart(
+      createdAt

@@ -27,7 +27,7 @@
   --shadow:0 18px 40px rgba(25,50,110,.13);
 }
 html,body{overflow-x:hidden;width:100%;max-width:100%;}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:130px;}
 body{
   font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
   background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;
@@ -50,11 +50,25 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 }
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
-/* HEADER */
+/* ============================================================
+   HEADER (STICKY + SCROLL SHADOW)
+   ============================================================ */
 .header{
-  position:sticky;top:0;z-index:90;
-  background:var(--header-bg);backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+  position:-webkit-sticky;
+  position:sticky;
+  top:0;z-index:90;
+  background:var(--header-bg);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .25s ease,background .3s ease,border-color .3s ease;
+  will-change:box-shadow;
+}
+.header.scrolled{
+  box-shadow:0 6px 22px rgba(0,0,0,.38);
+  border-bottom-color:transparent;
+}
+[data-theme="light"] .header.scrolled{
+  box-shadow:0 6px 22px rgba(25,50,110,.12);
 }
 .header-inner{display:flex;align-items:center;justify-content:space-between;height:60px;gap:10px;}
 .brand{display:flex;align-items:center;gap:10px;flex:none;cursor:pointer;background:none;border:none;color:inherit;font:inherit;}
@@ -149,7 +163,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .notif-empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13.5px;}
 .notif-empty .e-emoji{font-size:32px;display:block;margin-bottom:10px;opacity:.7;}
 
-/* TABBAR */
+/* TABBAR (inside sticky header) */
 .tabbar{
   display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;
   scrollbar-width:none;-ms-overflow-style:none;
@@ -287,11 +301,11 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .field .req{color:var(--danger);}
 input[type="text"],input[type="email"],input[type="tel"],input[type="password"],
 input[type="number"],input[type="date"],select,textarea{
-  width:100%;font-size:16px;font-family:inherit;
+  width:100%;max-width:100%;font-size:16px;font-family:inherit;
   padding:12px 14px;border-radius:13px;
   border:1px solid var(--border);background:var(--input-bg);color:var(--text);
   outline:none;transition:border-color .2s,box-shadow .2s;
-  -webkit-appearance:none;appearance:none;max-width:100%;
+  -webkit-appearance:none;appearance:none;
 }
 textarea{resize:vertical;min-height:100px;line-height:1.55;}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75;}
@@ -423,8 +437,14 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 .bar-col .bd{font-size:10.5px;color:var(--muted);font-weight:700;white-space:nowrap;}
 .bar-col .be{font-size:14px;line-height:1;min-height:16px;}
 
-/* SCHEDULE */
-.sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+/* ============================================================
+   SCHEDULE (FIXED OVERFLOW)
+   ============================================================ */
+.sched-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;
+  min-width:0;
+}
+.sched-grid > .panel{min-width:0;overflow:hidden;}
 .plan-list{display:flex;flex-direction:column;gap:11px;margin-top:16px;}
 .plan-day{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--bg-soft);}
 .plan-day .pd-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;flex-wrap:wrap;}
@@ -433,12 +453,159 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 .plan-day ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
 .plan-day li{font-size:13.5px;display:flex;align-items:center;gap:9px;color:var(--text);opacity:.9;line-height:1.45;}
 .plan-day li::before{content:"";width:6px;height:6px;border-radius:50%;flex:none;background:linear-gradient(135deg,var(--primary),var(--primary-2));}
-.tt-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:16px;border-radius:14px;border:1px solid var(--border);}
-table.tt{width:100%;border-collapse:collapse;min-width:620px;font-size:12.5px;}
-table.tt th,table.tt td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
-table.tt th{background:var(--bg-soft);font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
-table.tt td:first-child{font-weight:800;color:var(--primary);}
+
+/* Timetable: swipe hint (mobile only) */
+.tt-hint-swipe{
+  display:none;
+  margin-top:14px;
+  padding:9px 14px;
+  font-size:12.5px;font-weight:700;
+  color:var(--primary);
+  text-align:center;
+  background:rgba(79,124,255,.1);
+  border:1px dashed rgba(79,124,255,.4);
+  border-radius:11px;
+  animation:swipeHintPulse 2.4s ease-in-out infinite;
+}
+@keyframes swipeHintPulse{
+  0%,100%{transform:translateX(0);opacity:.85;}
+  50%{transform:translateX(4px);opacity:1;}
+}
+
+/* Timetable desktop table */
+.tt-scroll{
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+  margin-top:12px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+.tt-scroll::-webkit-scrollbar{height:8px;}
+.tt-scroll::-webkit-scrollbar-track{background:transparent;}
+.tt-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.tt-scroll::-webkit-scrollbar-thumb:hover{background:var(--primary);}
+
+table.tt{
+  width:100%;border-collapse:separate;border-spacing:0;
+  min-width:820px;font-size:12.5px;
+}
+table.tt th{
+  background:var(--bg-soft);font-weight:800;
+  font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--muted);padding:11px 12px;text-align:left;
+  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+  white-space:nowrap;
+}
+table.tt th:last-child{border-right:none;}
+table.tt td{
+  padding:10px 12px;text-align:left;
+  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+  white-space:nowrap;
+  font-weight:700;font-size:12px;
+  transition:transform .15s;
+}
+table.tt td:last-child{border-right:none;}
 table.tt tr:last-child td{border-bottom:none;}
+table.tt td:first-child{
+  font-weight:800;color:var(--primary);
+  background:var(--bg-soft);font-size:11.5px;
+  font-variant-numeric:tabular-nums;
+}
+table.tt tr.tt-lunch td{
+  background:rgba(255,176,32,.06);
+  color:var(--muted);font-style:italic;
+  text-align:center;font-weight:800;font-size:11.5px;
+  letter-spacing:.5px;
+}
+table.tt tr.tt-lunch td:first-child{
+  background:rgba(255,176,32,.1);color:var(--warn);font-style:normal;
+}
+
+/* Subject color classes */
+.subject-1{background:rgba(124,92,255,.16);color:#a893ff;}
+.subject-2{background:rgba(79,124,255,.16);color:#82a3ff;}
+.subject-3{background:rgba(34,201,138,.16);color:#4de0a3;}
+.subject-4{background:rgba(255,176,32,.16);color:#ffc153;}
+.subject-5{background:rgba(255,77,109,.16);color:#ff7a94;}
+.subject-6{background:rgba(18,165,184,.16);color:#4cc4da;}
+.subject-7{background:rgba(255,122,60,.16);color:#ffa06c;}
+.subject-8{background:rgba(124,197,118,.2);color:#8ed888;}
+
+[data-theme="light"] .subject-1{background:rgba(124,92,255,.13);color:#5b3fd4;}
+[data-theme="light"] .subject-2{background:rgba(79,124,255,.13);color:#2e5bd8;}
+[data-theme="light"] .subject-3{background:rgba(34,201,138,.15);color:#0e8a5c;}
+[data-theme="light"] .subject-4{background:rgba(255,176,32,.18);color:#9c6200;}
+[data-theme="light"] .subject-5{background:rgba(255,77,109,.13);color:#c92447;}
+[data-theme="light"] .subject-6{background:rgba(18,165,184,.13);color:#0b6d7a;}
+[data-theme="light"] .subject-7{background:rgba(255,122,60,.13);color:#b44b12;}
+[data-theme="light"] .subject-8{background:rgba(124,197,118,.22);color:#397c36;}
+
+/* Timetable mobile cards */
+.tt-cards{
+  display:none;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  gap:12px;
+  padding:4px 2px 12px;
+  margin-top:12px;
+  scrollbar-width:none;
+}
+.tt-cards::-webkit-scrollbar{display:none;}
+.tt-card{
+  flex:0 0 100%;
+  scroll-snap-align:center;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px 14px;
+  min-width:0;
+}
+.tt-card-day{
+  font-size:16px;font-weight:800;letter-spacing:-.2px;
+  margin-bottom:14px;padding-bottom:12px;
+  border-bottom:2px solid var(--border);
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;text-transform:uppercase;
+}
+.tt-card-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;
+  border-bottom:1px dashed var(--border);
+}
+.tt-card-row:last-child{border-bottom:none;}
+.tt-card-time{
+  font-size:11.5px;font-weight:800;
+  color:var(--primary);
+  min-width:88px;flex-shrink:0;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.2px;
+}
+.tt-card-subj{
+  font-size:12.5px;font-weight:700;
+  padding:6px 12px;border-radius:9px;
+  flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-align:center;
+}
+.tt-card-row.tt-lunch-row .tt-card-subj{
+  background:rgba(255,176,32,.1);
+  color:var(--warn);
+  font-style:italic;
+}
+
+/* Timetable action buttons */
+.tt-actions{
+  display:flex;gap:10px;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+.tt-action-btn{flex:1 1 140px;justify-content:center;}
 
 /* DASHBOARD */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
@@ -573,7 +740,9 @@ table.tt tr:last-child td{border-bottom:none;}
 .radio-pill input{accent-color:var(--primary);cursor:pointer;width:16px;height:16px;}
 .radio-pill:has(input:checked){border-color:var(--primary);background:rgba(79,124,255,.13);}
 
-/* RESPONSIVE */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width:980px){
   .quick-grid{grid-template-columns:repeat(3,1fr);}
   .steps{grid-template-columns:repeat(2,1fr);}
@@ -582,6 +751,7 @@ table.tt tr:last-child td{border-bottom:none;}
   .chat-panel{height:520px;}
 }
 @media (max-width:720px){
+  html{scroll-padding-top:120px;}
   .grid-2{grid-template-columns:1fr;}
   .stats{grid-template-columns:1fr 1fr;}
   .hero{padding:38px 0 26px;}
@@ -598,7 +768,12 @@ table.tt tr:last-child td{border-bottom:none;}
   .items-grid{grid-template-columns:1fr;}
   .footer{padding-bottom:120px;}
 
-  /* MOBILE: full-width notification panel below header */
+  /* Show swipe hint, hide desktop table, show mobile cards */
+  .tt-hint-swipe{display:block;}
+  .tt-scroll{display:none;}
+  .tt-cards{display:flex;}
+
+  /* Notification dropdown full-width */
   .notif-dropdown{
     top:60px;left:0;right:0;
     width:100%;max-width:100%;
@@ -625,6 +800,7 @@ table.tt tr:last-child td{border-bottom:none;}
   .sos-btn{width:60px;height:60px;font-size:12px;}
   .steps{grid-template-columns:1fr;}
   .hero-actions .btn{width:100%;}
+  .tt-action-btn{flex:1 1 100%;}
 }
 </style>
 </head>
@@ -632,7 +808,7 @@ table.tt tr:last-child td{border-bottom:none;}
 <body>
 
 <!-- HEADER -->
-<header class="header">
+<header class="header" id="siteHeader">
   <div class="wrap header-inner">
     <button type="button" class="brand" data-view="home" aria-label="Home">
       <span class="brand-mark">C1</span>
@@ -875,9 +1051,12 @@ table.tt tr:last-child td{border-bottom:none;}
           <button type="button" class="btn btn-primary btn-block" id="spGenerate">Generate Study Plan</button>
           <div class="plan-list" id="planList"></div>
         </div>
+
         <div class="panel">
           <div class="panel-title">🗓️ Timetable Generator</div>
-          <p style="font-size:13.5px;color:var(--muted);line-height:1.6;">Generate a demo weekly class timetable based on your course.</p>
+          <p style="font-size:13.5px;color:var(--muted);line-height:1.6;">
+            Generate a demo weekly class timetable. 6 days · 7 slots per day.
+          </p>
           <div class="field" style="margin-top:14px;">
             <label for="ttCourse">Course / Class</label>
             <select id="ttCourse"></select>
@@ -1142,7 +1321,6 @@ document.addEventListener("DOMContentLoaded", function () {
     chat: "campusone_chat", theme: "campusone_theme",
     notifRead: "campusone_notif_read"
   };
-
   function readLS(key, fallback) {
     try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }
     catch (e) { return fallback; }
@@ -1169,7 +1347,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* =========================================================
-     NOTIFICATIONS — HARDCODED SAMPLES + READ STATE
+     FIX 1 — STICKY HEADER SHADOW
+     ========================================================= */
+  const siteHeader = $("#siteHeader");
+  let lastScrollTop = 0;
+  function updateHeaderShadow() {
+    const y = window.scrollY || window.pageYOffset || 0;
+    if (y > 6) siteHeader.classList.add("scrolled");
+    else siteHeader.classList.remove("scrolled");
+    lastScrollTop = y;
+  }
+  updateHeaderShadow();
+  window.addEventListener("scroll", updateHeaderShadow, { passive: true });
+
+  /* =========================================================
+     NOTIFICATIONS (bell + dropdown + unread dot)
      ========================================================= */
   const SAMPLE_NOTIFICATIONS = [
     { id: "N1", icon: "🎉", message: "Welcome to CampusOne! Explore all features." },
@@ -1188,81 +1380,57 @@ document.addEventListener("DOMContentLoaded", function () {
     return SAMPLE_NOTIFICATIONS.some(function (n) { return isUnread(n.id); });
   }
   function markAllAsRead() {
-    const ids = SAMPLE_NOTIFICATIONS.map(function (n) { return n.id; });
-    saveReadIds(ids);
-    renderNotifDot();
-    renderNotifList();
+    saveReadIds(SAMPLE_NOTIFICATIONS.map(function (n) { return n.id; }));
+    renderNotifDot(); renderNotifList();
   }
-
   function renderNotifDot() {
     const dot = $("#notifDot");
     if (hasUnread()) dot.classList.remove("hidden");
     else dot.classList.add("hidden");
   }
-
   function renderNotifList() {
     const list = $("#notifList");
-    if (!SAMPLE_NOTIFICATIONS.length) {
-      list.innerHTML = '<div class="notif-empty"><span class="e-emoji">🔕</span>No notifications yet.</div>';
-      return;
-    }
     list.innerHTML = SAMPLE_NOTIFICATIONS.map(function (n) {
-      const unreadClass = isUnread(n.id) ? " unread" : "";
-      return (
-        '<div class="notif-item' + unreadClass + '">' +
-          '<div class="ni-icon">' + n.icon + "</div>" +
-          '<div class="ni-body"><div class="ni-msg">' + esc(n.message) + "</div></div>" +
-        "</div>"
-      );
+      const cls = isUnread(n.id) ? " unread" : "";
+      return '<div class="notif-item' + cls + '">' +
+        '<div class="ni-icon">' + n.icon + '</div>' +
+        '<div class="ni-body"><div class="ni-msg">' + esc(n.message) + '</div></div>' +
+      '</div>';
     }).join("");
   }
 
-  /* Bell toggle */
   const notifBell = $("#notifBell");
   const notifDropdown = $("#notifDropdown");
 
   notifBell.addEventListener("click", function (e) {
     e.stopPropagation();
-    const isHidden = notifDropdown.classList.contains("hidden");
-    if (isHidden) {
+    if (notifDropdown.classList.contains("hidden")) {
       renderNotifList();
       notifDropdown.classList.remove("hidden");
-      // Mark all as read after opening (slight delay for visual feedback)
       setTimeout(markAllAsRead, 700);
     } else {
       notifDropdown.classList.add("hidden");
     }
   });
-
-  /* Click outside closes */
   document.addEventListener("click", function (e) {
     if (notifDropdown.classList.contains("hidden")) return;
     if (notifDropdown.contains(e.target)) return;
     if (e.target === notifBell || notifBell.contains(e.target)) return;
     notifDropdown.classList.add("hidden");
   });
-
-  /* Mark all button */
   $("#markAllRead").addEventListener("click", function (e) {
     e.stopPropagation();
     markAllAsRead();
     toast("All notifications marked as read", "success", 1800);
   });
-
-  /* ESC closes */
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-      notifDropdown.classList.add("hidden");
-    }
+    if (e.key === "Escape") notifDropdown.classList.add("hidden");
   });
 
-  /* Init notifications */
   renderNotifDot();
   renderNotifList();
 
-  /* =========================================================
-     THEME
-     ========================================================= */
+  /* THEME */
   const themeToggle = $("#themeToggle");
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
@@ -1275,9 +1443,7 @@ document.addEventListener("DOMContentLoaded", function () {
     applyTheme(next);
   });
 
-  /* =========================================================
-     VIEWS
-     ========================================================= */
+  /* VIEWS */
   const VIEWS = ["home", "complaints", "lostfound", "sukoon", "schedule", "dashboard"];
   function showView(name) {
     if (VIEWS.indexOf(name) === -1) name = "home";
@@ -1310,9 +1476,7 @@ document.addEventListener("DOMContentLoaded", function () {
     showView(view);
   });
 
-  /* =========================================================
-     MODALS
-     ========================================================= */
+  /* MODALS */
   function openModal(id) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1340,7 +1504,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (e.target === overlay) closeModal(overlay.id);
     });
   });
-
   function formMsg(id, text, type) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1353,9 +1516,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (el) el.className = "form-msg";
   }
 
-  /* =========================================================
-     COURSES
-     ========================================================= */
+  /* COURSES */
   const COURSES = {
     "Class 11": ["Science", "Commerce", "Arts"],
     "Class 12": ["Science", "Commerce", "Arts"],
@@ -1422,7 +1583,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function readAndResizeImage(file, maxSize, cb) {
     if (!file) return;
     if (!/^image\//.test(file.type)) { toast("Please choose an image.", "error"); return; }
-    if (file.size > 5 * 1024 * 1024) { toast("Image is too large (max 5MB).", "error"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast("Image too large (max 5MB).", "error"); return; }
     const reader = new FileReader();
     reader.onload = function (e) {
       const img = new Image();
@@ -1437,7 +1598,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try { data = c.toDataURL("image/jpeg", 0.82); } catch (err) { data = e.target.result; }
         cb(data);
       };
-      img.onerror = function () { toast("Could not read that image.", "error"); };
+      img.onerror = function () { toast("Could not read image.", "error"); };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
@@ -1457,9 +1618,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const t = String(email || "").trim().toLowerCase();
     return getUsers().find(function (u) { return u.email === t; }) || null;
   }
-  function sanitizeUser(u) {
-    const c = Object.assign({}, u); delete c.password; return c;
-  }
+  function sanitizeUser(u) { const c = Object.assign({}, u); delete c.password; return c; }
   function saveSession(user, remember) {
     const p = JSON.stringify(sanitizeUser(user));
     try {
@@ -1515,24 +1674,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const dL = $("#drawerLogin");
     const dLg = $("#drawerLogout");
     const dD = $("#drawerDiv2");
-
     if (user) {
       hU.classList.remove("hidden");
       hU.innerHTML = avatarHTML(user, "") + '<span class="uname">' + esc(user.fullName.split(" ")[0]) + "</span>";
       dU.classList.remove("hidden");
       dU.innerHTML = avatarHTML(user, "") +
         '<div class="drawer-user-info"><div class="n">' + esc(user.fullName) + '</div><div class="r">' + esc(user.role) + "</div></div>";
-      dS.classList.add("hidden");
-      dL.classList.add("hidden");
-      dLg.classList.remove("hidden");
-      dD.classList.remove("hidden");
+      dS.classList.add("hidden"); dL.classList.add("hidden");
+      dLg.classList.remove("hidden"); dD.classList.remove("hidden");
     } else {
       hU.classList.add("hidden"); hU.innerHTML = "";
       dU.classList.add("hidden"); dU.innerHTML = "";
-      dS.classList.remove("hidden");
-      dL.classList.remove("hidden");
-      dLg.classList.add("hidden");
-      dD.classList.add("hidden");
+      dS.classList.remove("hidden"); dL.classList.remove("hidden");
+      dLg.classList.add("hidden"); dD.classList.add("hidden");
     }
     prefillComplaintForm();
   }
@@ -1623,7 +1777,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const section = $("#suSection").value;
     const terms = $("#suTerms").checked;
     const photo = this.dataset.photo || "";
-
     if (!fullName || fullName.length < 3) return formMsg("suMsg", "Full name min 3 characters.", "error");
     if (!phoneRe.test(phone)) return formMsg("suMsg", "Valid phone number required.", "error");
     if (!collegeId) return formMsg("suMsg", "College ID required.", "error");
@@ -1632,9 +1785,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (password !== confirm) return formMsg("suMsg", "Passwords do not match.", "error");
     if (!course) return formMsg("suMsg", "Select a course.", "error");
     if (!section) return formMsg("suMsg", "Select a section.", "error");
-    if (!terms) return formMsg("suMsg", "Agree to Terms & Conditions.", "error");
+    if (!terms) return formMsg("suMsg", "Agree to Terms.", "error");
     if (findUserByEmail(email)) return formMsg("suMsg", "Email already registered.", "error");
-
     const user = {
       id: "USR" + Date.now().toString(36).toUpperCase(),
       role: "student", fullName: fullName, phone: phone, collegeId: collegeId,
@@ -1642,12 +1794,9 @@ document.addEventListener("DOMContentLoaded", function () {
       photo: photo, createdAt: new Date().toISOString()
     };
     const users = getUsers(); users.push(user); if (!saveUsers(users)) return;
-
     formMsg("suMsg", "Account created! Signing you in…", "success");
     setTimeout(function () {
-      saveSession(user, true);
-      closeModal("studentModal");
-      updateAuthUI();
+      saveSession(user, true); closeModal("studentModal"); updateAuthUI();
       toast("Welcome to CampusOne, " + fullName.split(" ")[0] + "! 🎉", "success");
       showDashboard();
     }, 700);
@@ -1667,7 +1816,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const photo = this.dataset.photo || "";
     const terms = $("#tuTerms").checked;
     const classes = $$('input[name="tu-classes"]:checked').map(function (c) { return c.value; });
-
     if (!fullName || fullName.length < 3) return formMsg("tuMsg", "Full name min 3 characters.", "error");
     if (!phoneRe.test(phone)) return formMsg("tuMsg", "Valid phone number required.", "error");
     if (!empId) return formMsg("tuMsg", "Employee ID required.", "error");
@@ -1676,9 +1824,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!designation) return formMsg("tuMsg", "Select designation.", "error");
     if (!department) return formMsg("tuMsg", "Select department.", "error");
     if (classes.length === 0) return formMsg("tuMsg", "Select at least one class.", "error");
-    if (!terms) return formMsg("tuMsg", "Agree to Terms & Conditions.", "error");
+    if (!terms) return formMsg("tuMsg", "Agree to Terms.", "error");
     if (findUserByEmail(email)) return formMsg("tuMsg", "Email already registered.", "error");
-
     const user = {
       id: "USR" + Date.now().toString(36).toUpperCase(),
       role: "teacher", fullName: fullName, phone: phone, employeeId: empId,
@@ -1687,12 +1834,9 @@ document.addEventListener("DOMContentLoaded", function () {
       photo: photo, createdAt: new Date().toISOString()
     };
     const users = getUsers(); users.push(user); if (!saveUsers(users)) return;
-
     formMsg("tuMsg", "Account created! Signing you in…", "success");
     setTimeout(function () {
-      saveSession(user, true);
-      closeModal("teacherModal");
-      updateAuthUI();
+      saveSession(user, true); closeModal("teacherModal"); updateAuthUI();
       toast("Welcome aboard, " + fullName.split(" ")[0] + "! 🎉", "success");
       showDashboard();
     }, 700);
@@ -1710,13 +1854,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!user) return formMsg("liMsg", "No account found. Please sign up.", "error");
     if (user.password !== password) return formMsg("liMsg", "Incorrect password.", "error");
     saveSession(user, remember);
-    closeModal("loginModal");
-    updateAuthUI();
+    closeModal("loginModal"); updateAuthUI();
     toast("Signed in as " + (user.role === "student" ? "Student" : "Teacher") + " · " + user.fullName, "success");
     showDashboard();
   });
 
-  /* FORGOT PASSWORD */
+  /* FORGOT */
   $("#forgotForm").addEventListener("submit", function (e) {
     e.preventDefault(); clearMsg("fpMsg");
     const email = $("#fpEmail").value.trim().toLowerCase();
@@ -1728,23 +1871,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const users = getUsers();
     const i = users.findIndex(function (u) { return u.email === email; });
     if (i === -1) return formMsg("fpMsg", "No account found.", "error");
-    users[i].password = pass;
-    saveUsers(users);
+    users[i].password = pass; saveUsers(users);
     formMsg("fpMsg", "Password updated! You can sign in.", "success");
     const self = this;
     setTimeout(function () {
-      closeModal("forgotModal");
-      self.reset(); clearMsg("fpMsg");
-      resetLoginForm();
-      $("#liEmail").value = email;
-      openModal("loginModal");
+      closeModal("forgotModal"); self.reset(); clearMsg("fpMsg");
+      resetLoginForm(); $("#liEmail").value = email; openModal("loginModal");
     }, 1200);
   });
 
   /* LOGOUT */
   function logout() {
-    clearSession(); updateAuthUI(); closeDrawer();
-    showView("home");
+    clearSession(); updateAuthUI(); closeDrawer(); showView("home");
     toast("You have been logged out.", "info");
   }
   $("#drawerLogout").addEventListener("click", logout);
@@ -1760,7 +1898,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function saveComplaints(l) { writeLS(K.complaints, l); }
   function getAlerts() { return readLS(K.alerts, []); }
   function saveAlerts(l) { writeLS(K.alerts, l); }
-
   function prefillComplaintForm() {
     const u = getSession();
     if (!u) return;
@@ -1774,7 +1911,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!$("#cmpEmail").value) $("#cmpEmail").value = u.email || "";
     }
   }
-
   $("#complaintForm").addEventListener("submit", function (e) {
     e.preventDefault(); clearMsg("cmpMsg");
     const name = $("#cmpName").value.trim();
@@ -1784,27 +1920,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const category = $("#cmpCategory").value;
     const priority = $("#cmpPriority").value;
     const desc = $("#cmpDesc").value.trim();
-
     if (!name) return formMsg("cmpMsg", "Full name required.", "error");
     if (!emailRe.test(email)) return formMsg("cmpMsg", "Valid email required.", "error");
     if (!course) return formMsg("cmpMsg", "Select a course.", "error");
     if (!section) return formMsg("cmpMsg", "Select a section.", "error");
     if (!category) return formMsg("cmpMsg", "Select a category.", "error");
     if (desc.length < 10) return formMsg("cmpMsg", "Describe the issue (min 10 chars).", "error");
-
     const session = getSession();
     const complaint = {
       id: "CMP" + Date.now().toString(36).toUpperCase(),
       name: name, email: email, course: course, section: section,
       category: category, priority: priority, description: desc,
-      status: "Pending",
-      userEmail: session ? session.email : email,
+      status: "Pending", userEmail: session ? session.email : email,
       createdAt: new Date().toISOString()
     };
-    const list = getComplaints();
-    list.unshift(complaint);
-    saveComplaints(list);
-
+    const list = getComplaints(); list.unshift(complaint); saveComplaints(list);
     if (priority === "Emergency") {
       const alerts = getAlerts();
       alerts.unshift({
@@ -1817,12 +1947,9 @@ document.addEventListener("DOMContentLoaded", function () {
       if (alerts.length > 60) alerts.length = 60;
       saveAlerts(alerts);
     }
-
     formMsg("cmpMsg", "Complaint submitted! ID: " + complaint.id, "success");
     toast("Complaint submitted ✅", "success");
-    $("#cmpDesc").value = "";
-    $("#cmpCategory").value = "";
-    $("#cmpPriority").value = "Medium";
+    $("#cmpDesc").value = ""; $("#cmpCategory").value = ""; $("#cmpPriority").value = "Medium";
     refreshDashboard();
   });
 
@@ -1858,16 +1985,12 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
   function getItems() {
     let items = readLS(K.items, null);
-    if (!items || !Array.isArray(items)) {
-      items = DEFAULT_ITEMS.slice();
-      writeLS(K.items, items);
-    }
+    if (!items || !Array.isArray(items)) { items = DEFAULT_ITEMS.slice(); writeLS(K.items, items); }
     return items;
   }
   function saveItems(l) { writeLS(K.items, l); }
   function aiMatchScore(item) {
-    let h = 0;
-    const s = String(item.id || "") + String(item.name || "");
+    let h = 0; const s = String(item.id || "") + String(item.name || "");
     for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000;
     return Math.min(98, 62 + (h % 34));
   }
@@ -1879,8 +2002,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return dt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
   }
   function renderItems() {
-    const grid = $("#lfGrid");
-    if (!grid) return;
+    const grid = $("#lfGrid"); if (!grid) return;
     const q = ($("#lfSearch").value || "").trim().toLowerCase();
     const cat = $("#lfCategory").value;
     let items = getItems();
@@ -1941,8 +2063,7 @@ document.addEventListener("DOMContentLoaded", function () {
   $("#lfCategory").addEventListener("change", renderItems);
   $("#lfAddBtn").addEventListener("click", function () {
     resetItemForm();
-    const today = new Date().toISOString().slice(0, 10);
-    $("#itDate").value = today;
+    $("#itDate").value = new Date().toISOString().slice(0, 10);
     openModal("itemModal");
   });
   function resetItemForm() {
@@ -1972,9 +2093,7 @@ document.addEventListener("DOMContentLoaded", function () {
       reporter: session ? session.email : "anonymous@college.edu",
       createdAt: new Date().toISOString()
     };
-    const list = getItems();
-    list.unshift(item);
-    saveItems(list);
+    const list = getItems(); list.unshift(item); saveItems(list);
     formMsg("itMsg", "Item posted successfully!", "success");
     toast("Item reported ✅", "success");
     setTimeout(function () { closeModal("itemModal"); renderItems(); }, 600);
@@ -2049,7 +2168,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function showTyping() {
     const d = document.createElement("div");
     d.className = "bubble bot typing";
-    d.id = "typingIndicator";
     d.innerHTML = "<span></span><span></span><span></span>";
     chatBody.appendChild(d);
     chatBody.scrollTop = chatBody.scrollHeight;
@@ -2058,8 +2176,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function sendMessage(text) {
     const msg = String(text || "").trim();
     if (!msg) return;
-    addBubble(msg, "user");
-    chatInput.value = "";
+    addBubble(msg, "user"); chatInput.value = "";
     if (detectCrisis(msg)) {
       const t = showTyping();
       setTimeout(function () { t.remove(); addCrisisAlert(); saveChatHistory(); }, 900);
@@ -2103,9 +2220,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   function getMoods() { return readLS(K.moods, {}); }
   function setMood(v) {
-    const m = getMoods();
-    m[todayKey()] = v;
-    writeLS(K.moods, m);
+    const m = getMoods(); m[todayKey()] = v; writeLS(K.moods, m);
     renderMoodChart(); renderMoodSelection();
     toast("Mood saved 💙", "success");
   }
@@ -2122,8 +2237,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     let html = "";
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+      const d = new Date(); d.setDate(d.getDate() - i);
       const key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
       const value = moods[key] || 0;
       const heightPx = value ? Math.round((value / 5) * 80) + 10 : 6;
@@ -2139,7 +2253,9 @@ document.addEventListener("DOMContentLoaded", function () {
     setMood(Number(btn.getAttribute("data-mood")));
   });
 
-  /* SCHEDULE */
+  /* =========================================================
+     SCHEDULE — STUDY PLANNER
+     ========================================================= */
   $("#spGenerate").addEventListener("click", function () {
     const raw = $("#spSubjects").value.trim();
     const examDate = $("#spExam").value;
@@ -2167,34 +2283,132 @@ document.addEventListener("DOMContentLoaded", function () {
     $("#planList").innerHTML = html;
     toast("Study plan generated ✅", "success");
   });
+
+  /* =========================================================
+     FIX 3 — IMPROVED TIMETABLE GENERATOR
+     ========================================================= */
+  const TT_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const TT_SLOTS = [
+    "8:00 – 9:00",
+    "9:00 – 10:00",
+    "10:00 – 11:00",
+    "11:15 – 12:15",
+    "12:15 – 1:15",
+    "2:00 – 3:00",
+    "3:00 – 4:00"
+  ];
+  const LUNCH_SLOT_INDEX = 4; // 12:15 – 1:15 is lunch
+
+  const TT_SUBJECTS = [
+    "Mathematics", "Physics", "Chemistry", "English",
+    "Computer Science", "Biology", "Economics", "Accountancy",
+    "Business Studies", "History", "Geography", "Political Science",
+    "Lab Session", "Library / Self Study", "Physical Education", "Statistics",
+    "Environmental Science", "Computer Lab", "Moral Science", "Hindi"
+  ];
+
+  function ttSeed(course) {
+    let s = 0;
+    for (let i = 0; i < course.length; i++) s = (s * 31 + course.charCodeAt(i)) % 100000;
+    return s;
+  }
+  function ttPick(seed, slotIdx, dayIdx) {
+    const idx = (seed + slotIdx * 7 + dayIdx * 13 + slotIdx * dayIdx * 3) % TT_SUBJECTS.length;
+    return TT_SUBJECTS[idx];
+  }
+  function ttColorClass(subject) {
+    let h = 0;
+    for (let i = 0; i < subject.length; i++) h = (h * 31 + subject.charCodeAt(i)) % 997;
+    return "subject-" + ((h % 8) + 1);
+  }
+
+  function buildTimetableHTML(course) {
+    const seed = ttSeed(course);
+
+    // ----- Swipe hint (mobile only via CSS) -----
+    let hintHTML = '<div class="tt-hint-swipe">👈 Swipe to see more days →</div>';
+
+    // ----- Desktop table -----
+    let tableHTML = '<div class="tt-scroll"><table class="tt"><thead><tr>';
+    tableHTML += '<th>Time</th>';
+    TT_DAYS.forEach(function (d) { tableHTML += '<th>' + d + '</th>'; });
+    tableHTML += '</tr></thead><tbody>';
+
+    TT_SLOTS.forEach(function (slot, si) {
+      if (si === LUNCH_SLOT_INDEX) {
+        tableHTML += '<tr class="tt-lunch"><td>' + slot + '</td><td colspan="6">🍽️ Lunch Break</td></tr>';
+        return;
+      }
+      tableHTML += '<tr>';
+      tableHTML += '<td>' + slot + '</td>';
+      TT_DAYS.forEach(function (day, di) {
+        const subj = ttPick(seed, si, di);
+        const cls = ttColorClass(subj);
+        tableHTML += '<td class="' + cls + '">' + esc(subj) + '</td>';
+      });
+      tableHTML += '</tr>';
+    });
+
+    tableHTML += '</tbody></table></div>';
+
+    // ----- Mobile cards (one day per swipe) -----
+    let cardsHTML = '<div class="tt-cards">';
+    TT_DAYS.forEach(function (day, di) {
+      cardsHTML += '<div class="tt-card">';
+      cardsHTML += '<div class="tt-card-day">📅 ' + day + '</div>';
+      TT_SLOTS.forEach(function (slot, si) {
+        if (si === LUNCH_SLOT_INDEX) {
+          cardsHTML += '<div class="tt-card-row tt-lunch-row">' +
+            '<span class="tt-card-time">' + slot + '</span>' +
+            '<span class="tt-card-subj">🍽️ Lunch Break</span>' +
+          '</div>';
+          return;
+        }
+        const subj = ttPick(seed, si, di);
+        const cls = ttColorClass(subj);
+        cardsHTML += '<div class="tt-card-row">' +
+          '<span class="tt-card-time">' + slot + '</span>' +
+          '<span class="tt-card-subj ' + cls + '">' + esc(subj) + '</span>' +
+        '</div>';
+      });
+      cardsHTML += '</div>';
+    });
+    cardsHTML += '</div>';
+
+    // ----- Action buttons -----
+    let actionsHTML = '<div class="tt-actions">' +
+      '<button type="button" class="btn btn-ghost btn-sm tt-action-btn" data-tt-action="download">📄 Download PDF</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm tt-action-btn" data-tt-action="edit">✏️ Edit Timetable</button>' +
+    '</div>';
+
+    // ----- Info line -----
+    let infoHTML = '<p class="hint" style="margin-top:14px;text-align:center;">Timetable for <b>' + esc(course) + '</b> · 6 days · 7 slots/day</p>';
+
+    return hintHTML + tableHTML + cardsHTML + actionsHTML + infoHTML;
+  }
+
   $("#ttGenerate").addEventListener("click", function () {
     const course = $("#ttCourse").value;
-    if (!course) return toast("Select a course.", "error");
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-    const slots = ["9:00 – 10:00", "10:00 – 11:00", "11:15 – 12:15", "12:15 – 1:15", "2:00 – 3:00"];
-    const pool = ["Mathematics", "Physics", "Chemistry", "English", "Computer Science", "Biology", "Economics", "Accountancy", "Business Studies", "History", "Geography", "Political Science", "Lab Session", "Library / Self Study"];
-    let seed = 0;
-    for (let i = 0; i < course.length; i++) seed = (seed * 31 + course.charCodeAt(i)) % 9999;
-    function pick(o) { return pool[(seed + o) % pool.length]; }
-    let html = '<div class="tt-wrap"><table class="tt"><thead><tr><th>Time</th>';
-    days.forEach(function (d) { html += "<th>" + d + "</th>"; });
-    html += "</tr></thead><tbody>";
-    slots.forEach(function (s, si) {
-      html += "<tr><td>" + s + "</td>";
-      days.forEach(function (_, di) { html += "<td>" + pick(si * 3 + di * 7) + "</td>"; });
-      html += "</tr>";
-    });
-    html += "</tbody></table></div>";
-    html += '<p class="hint" style="margin-top:12px;">Timetable for <b>' + esc(course) + "</b></p>";
-    $("#ttResult").innerHTML = html;
+    if (!course) return toast("Please select a course.", "error");
+    $("#ttResult").innerHTML = buildTimetableHTML(course);
     toast("Timetable generated ✅", "success");
   });
 
+  /* Placeholder actions for timetable buttons */
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-tt-action]");
+    if (!btn) return;
+    e.preventDefault();
+    const action = btn.getAttribute("data-tt-action");
+    if (action === "download") {
+      toast("📄 PDF download will be available soon!", "info", 2800);
+    } else if (action === "edit") {
+      toast("✏️ Edit feature coming soon!", "info", 2800);
+    }
+  });
+
   /* DASHBOARD */
-  function showDashboard() {
-    showView("dashboard");
-    refreshDashboard();
-  }
+  function showDashboard() { showView("dashboard"); refreshDashboard(); }
   function statusClass(s) {
     if (s === "Resolved") return "resolved";
     if (s === "In Progress") return "progress";

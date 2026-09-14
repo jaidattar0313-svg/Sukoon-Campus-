@@ -17,7 +17,7 @@
 </script>
 
 <!-- ============================================================
-     FIREBASE: STUB GLOBAL (runs before the module)
+     FIREBASE: STUB GLOBAL
      ============================================================ -->
 <script>
   window.UniSolveFirebase = {
@@ -43,7 +43,7 @@
 </script>
 
 <!-- ============================================================
-     FIREBASE: ES MODULE INITIALIZATION
+     FIREBASE: ES MODULE
      ============================================================ -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -207,8 +207,32 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:var(--bg-soft);color:var(--text);font-size:17px;cursor:pointer;display:grid;place-items:center;transition:.2s;flex:none;position:relative;}
 .icon-btn:hover{border-color:var(--primary);}
 .icon-btn:active{transform:scale(.94);}
+
+/* ============================================================
+   FIX 1: PROMINENT CLOSE BUTTON (red-tinted, rotates on hover)
+   ============================================================ */
+#drawerClose{
+  width:42px;height:42px;
+  font-size:20px;font-weight:900;line-height:1;
+  background:rgba(255,77,109,.14);
+  color:var(--danger);
+  border-color:rgba(255,77,109,.4);
+  transition:background .22s, color .22s, border-color .22s, transform .25s;
+}
+#drawerClose:hover{
+  background:var(--danger);color:#fff;border-color:var(--danger);
+  transform:rotate(90deg);
+}
+#drawerClose:active{
+  transform:scale(.9) rotate(90deg);
+}
+
 .hamburger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
-.hamburger span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;}
+.hamburger span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;transition:.25s;}
+.hamburger.active span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.hamburger.active span:nth-child(2){opacity:0;}
+.hamburger.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+
 .user-chip{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;border:1px solid var(--border);background:var(--bg-soft);font-size:13px;font-weight:600;cursor:pointer;max-width:180px;transition:.2s;}
 .user-chip:hover{border-color:var(--primary);}
 .user-chip .uname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -240,23 +264,47 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .notif-item .ni-msg{font-size:13.5px;font-weight:600;line-height:1.45;word-break:break-word;}
 .notif-empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13.5px;}
 .notif-empty .e-emoji{font-size:32px;display:block;margin-bottom:10px;opacity:.7;}
-.drawer{position:fixed;top:0;right:0;height:100%;width:292px;max-width:86vw;background:var(--card);border-left:1px solid var(--border);z-index:130;transform:translateX(105%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:18px;overflow-y:auto;}
+.drawer{position:fixed;top:0;right:0;height:100%;width:292px;max-width:86vw;background:var(--card);border-left:1px solid var(--border);z-index:130;transform:translateX(105%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:18px;overflow-y:auto;box-shadow:-14px 0 40px rgba(0,0,0,.4);}
 .drawer.open{transform:translateX(0);}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:14px;}
-.drawer-head strong{font-size:16px;}
+.drawer-head strong{font-size:16px;letter-spacing:-.2px;}
 .drawer-nav{display:flex;flex-direction:column;gap:6px;}
 .drawer-nav a,.drawer-nav button{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:13px;border:1px solid transparent;background:transparent;color:var(--text);font-size:15px;font-weight:600;cursor:pointer;text-align:left;width:100%;transition:.18s;font-family:inherit;}
 .drawer-nav a:hover,.drawer-nav button:hover{background:var(--bg-soft);border-color:var(--border);}
 .drawer-nav .danger{color:var(--danger);}
 .drawer-nav .danger:hover{background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.3);}
+
+/* FIX 2: Install button styling — always visible, gradient accent */
+#drawerInstall{
+  background:linear-gradient(135deg,rgba(79,124,255,.18),rgba(124,92,255,.14));
+  border:1px solid rgba(79,124,255,.4);
+  color:var(--text);
+  font-weight:800;
+}
+#drawerInstall:hover{
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  color:#fff;border-color:transparent;
+  box-shadow:0 8px 20px rgba(79,124,255,.35);
+}
+
 .drawer-divider{height:1px;background:var(--border);margin:10px 4px;}
 .drawer-user{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--bg-soft);border:1px solid var(--border);margin-bottom:14px;}
 .drawer-user .avatar{width:42px;height:42px;font-size:14px;}
 .drawer-user-info{min-width:0;}
 .drawer-user-info .n{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .drawer-user-info .r{font-size:12px;color:var(--muted);text-transform:capitalize;}
-.drawer-backdrop{position:fixed;inset:0;background:rgba(3,7,16,.6);opacity:0;pointer-events:none;transition:opacity .3s;z-index:125;backdrop-filter:blur(2px);}
+
+/* FIX 1: Dark overlay behind the drawer */
+.drawer-backdrop{
+  position:fixed;inset:0;
+  background:rgba(3,7,16,.72);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+  z-index:125;
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+}
 .drawer-backdrop.open{opacity:1;pointer-events:auto;}
+
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:700;padding:12px 20px;border-radius:13px;border:1px solid transparent;cursor:pointer;transition:.2s;white-space:nowrap;line-height:1.2;font-family:inherit;}
 .btn:active{transform:scale(.97);}
 .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 10px 24px rgba(79,124,255,.34);}
@@ -467,8 +515,6 @@ table.tt tr.tt-lunch td:first-child{background:rgba(255,176,32,.1);color:var(--w
 .alert-item .at{font-size:14px;font-weight:800;color:#ff6b87;display:flex;align-items:center;gap:8px;}
 .empty{text-align:center;padding:34px 16px;color:var(--muted);font-size:14px;}
 .empty .e-emoji{font-size:38px;display:block;margin-bottom:12px;opacity:.85;}
-
-/* ADMIN VIEW */
 .admin-view{min-height:100vh;background:var(--bg);position:relative;}
 .admin-header{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--sticky-bg);border-bottom:1px solid var(--border);box-shadow:0 4px 18px rgba(0,0,0,.28);}
 [data-theme="light"] .admin-header{box-shadow:0 4px 18px rgba(25,50,110,.1);}
@@ -476,18 +522,15 @@ table.tt tr.tt-lunch td:first-child{background:rgba(255,176,32,.1);color:var(--w
 .admin-brand{display:flex;align-items:center;gap:10px;min-width:0;}
 .admin-brand-text{font-size:17px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .admin-tag{display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:6px;margin-left:7px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;letter-spacing:.7px;vertical-align:middle;}
-
 .live-indicator{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.9px;color:var(--ok);background:rgba(34,201,138,.13);padding:4px 10px;border-radius:999px;margin-left:10px;vertical-align:middle;}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(34,201,138,.7);animation:livePulse 1.8s infinite;}
 @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(34,201,138,.7);}70%{box-shadow:0 0 0 8px rgba(34,201,138,0);}100%{box-shadow:0 0 0 0 rgba(34,201,138,0);}}
-
 .sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;padding:4px 10px;border-radius:999px;margin-left:6px;vertical-align:middle;background:rgba(255,176,32,.13);color:var(--warn);transition:background .3s, color .3s;}
 .sync-badge.connected{background:rgba(34,201,138,.13);color:var(--ok);}
 .sync-badge.offline{background:rgba(255,176,32,.13);color:var(--warn);}
 .sync-badge.error{background:rgba(255,77,109,.13);color:#ff6b87;}
 .sync-badge .sb-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
 .sync-badge.connected .sb-dot{animation:livePulse 1.8s infinite;}
-
 .admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
 .admin-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .2s;}
 .admin-card:hover{transform:translateY(-3px);}
@@ -504,13 +547,11 @@ table.tt tr.tt-lunch td:first-child{background:rgba(255,176,32,.1);color:var(--w
 .admin-card .ac-body{min-width:0;flex:1;}
 .admin-card .ac-num{font-size:24px;font-weight:800;line-height:1.1;letter-spacing:-.6px;}
 .admin-card .ac-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
-
 .admin-filter-bar{display:flex;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:16px;}
 .admin-filter-bar .af-search{flex:2 1 220px;min-width:0;position:relative;}
 .admin-filter-bar .af-search input{font-size:14px;padding:10px 14px 10px 38px;}
 .admin-filter-bar .af-search::before{content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.65;}
 .admin-filter-bar select{flex:1 1 150px;min-width:0;font-size:14px;padding:10px 36px 10px 14px;}
-
 table.admin-table{width:100%;border-collapse:collapse;min-width:820px;font-size:13px;}
 table.admin-table th,table.admin-table td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:middle;}
 table.admin-table th{background:var(--bg-soft);font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);white-space:nowrap;}
@@ -527,12 +568,10 @@ table.admin-table .t-actions button:active{transform:scale(.95);}
 table.admin-table tr.row-emergency td{background:rgba(255,45,85,.07);border-bottom-color:rgba(255,77,109,.2);}
 table.admin-table tr.row-emergency td:first-child{border-left:4px solid var(--danger);padding-left:10px;}
 table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
-
 .admin-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid var(--border);background:var(--card);scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
 .admin-table-wrap::-webkit-scrollbar{height:8px;}
 .admin-table-wrap::-webkit-scrollbar-track{background:transparent;}
 .admin-table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-
 .admin-cards-wrap{display:none;flex-direction:column;gap:12px;}
 .admin-complaint-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:transform .2s, box-shadow .2s;}
 .admin-complaint-card:active{transform:scale(.995);}
@@ -550,13 +589,11 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 .acc-btn-reject:hover{box-shadow:0 8px 20px rgba(255,45,85,.45);}
 .acc-btn-resolve{grid-column:1 / -1;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 6px 16px rgba(79,124,255,.3);}
 .acc-btn-resolve:hover{box-shadow:0 8px 20px rgba(79,124,255,.48);}
-
 .admin-empty{text-align:center;padding:56px 20px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);}
 .admin-empty .ae-emoji{font-size:52px;display:block;margin-bottom:16px;animation:bounceIn .6s cubic-bezier(.34,1.56,.64,1);}
 @keyframes bounceIn{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.08);opacity:1;}100%{transform:scale(1);}}
 .admin-empty h3{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px;color:var(--text);}
 .admin-empty p{font-size:14px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.6;}
-
 .sos-btn{position:fixed;right:16px;bottom:16px;z-index:80;width:66px;height:66px;border-radius:50%;border:none;background:linear-gradient(135deg,#ff2d55,#ff6b3d);color:#fff;font-weight:900;font-size:13px;letter-spacing:.6px;cursor:pointer;box-shadow:0 12px 30px rgba(255,45,85,.5);display:grid;place-items:center;transition:transform .2s;}
 .sos-btn:active{transform:scale(.92);}
 .sos-btn::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,45,85,.85);animation:sosPulse 2s infinite;pointer-events:none;z-index:-1;}
@@ -601,7 +638,6 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 .radio-pill:has(input:checked){border-color:var(--primary);background:rgba(79,124,255,.13);}
 .admin-hint{font-size:12px;color:var(--muted);margin-top:14px;text-align:center;line-height:1.5;padding:10px;background:var(--bg-soft);border-radius:10px;border:1px dashed var(--border);}
 .admin-hint code{background:rgba(79,124,255,.14);color:var(--primary);padding:2px 6px;border-radius:5px;font-size:11.5px;font-weight:700;}
-
 @media (max-width:980px){
   .quick-grid{grid-template-columns:repeat(3,1fr);}
   .steps{grid-template-columns:repeat(2,1fr);}
@@ -640,6 +676,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 }
 @media (max-width:480px){
   .icon-btn{width:36px;height:36px;font-size:15px;border-radius:10px;}
+  #drawerClose{width:40px;height:40px;font-size:18px;}
   .header-actions{gap:5px;}
   .brand-text{font-size:16px;}
   .brand-mark{width:32px;height:32px;font-size:12px;}
@@ -721,7 +758,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 <aside class="drawer" id="drawer" aria-hidden="true">
   <div class="drawer-head">
     <strong>Menu</strong>
-    <button type="button" class="icon-btn" id="drawerClose" aria-label="Close">✕</button>
+    <button type="button" class="icon-btn" id="drawerClose" aria-label="Close menu">✕</button>
   </div>
   <div class="drawer-user hidden" id="drawerUser"></div>
   <nav class="drawer-nav">
@@ -736,8 +773,8 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
     <button type="button" id="drawerLogin">🔐 Login</button>
     <div class="drawer-divider hidden" id="drawerDiv2"></div>
     <button type="button" id="drawerLogout" class="danger hidden">🚪 Logout</button>
-    <div class="drawer-divider hidden" id="drawerDiv3"></div>
-    <button type="button" id="drawerInstall" class="hidden">📲 Install App</button>
+    <div class="drawer-divider" id="drawerDiv3"></div>
+    <button type="button" id="drawerInstall">📥 Install App</button>
   </nav>
 </aside>
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
@@ -943,7 +980,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </section>
 </main>
 
-<!-- DASHBOARD (Student / Teacher) -->
+<!-- DASHBOARD -->
 <main id="view-dashboard" class="hidden">
   <section class="section">
     <div class="wrap">
@@ -1436,9 +1473,6 @@ document.addEventListener("DOMContentLoaded", function () {
     markAllAsRead();
     toast("All notifications marked as read", "success", 1800);
   });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") notifDropdown.classList.add("hidden");
-  });
   renderNotifDot();
   renderNotifList();
 
@@ -1686,75 +1720,95 @@ document.addEventListener("DOMContentLoaded", function () {
     return '<span class="' + cls + ' avatar-initials">' + esc(initials) + "</span>";
   }
 
-  /* DRAWER */
+  /* ============================================================
+     DRAWER (FIX 1: toggle, prominent close, ESC to close)
+     ============================================================ */
   const drawer = $("#drawer");
   const drawerBackdrop = $("#drawerBackdrop");
+  const hamburgerBtn = $("#hamburger");
+
   function openDrawer() {
     drawer.classList.add("open");
     drawerBackdrop.classList.add("open");
     drawer.setAttribute("aria-hidden", "false");
+    hamburgerBtn.classList.add("active");
     document.body.style.overflow = "hidden";
   }
   function closeDrawer() {
     drawer.classList.remove("open");
     drawerBackdrop.classList.remove("open");
     drawer.setAttribute("aria-hidden", "true");
+    hamburgerBtn.classList.remove("active");
     if (!document.querySelector(".modal-overlay.open")) document.body.style.overflow = "";
   }
-  $("#hamburger").addEventListener("click", openDrawer);
-  $("#drawerClose").addEventListener("click", closeDrawer);
-  drawerBackdrop.addEventListener("click", closeDrawer);
+
+  /* FIX 1: hamburger toggles the drawer */
+  hamburgerBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (drawer.classList.contains("open")) closeDrawer();
+    else openDrawer();
+  });
+
+  /* Close button */
+  $("#drawerClose").addEventListener("click", function (e) {
+    e.stopPropagation();
+    closeDrawer();
+  });
+
+  /* Backdrop click closes drawer */
+  drawerBackdrop.addEventListener("click", function () {
+    closeDrawer();
+  });
+
+  /* Any [data-close] inside drawer closes it */
+  $$(".drawer-nav [data-close]").forEach(function (el) {
+    el.addEventListener("click", function () { closeDrawer(); });
+  });
+
+  /* FIX 1: ESC closes drawer */
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (!notifDropdown.classList.contains("hidden")) notifDropdown.classList.add("hidden");
+    if (drawer.classList.contains("open")) closeDrawer();
+  });
 
   /* ============================================================
-     PWA: INSTALL APP BUTTON
+     FIX 2: PWA INSTALL APP BUTTON (always visible, graceful fallback)
      ============================================================ */
   let deferredInstallPrompt = null;
 
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredInstallPrompt = e;
-    const installBtn = document.getElementById("drawerInstall");
-    const installDiv = document.getElementById("drawerDiv3");
-    if (installBtn) installBtn.classList.remove("hidden");
-    if (installDiv) installDiv.classList.remove("hidden");
-    console.log("[UniSolve] beforeinstallprompt captured — install available");
+    console.log("[UniSolve] beforeinstallprompt captured");
   });
 
   const drawerInstallBtn = document.getElementById("drawerInstall");
   if (drawerInstallBtn) {
     drawerInstallBtn.addEventListener("click", async function () {
-      const installBtn = this;
-      if (!deferredInstallPrompt) {
-        toast("Install not available on this browser.", "info", 2200);
-        return;
-      }
-      try {
-        deferredInstallPrompt.prompt();
-        const choice = await deferredInstallPrompt.userChoice;
-        console.log("[UniSolve] Install choice:", choice && choice.outcome);
-        if (choice && choice.outcome === "accepted") {
-          toast("🎉 UniSolve installed! Check your home screen.", "success", 3000);
-        } else {
-          toast("Install cancelled", "info", 1800);
-        }
-      } catch (err) {
-        console.warn("[UniSolve] Install prompt error:", err);
-        toast("Install failed. Try again later.", "error", 2200);
-      }
-      deferredInstallPrompt = null;
-      installBtn.classList.add("hidden");
-      const div3 = document.getElementById("drawerDiv3");
-      if (div3) div3.classList.add("hidden");
       closeDrawer();
+      if (deferredInstallPrompt) {
+        try {
+          deferredInstallPrompt.prompt();
+          const choice = await deferredInstallPrompt.userChoice;
+          if (choice && choice.outcome === "accepted") {
+            toast("🎉 UniSolve installed! Check your home screen.", "success", 3000);
+          } else {
+            toast("Install cancelled", "info", 1800);
+          }
+        } catch (err) {
+          console.warn("[UniSolve] Install prompt error:", err);
+          toast("Install failed. Try again later.", "error", 2200);
+        }
+        deferredInstallPrompt = null;
+      } else {
+        toast("App is already installed, or your browser doesn't support it. Try adding it from your browser menu.", "info", 4500);
+      }
     });
   }
 
   window.addEventListener("appinstalled", function () {
     console.log("[UniSolve] App installed");
-    const installBtn = document.getElementById("drawerInstall");
-    const installDiv = document.getElementById("drawerDiv3");
-    if (installBtn) installBtn.classList.add("hidden");
-    if (installDiv) installDiv.classList.add("hidden");
     deferredInstallPrompt = null;
   });
 

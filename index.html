@@ -51,21 +51,20 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
 /* ============================================================
-   HEADER (STICKY + SCROLL SHADOW)
+   HEADER (STICKY, z-index:100)
    ============================================================ */
 .header{
   position:-webkit-sticky;
   position:sticky;
-  top:0;z-index:90;
+  top:0;
+  z-index:100;
   background:var(--header-bg);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--border);
-  transition:box-shadow .25s ease,background .3s ease,border-color .3s ease;
+  transition:box-shadow .25s ease,background .3s ease;
   will-change:box-shadow;
 }
 .header.scrolled{
-  box-shadow:0 6px 22px rgba(0,0,0,.38);
-  border-bottom-color:transparent;
+  box-shadow:0 6px 22px rgba(0,0,0,.42);
 }
 [data-theme="light"] .header.scrolled{
   box-shadow:0 6px 22px rgba(25,50,110,.12);
@@ -105,8 +104,6 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
   color:#fff;font-size:11px;font-weight:800;letter-spacing:.3px;border:none;
 }
-
-/* NOTIFICATION BELL */
 .notif-btn{position:relative;}
 .notif-dot{
   position:absolute;top:6px;right:6px;
@@ -163,25 +160,65 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .notif-empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13.5px;}
 .notif-empty .e-emoji{font-size:32px;display:block;margin-bottom:10px;opacity:.7;}
 
-/* TABBAR (inside sticky header) */
+/* ============================================================
+   TABBAR — YouTube/Instagram style underline tabs
+   ============================================================ */
 .tabbar{
-  display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;
+  display:flex;
+  gap:4px;
+  overflow-x:auto;
+  padding:0 12px;
   scrollbar-width:none;-ms-overflow-style:none;
-  scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:transparent;
 }
 .tabbar::-webkit-scrollbar{display:none;}
+
 .tab{
-  flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;
-  padding:9px 15px;border-radius:999px;
-  border:1px solid var(--border);background:var(--bg-soft);color:var(--muted);
-  font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;
-  transition:.2s;scroll-snap-align:start;font-family:inherit;
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:13px 14px 12px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:color .2s ease;
+  scroll-snap-align:start;
+  font-family:inherit;
+  position:relative;
+  border-radius:0;
+  box-shadow:none;
+  outline:none;
+  -webkit-tap-highlight-color:transparent;
 }
-.tab:hover{color:var(--text);border-color:var(--primary);}
+.tab::after{
+  content:"";
+  position:absolute;
+  left:12px;right:12px;
+  bottom:-1px;
+  height:3px;
+  background:transparent;
+  border-radius:2px 2px 0 0;
+  transition:background .2s ease;
+}
+.tab:hover{color:var(--text);}
 .tab.active{
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  color:#fff;border-color:transparent;
-  box-shadow:0 8px 20px rgba(79,124,255,.34);
+  color:var(--text);
+  font-weight:800;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+}
+.tab.active::after{
+  background:linear-gradient(90deg,var(--primary),var(--primary-2));
 }
 
 /* DRAWER */
@@ -226,7 +263,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 }
 .drawer-backdrop.open{opacity:1;pointer-events:auto;}
 
-/* BUTTONS */
+/* BUTTONS (distinct from tabs) */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   font-size:15px;font-weight:700;padding:12px 20px;border-radius:13px;
@@ -437,9 +474,7 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 .bar-col .bd{font-size:10.5px;color:var(--muted);font-weight:700;white-space:nowrap;}
 .bar-col .be{font-size:14px;line-height:1;min-height:16px;}
 
-/* ============================================================
-   SCHEDULE (FIXED OVERFLOW)
-   ============================================================ */
+/* SCHEDULE */
 .sched-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;
   min-width:0;
@@ -454,7 +489,6 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 .plan-day li{font-size:13.5px;display:flex;align-items:center;gap:9px;color:var(--text);opacity:.9;line-height:1.45;}
 .plan-day li::before{content:"";width:6px;height:6px;border-radius:50%;flex:none;background:linear-gradient(135deg,var(--primary),var(--primary-2));}
 
-/* Timetable: swipe hint (mobile only) */
 .tt-hint-swipe{
   display:none;
   margin-top:14px;
@@ -471,8 +505,6 @@ select option,select optgroup{background:var(--card);color:var(--text);}
   0%,100%{transform:translateX(0);opacity:.85;}
   50%{transform:translateX(4px);opacity:1;}
 }
-
-/* Timetable desktop table */
 .tt-scroll{
   overflow-x:auto;-webkit-overflow-scrolling:touch;
   scroll-behavior:smooth;
@@ -486,7 +518,6 @@ select option,select optgroup{background:var(--card);color:var(--text);}
 .tt-scroll::-webkit-scrollbar-track{background:transparent;}
 .tt-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 .tt-scroll::-webkit-scrollbar-thumb:hover{background:var(--primary);}
-
 table.tt{
   width:100%;border-collapse:separate;border-spacing:0;
   min-width:820px;font-size:12.5px;
@@ -506,7 +537,6 @@ table.tt td{
   border-right:1px solid var(--border);
   white-space:nowrap;
   font-weight:700;font-size:12px;
-  transition:transform .15s;
 }
 table.tt td:last-child{border-right:none;}
 table.tt tr:last-child td{border-bottom:none;}
@@ -524,8 +554,6 @@ table.tt tr.tt-lunch td{
 table.tt tr.tt-lunch td:first-child{
   background:rgba(255,176,32,.1);color:var(--warn);font-style:normal;
 }
-
-/* Subject color classes */
 .subject-1{background:rgba(124,92,255,.16);color:#a893ff;}
 .subject-2{background:rgba(79,124,255,.16);color:#82a3ff;}
 .subject-3{background:rgba(34,201,138,.16);color:#4de0a3;}
@@ -534,7 +562,6 @@ table.tt tr.tt-lunch td:first-child{
 .subject-6{background:rgba(18,165,184,.16);color:#4cc4da;}
 .subject-7{background:rgba(255,122,60,.16);color:#ffa06c;}
 .subject-8{background:rgba(124,197,118,.2);color:#8ed888;}
-
 [data-theme="light"] .subject-1{background:rgba(124,92,255,.13);color:#5b3fd4;}
 [data-theme="light"] .subject-2{background:rgba(79,124,255,.13);color:#2e5bd8;}
 [data-theme="light"] .subject-3{background:rgba(34,201,138,.15);color:#0e8a5c;}
@@ -543,8 +570,6 @@ table.tt tr.tt-lunch td:first-child{
 [data-theme="light"] .subject-6{background:rgba(18,165,184,.13);color:#0b6d7a;}
 [data-theme="light"] .subject-7{background:rgba(255,122,60,.13);color:#b44b12;}
 [data-theme="light"] .subject-8{background:rgba(124,197,118,.22);color:#397c36;}
-
-/* Timetable mobile cards */
 .tt-cards{
   display:none;
   overflow-x:auto;-webkit-overflow-scrolling:touch;
@@ -598,8 +623,6 @@ table.tt tr.tt-lunch td:first-child{
   color:var(--warn);
   font-style:italic;
 }
-
-/* Timetable action buttons */
 .tt-actions{
   display:flex;gap:10px;
   margin-top:16px;
@@ -740,9 +763,7 @@ table.tt tr.tt-lunch td:first-child{
 .radio-pill input{accent-color:var(--primary);cursor:pointer;width:16px;height:16px;}
 .radio-pill:has(input:checked){border-color:var(--primary);background:rgba(79,124,255,.13);}
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* RESPONSIVE */
 @media (max-width:980px){
   .quick-grid{grid-template-columns:repeat(3,1fr);}
   .steps{grid-template-columns:repeat(2,1fr);}
@@ -767,13 +788,9 @@ table.tt tr.tt-lunch td:first-child{
   .quick-card .qt{font-size:12.5px;}
   .items-grid{grid-template-columns:1fr;}
   .footer{padding-bottom:120px;}
-
-  /* Show swipe hint, hide desktop table, show mobile cards */
   .tt-hint-swipe{display:block;}
   .tt-scroll{display:none;}
   .tt-cards{display:flex;}
-
-  /* Notification dropdown full-width */
   .notif-dropdown{
     top:60px;left:0;right:0;
     width:100%;max-width:100%;
@@ -781,13 +798,17 @@ table.tt tr.tt-lunch td:first-child{
     max-height:calc(100vh - 60px);
     border-left:none;border-right:none;border-top:none;
   }
+  .tab{padding:12px 11px 11px;font-size:13.5px;}
+  .tab::after{left:9px;right:9px;}
 }
 @media (max-width:480px){
   .icon-btn{width:36px;height:36px;font-size:15px;border-radius:10px;}
-  .header-actions{gap:6px;}
+  .header-actions{gap:5px;}
   .brand-text{font-size:16px;}
   .brand-mark{width:32px;height:32px;font-size:12px;}
   .notif-dot{width:9px;height:9px;top:5px;right:5px;}
+  .tab{padding:11px 9px 10px;font-size:12.5px;gap:4px;}
+  .tab::after{left:7px;right:7px;}
 }
 @media (max-width:400px){
   .role-btn{padding:20px 8px;}
@@ -807,7 +828,7 @@ table.tt tr.tt-lunch td:first-child{
 
 <body>
 
-<!-- HEADER -->
+<!-- HEADER (sticky, contains tabbar too) -->
 <header class="header" id="siteHeader">
   <div class="wrap header-inner">
     <button type="button" class="brand" data-view="home" aria-label="Home">
@@ -816,6 +837,7 @@ table.tt tr.tt-lunch td:first-child{
     </button>
 
     <div class="header-actions">
+      <button type="button" class="icon-btn" id="soundToggle" aria-label="Toggle tap sound">🔊</button>
       <button type="button" class="icon-btn notif-btn" id="notifBell" aria-label="Notifications">
         🔔<span class="notif-dot hidden" id="notifDot"></span>
       </button>
@@ -1319,7 +1341,7 @@ document.addEventListener("DOMContentLoaded", function () {
     complaints: "campusone_complaints", alerts: "campusone_alerts",
     items: "campusone_items", moods: "campusone_moods",
     chat: "campusone_chat", theme: "campusone_theme",
-    notifRead: "campusone_notif_read"
+    notifRead: "campusone_notif_read", sound: "campusone_sound"
   };
   function readLS(key, fallback) {
     try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }
@@ -1347,21 +1369,106 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* =========================================================
+     NEW: TAP SOUND (Haptic feedback)
+     ========================================================= */
+  const TAP_SOUND_URL = "https://actions.google.com/sounds/v1/ui/ui_tap_variant_1.ogg";
+  const TAP_THROTTLE_MS = 200;
+
+  let soundEnabled = readLS(K.sound, true);
+  if (typeof soundEnabled !== "boolean") soundEnabled = true;
+
+  let tapAudio = null;
+  let lastTapTime = 0;
+  let audioReady = false;
+
+  // Lazy-create and warm up the audio element on the first user gesture
+  function warmUpAudio() {
+    if (audioReady) return;
+    try {
+      if (!tapAudio) {
+        tapAudio = new Audio(TAP_SOUND_URL);
+        tapAudio.preload = "auto";
+        tapAudio.volume = 0.15;
+      }
+      // Attempt to prime the element (silent play) - enables subsequent plays on mobile
+      const p = tapAudio.play();
+      if (p && typeof p.then === "function") {
+        p.then(function () {
+          try { tapAudio.pause(); tapAudio.currentTime = 0; } catch (e) {}
+          audioReady = true;
+        }).catch(function () {
+          // Autoplay blocked → will try again on next tap
+        });
+      } else {
+        audioReady = true;
+      }
+    } catch (e) { /* silent */ }
+  }
+
+  function playTapSound() {
+    if (!soundEnabled) return;
+    const now = Date.now();
+    if (now - lastTapTime < TAP_THROTTLE_MS) return;
+    lastTapTime = now;
+    try {
+      if (!tapAudio) {
+        tapAudio = new Audio(TAP_SOUND_URL);
+        tapAudio.preload = "auto";
+        tapAudio.volume = 0.15;
+      }
+      try { tapAudio.currentTime = 0; } catch (e) {}
+      const p = tapAudio.play();
+      if (p && typeof p.catch === "function") p.catch(function () {});
+    } catch (e) { /* silent */ }
+  }
+
+  // Warm up on very first interaction of any kind (capture phase)
+  ["pointerdown", "touchstart", "mousedown", "keydown"].forEach(function (evt) {
+    document.addEventListener(evt, warmUpAudio, { once: true, capture: true, passive: true });
+  });
+
+  // Global delegated tap-sound on any interactive element (capture phase so it fires first)
+  const TAP_TARGETS = "button, a, .tab, .chip, .quick-card, .role-btn, .mood-btn, .qr, .item-card, .btn, .check-pill, .radio-pill, label[for], .notif-item, [role='button']";
+  document.addEventListener("click", function (e) {
+    const el = e.target.closest(TAP_TARGETS);
+    if (!el) return;
+    if (el.id === "soundToggle") return; // don't beep when toggling sound
+    playTapSound();
+  }, true);
+
+  /* SOUND TOGGLE */
+  const soundToggle = $("#soundToggle");
+  function applySoundUI() {
+    soundToggle.textContent = soundEnabled ? "🔊" : "🔇";
+    soundToggle.setAttribute("aria-label", soundEnabled ? "Mute tap sound" : "Unmute tap sound");
+    soundToggle.title = soundEnabled ? "Tap sound: ON" : "Tap sound: OFF";
+  }
+  applySoundUI();
+  soundToggle.addEventListener("click", function () {
+    soundEnabled = !soundEnabled;
+    writeLS(K.sound, soundEnabled);
+    applySoundUI();
+    if (soundEnabled) {
+      warmUpAudio();
+      setTimeout(playTapSound, 60);
+    }
+    toast(soundEnabled ? "🔊 Tap sound enabled" : "🔇 Tap sound muted", "info", 1600);
+  });
+
+  /* =========================================================
      FIX 1 — STICKY HEADER SHADOW
      ========================================================= */
   const siteHeader = $("#siteHeader");
-  let lastScrollTop = 0;
   function updateHeaderShadow() {
     const y = window.scrollY || window.pageYOffset || 0;
     if (y > 6) siteHeader.classList.add("scrolled");
     else siteHeader.classList.remove("scrolled");
-    lastScrollTop = y;
   }
   updateHeaderShadow();
   window.addEventListener("scroll", updateHeaderShadow, { passive: true });
 
   /* =========================================================
-     NOTIFICATIONS (bell + dropdown + unread dot)
+     NOTIFICATIONS
      ========================================================= */
   const SAMPLE_NOTIFICATIONS = [
     { id: "N1", icon: "🎉", message: "Welcome to CampusOne! Explore all features." },
@@ -1369,16 +1476,13 @@ document.addEventListener("DOMContentLoaded", function () {
     { id: "N3", icon: "🔍", message: "New lost item match found for you (94%)." },
     { id: "N4", icon: "🚨", message: "Emergency alert system is active." }
   ];
-
   function getReadIds() {
     const v = readLS(K.notifRead, []);
     return Array.isArray(v) ? v : [];
   }
   function saveReadIds(list) { writeLS(K.notifRead, list); }
   function isUnread(id) { return getReadIds().indexOf(id) === -1; }
-  function hasUnread() {
-    return SAMPLE_NOTIFICATIONS.some(function (n) { return isUnread(n.id); });
-  }
+  function hasUnread() { return SAMPLE_NOTIFICATIONS.some(function (n) { return isUnread(n.id); }); }
   function markAllAsRead() {
     saveReadIds(SAMPLE_NOTIFICATIONS.map(function (n) { return n.id; }));
     renderNotifDot(); renderNotifList();
@@ -1398,10 +1502,8 @@ document.addEventListener("DOMContentLoaded", function () {
       '</div>';
     }).join("");
   }
-
   const notifBell = $("#notifBell");
   const notifDropdown = $("#notifDropdown");
-
   notifBell.addEventListener("click", function (e) {
     e.stopPropagation();
     if (notifDropdown.classList.contains("hidden")) {
@@ -1426,7 +1528,6 @@ document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") notifDropdown.classList.add("hidden");
   });
-
   renderNotifDot();
   renderNotifList();
 
@@ -1443,14 +1544,41 @@ document.addEventListener("DOMContentLoaded", function () {
     applyTheme(next);
   });
 
-  /* VIEWS */
+  /* =========================================================
+     VIEWS + FIX 3 — SMOOTH SCROLL TO TOP OF TAB CONTENT
+     ========================================================= */
   const VIEWS = ["home", "complaints", "lostfound", "sukoon", "schedule", "dashboard"];
+
+  function scrollToViewTop() {
+    const headerH = siteHeader ? siteHeader.offsetHeight : 0;
+    const targetY = Math.max(0, (window.scrollY || 0) - 1);
+    // Find the currently visible view's top and scroll just above it
+    const visibleView = VIEWS.map(function (v) { return document.getElementById("view-" + v); })
+      .filter(function (el) { return el && !el.classList.contains("hidden"); })[0];
+    if (!visibleView) {
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+      return;
+    }
+    const rect = visibleView.getBoundingClientRect();
+    const currentY = window.scrollY || window.pageYOffset || 0;
+    const viewTop = rect.top + currentY;
+    // Scroll so the view's top sits just below the sticky header
+    const desiredY = Math.max(0, viewTop - headerH - 6);
+    try {
+      window.scrollTo({ top: desiredY, behavior: "smooth" });
+    } catch (e) {
+      window.scrollTo(0, desiredY);
+    }
+  }
+
   function showView(name) {
     if (VIEWS.indexOf(name) === -1) name = "home";
+
     VIEWS.forEach(function (v) {
       const el = document.getElementById("view-" + v);
       if (el) el.classList.toggle("hidden", v !== name);
     });
+
     $$(".tab").forEach(function (t) {
       const active = t.getAttribute("data-view") === name;
       t.classList.toggle("active", active);
@@ -1458,14 +1586,18 @@ document.addEventListener("DOMContentLoaded", function () {
         try { t.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }); } catch (e) {}
       }
     });
-    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+
+    // Smooth scroll to top of new content (below sticky header)
+    setTimeout(scrollToViewTop, 40);
+
     if (name === "sukoon") {
       setTimeout(function () {
         const body = $("#chatBody");
         if (body) body.scrollTop = body.scrollHeight;
-      }, 80);
+      }, 120);
     }
   }
+
   document.addEventListener("click", function (e) {
     const t = e.target.closest("[data-view]");
     if (!t) return;
@@ -2253,9 +2385,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setMood(Number(btn.getAttribute("data-mood")));
   });
 
-  /* =========================================================
-     SCHEDULE — STUDY PLANNER
-     ========================================================= */
+  /* SCHEDULE — STUDY PLANNER */
   $("#spGenerate").addEventListener("click", function () {
     const raw = $("#spSubjects").value.trim();
     const examDate = $("#spExam").value;
@@ -2284,21 +2414,13 @@ document.addEventListener("DOMContentLoaded", function () {
     toast("Study plan generated ✅", "success");
   });
 
-  /* =========================================================
-     FIX 3 — IMPROVED TIMETABLE GENERATOR
-     ========================================================= */
+  /* TIMETABLE GENERATOR */
   const TT_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const TT_SLOTS = [
-    "8:00 – 9:00",
-    "9:00 – 10:00",
-    "10:00 – 11:00",
-    "11:15 – 12:15",
-    "12:15 – 1:15",
-    "2:00 – 3:00",
-    "3:00 – 4:00"
+    "8:00 – 9:00", "9:00 – 10:00", "10:00 – 11:00",
+    "11:15 – 12:15", "12:15 – 1:15", "2:00 – 3:00", "3:00 – 4:00"
   ];
-  const LUNCH_SLOT_INDEX = 4; // 12:15 – 1:15 is lunch
-
+  const LUNCH_SLOT_INDEX = 4;
   const TT_SUBJECTS = [
     "Mathematics", "Physics", "Chemistry", "English",
     "Computer Science", "Biology", "Economics", "Accountancy",
@@ -2306,7 +2428,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "Lab Session", "Library / Self Study", "Physical Education", "Statistics",
     "Environmental Science", "Computer Lab", "Moral Science", "Hindi"
   ];
-
   function ttSeed(course) {
     let s = 0;
     for (let i = 0; i < course.length; i++) s = (s * 31 + course.charCodeAt(i)) % 100000;
@@ -2321,19 +2442,13 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < subject.length; i++) h = (h * 31 + subject.charCodeAt(i)) % 997;
     return "subject-" + ((h % 8) + 1);
   }
-
   function buildTimetableHTML(course) {
     const seed = ttSeed(course);
-
-    // ----- Swipe hint (mobile only via CSS) -----
     let hintHTML = '<div class="tt-hint-swipe">👈 Swipe to see more days →</div>';
-
-    // ----- Desktop table -----
     let tableHTML = '<div class="tt-scroll"><table class="tt"><thead><tr>';
     tableHTML += '<th>Time</th>';
     TT_DAYS.forEach(function (d) { tableHTML += '<th>' + d + '</th>'; });
     tableHTML += '</tr></thead><tbody>';
-
     TT_SLOTS.forEach(function (slot, si) {
       if (si === LUNCH_SLOT_INDEX) {
         tableHTML += '<tr class="tt-lunch"><td>' + slot + '</td><td colspan="6">🍽️ Lunch Break</td></tr>';
@@ -2348,63 +2463,43 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       tableHTML += '</tr>';
     });
-
     tableHTML += '</tbody></table></div>';
-
-    // ----- Mobile cards (one day per swipe) -----
     let cardsHTML = '<div class="tt-cards">';
     TT_DAYS.forEach(function (day, di) {
       cardsHTML += '<div class="tt-card">';
       cardsHTML += '<div class="tt-card-day">📅 ' + day + '</div>';
       TT_SLOTS.forEach(function (slot, si) {
         if (si === LUNCH_SLOT_INDEX) {
-          cardsHTML += '<div class="tt-card-row tt-lunch-row">' +
-            '<span class="tt-card-time">' + slot + '</span>' +
-            '<span class="tt-card-subj">🍽️ Lunch Break</span>' +
-          '</div>';
+          cardsHTML += '<div class="tt-card-row tt-lunch-row"><span class="tt-card-time">' + slot + '</span><span class="tt-card-subj">🍽️ Lunch Break</span></div>';
           return;
         }
         const subj = ttPick(seed, si, di);
         const cls = ttColorClass(subj);
-        cardsHTML += '<div class="tt-card-row">' +
-          '<span class="tt-card-time">' + slot + '</span>' +
-          '<span class="tt-card-subj ' + cls + '">' + esc(subj) + '</span>' +
-        '</div>';
+        cardsHTML += '<div class="tt-card-row"><span class="tt-card-time">' + slot + '</span><span class="tt-card-subj ' + cls + '">' + esc(subj) + '</span></div>';
       });
       cardsHTML += '</div>';
     });
     cardsHTML += '</div>';
-
-    // ----- Action buttons -----
     let actionsHTML = '<div class="tt-actions">' +
       '<button type="button" class="btn btn-ghost btn-sm tt-action-btn" data-tt-action="download">📄 Download PDF</button>' +
       '<button type="button" class="btn btn-ghost btn-sm tt-action-btn" data-tt-action="edit">✏️ Edit Timetable</button>' +
     '</div>';
-
-    // ----- Info line -----
     let infoHTML = '<p class="hint" style="margin-top:14px;text-align:center;">Timetable for <b>' + esc(course) + '</b> · 6 days · 7 slots/day</p>';
-
     return hintHTML + tableHTML + cardsHTML + actionsHTML + infoHTML;
   }
-
   $("#ttGenerate").addEventListener("click", function () {
     const course = $("#ttCourse").value;
     if (!course) return toast("Please select a course.", "error");
     $("#ttResult").innerHTML = buildTimetableHTML(course);
     toast("Timetable generated ✅", "success");
   });
-
-  /* Placeholder actions for timetable buttons */
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("[data-tt-action]");
     if (!btn) return;
     e.preventDefault();
     const action = btn.getAttribute("data-tt-action");
-    if (action === "download") {
-      toast("📄 PDF download will be available soon!", "info", 2800);
-    } else if (action === "edit") {
-      toast("✏️ Edit feature coming soon!", "info", 2800);
-    }
+    if (action === "download") toast("📄 PDF download will be available soon!", "info", 2800);
+    else if (action === "edit") toast("✏️ Edit feature coming soon!", "info", 2800);
   });
 
   /* DASHBOARD */

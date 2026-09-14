@@ -11,6 +11,147 @@
     if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
   } catch (e) {}
 </script>
+
+<!-- ============================================================
+     FIREBASE: STUB GLOBAL (runs before the module)
+     Ensures window.UniSolveFirebase exists even if Firebase fails.
+     ============================================================ -->
+<script>
+  window.UniSolveFirebase = {
+    ready: false,
+    error: null,
+    _readyCallbacks: [],
+    _listenerUnsub: null,
+    onReady: function (cb) {
+      if (this.ready) { try { cb(); } catch (e) { console.warn(e); } }
+      else this._readyCallbacks.push(cb);
+    },
+    _fireReady: function () {
+      this.ready = true;
+      var cbs = this._readyCallbacks.slice();
+      this._readyCallbacks = [];
+      cbs.forEach(function (cb) { try { cb(); } catch (e) { console.warn(e); } });
+    },
+    addComplaint: function () { return Promise.reject(new Error("Firebase not loaded")); },
+    updateStatus: function () { return Promise.reject(new Error("Firebase not loaded")); },
+    listenComplaints: function () { return null; },
+    stopListening: function () {}
+  };
+</script>
+
+<!-- ============================================================
+     FIREBASE: ES MODULE INITIALIZATION
+     ============================================================ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, onSnapshot,
+    doc, updateDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCIJIyu_53YvV6y1UFL5q9muiumerNCE4k",
+    authDomain: "unisolve-42bb9.firebaseapp.com",
+    projectId: "unisolve-42bb9",
+    storageBucket: "unisolve-42bb9.firebasestorage.app",
+    messagingSenderId: "13665345792",
+    appId: "1:13665345792:web:00b67ab0ff5c105e2753e5",
+    measurementId: "G-VDH8TTVD9H"
+  };
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    /* -------- Save a new complaint -------- */
+    window.UniSolveFirebase.addComplaint = async function (data) {
+      const ref = await addDoc(collection(db, "complaints"), {
+        title: data.title || (data.category || "General") + " complaint",
+        category: data.category || "Other",
+        location: data.location || "Not specified",
+        description: data.description || "",
+        studentName: data.studentName || "",
+        studentEmail: data.studentEmail || "",
+        course: data.course || "",
+        section: data.section || "",
+        priority: data.priority || "Medium",
+        status: "Pending",
+        timestamp: serverTimestamp()
+      });
+      return ref.id;
+    };
+
+    /* -------- Update complaint status -------- */
+    window.UniSolveFirebase.updateStatus = async function (firestoreId, status) {
+      const ref = doc(db, "complaints", firestoreId);
+      await updateDoc(ref, { status: status });
+    };
+
+    /* -------- Real-time listener -------- */
+    window.UniSolveFirebase.listenComplaints = function (callback) {
+      if (this._listenerUnsub) {
+        try { this._listenerUnsub(); } catch (e) {}
+        this._listenerUnsub = null;
+      }
+      const q = collection(db, "complaints");
+      const unsub = onSnapshot(
+        q,
+        function (snapshot) {
+          const items = [];
+          snapshot.forEach(function (docSnap) {
+            const d = docSnap.data();
+            let createdAt = new Date().toISOString();
+            try {
+              if (d.timestamp && typeof d.timestamp.toDate === "function") {
+                createdAt = d.timestamp.toDate().toISOString();
+              }
+            } catch (e) {}
+            items.push({
+              firestoreId: docSnap.id,
+              id: "FS-" + docSnap.id.slice(0, 6).toUpperCase(),
+              name: d.studentName || "Unknown",
+              email: d.studentEmail || "—",
+              course: d.course || "—",
+              section: d.section || "",
+              category: d.category || "Other",
+              priority: d.priority || "Medium",
+              description: d.description || "",
+              location: d.location || "—",
+              status: d.status || "Pending",
+              userEmail: d.studentEmail || "",
+              createdAt: createdAt,
+              fromFirestore: true
+            });
+          });
+          items.sort(function (a, b) {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          });
+          try { callback(items); } catch (e) { console.warn(e); }
+        },
+        function (err) {
+          console.warn("[UniSolve] Firestore listener error:", err);
+          window.UniSolveFirebase.error = err;
+        }
+      );
+      this._listenerUnsub = unsub;
+      return unsub;
+    };
+
+    window.UniSolveFirebase.stopListening = function () {
+      if (this._listenerUnsub) {
+        try { this._listenerUnsub(); } catch (e) {}
+        this._listenerUnsub = null;
+      }
+    };
+
+    window.UniSolveFirebase._fireReady();
+    console.log("[UniSolve] Firebase connected ✅");
+  } catch (e) {
+    console.warn("[UniSolve] Firebase init failed, using localStorage only:", e);
+    window.UniSolveFirebase.error = e;
+  }
+</script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -327,54 +468,37 @@ table.tt tr.tt-lunch td:first-child{background:rgba(255,176,32,.1);color:var(--w
 .empty{text-align:center;padding:34px 16px;color:var(--muted);font-size:14px;}
 .empty .e-emoji{font-size:38px;display:block;margin-bottom:12px;opacity:.85;}
 
-/* ============================================================
-   ADMIN VIEW
-   ============================================================ */
+/* ADMIN VIEW */
 .admin-view{min-height:100vh;background:var(--bg);position:relative;}
-.admin-header{
-  position:-webkit-sticky;position:sticky;top:0;z-index:100;
-  background:var(--sticky-bg);border-bottom:1px solid var(--border);
-  box-shadow:0 4px 18px rgba(0,0,0,.28);
-}
+.admin-header{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--sticky-bg);border-bottom:1px solid var(--border);box-shadow:0 4px 18px rgba(0,0,0,.28);}
 [data-theme="light"] .admin-header{box-shadow:0 4px 18px rgba(25,50,110,.1);}
 .admin-header-inner{display:flex;align-items:center;justify-content:space-between;height:60px;gap:10px;}
 .admin-brand{display:flex;align-items:center;gap:10px;min-width:0;}
 .admin-brand-text{font-size:17px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.admin-tag{
-  display:inline-block;font-size:10px;font-weight:900;
-  padding:3px 8px;border-radius:6px;margin-left:7px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  color:#fff;letter-spacing:.7px;vertical-align:middle;
-}
+.admin-tag{display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:6px;margin-left:7px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;letter-spacing:.7px;vertical-align:middle;}
 
-/* Live indicator */
-.live-indicator{
+.live-indicator{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.9px;color:var(--ok);background:rgba(34,201,138,.13);padding:4px 10px;border-radius:999px;margin-left:10px;vertical-align:middle;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(34,201,138,.7);animation:livePulse 1.8s infinite;}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(34,201,138,.7);}70%{box-shadow:0 0 0 8px rgba(34,201,138,0);}100%{box-shadow:0 0 0 0 rgba(34,201,138,0);}}
+
+/* SYNC BADGE (Firebase connection status) */
+.sync-badge{
   display:inline-flex;align-items:center;gap:6px;
   font-size:10.5px;font-weight:900;
-  text-transform:uppercase;letter-spacing:.9px;
-  color:var(--ok);
-  background:rgba(34,201,138,.13);
+  text-transform:uppercase;letter-spacing:.7px;
   padding:4px 10px;border-radius:999px;
-  margin-left:10px;vertical-align:middle;
+  margin-left:6px;vertical-align:middle;
+  background:rgba(255,176,32,.13);color:var(--warn);
+  transition:background .3s, color .3s;
 }
-.live-dot{
-  width:7px;height:7px;border-radius:50%;background:var(--ok);
-  box-shadow:0 0 0 0 rgba(34,201,138,.7);
-  animation:livePulse 1.8s infinite;
-}
-@keyframes livePulse{
-  0%{box-shadow:0 0 0 0 rgba(34,201,138,.7);}
-  70%{box-shadow:0 0 0 8px rgba(34,201,138,0);}
-  100%{box-shadow:0 0 0 0 rgba(34,201,138,0);}
-}
+.sync-badge.connected{background:rgba(34,201,138,.13);color:var(--ok);}
+.sync-badge.offline{background:rgba(255,176,32,.13);color:var(--warn);}
+.sync-badge.error{background:rgba(255,77,109,.13);color:#ff6b87;}
+.sync-badge .sb-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.sync-badge.connected .sb-dot{animation:livePulse 1.8s infinite;}
 
 .admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.admin-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:15px;padding:18px;
-  display:flex;align-items:center;gap:14px;
-  position:relative;overflow:hidden;transition:transform .2s;
-}
+.admin-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:transform .2s;}
 .admin-card:hover{transform:translateY(-3px);}
 .admin-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;}
 .admin-card.total::before{background:linear-gradient(90deg,var(--primary),var(--primary-2));}
@@ -390,168 +514,59 @@ table.tt tr.tt-lunch td:first-child{background:rgba(255,176,32,.1);color:var(--w
 .admin-card .ac-num{font-size:24px;font-weight:800;line-height:1.1;letter-spacing:-.6px;}
 .admin-card .ac-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
 
-/* Filters + Search */
-.admin-filter-bar{
-  display:flex;gap:10px;flex-wrap:wrap;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:14px;padding:12px;
-  margin-bottom:16px;
-}
-.admin-filter-bar .af-search{
-  flex:2 1 220px;min-width:0;position:relative;
-}
-.admin-filter-bar .af-search input{
-  font-size:14px;padding:10px 14px 10px 38px;
-}
-.admin-filter-bar .af-search::before{
-  content:"🔍";position:absolute;left:13px;top:50%;
-  transform:translateY(-50%);font-size:14px;
-  pointer-events:none;opacity:.65;
-}
-.admin-filter-bar select{
-  flex:1 1 150px;min-width:0;
-  font-size:14px;padding:10px 36px 10px 14px;
-}
+.admin-filter-bar{display:flex;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:16px;}
+.admin-filter-bar .af-search{flex:2 1 220px;min-width:0;position:relative;}
+.admin-filter-bar .af-search input{font-size:14px;padding:10px 14px 10px 38px;}
+.admin-filter-bar .af-search::before{content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.65;}
+.admin-filter-bar select{flex:1 1 150px;min-width:0;font-size:14px;padding:10px 36px 10px 14px;}
 
-/* Table row emergency highlight */
 table.admin-table{width:100%;border-collapse:collapse;min-width:820px;font-size:13px;}
 table.admin-table th,table.admin-table td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:middle;}
-table.admin-table th{
-  background:var(--bg-soft);font-size:11.5px;font-weight:800;
-  text-transform:uppercase;letter-spacing:.5px;color:var(--muted);white-space:nowrap;
-}
+table.admin-table th{background:var(--bg-soft);font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);white-space:nowrap;}
 table.admin-table tr:last-child td{border-bottom:none;}
 table.admin-table tr:hover td{background:rgba(79,124,255,.05);}
 table.admin-table .t-id{font-family:ui-monospace,monospace;font-size:11.5px;font-weight:700;color:var(--primary);}
 table.admin-table .t-actions{display:flex;gap:6px;flex-wrap:wrap;}
-table.admin-table .t-actions button{
-  padding:6px 11px;font-size:11.5px;border-radius:8px;
-  border:1px solid var(--border);background:var(--bg-soft);color:var(--text);
-  font-weight:700;cursor:pointer;font-family:inherit;
-  transition:background .2s, color .2s, border-color .2s, transform .15s, box-shadow .2s;
-}
+table.admin-table .t-actions button{padding:6px 11px;font-size:11.5px;border-radius:8px;border:1px solid var(--border);background:var(--bg-soft);color:var(--text);font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s, color .2s, border-color .2s, transform .15s, box-shadow .2s;}
 table.admin-table .t-actions button:active{transform:scale(.95);}
 .t-approve:hover{border-color:var(--ok);color:var(--ok);background:rgba(34,201,138,.12);}
 .t-reject:hover{border-color:var(--danger);color:var(--danger);background:rgba(255,77,109,.12);}
 .t-resolve{background:linear-gradient(135deg,var(--primary),var(--primary-2)) !important;color:#fff !important;border-color:transparent !important;}
 .t-resolve:hover{box-shadow:0 6px 16px rgba(79,124,255,.45);transform:translateY(-1px);}
+table.admin-table tr.row-emergency td{background:rgba(255,45,85,.07);border-bottom-color:rgba(255,77,109,.2);}
+table.admin-table tr.row-emergency td:first-child{border-left:4px solid var(--danger);padding-left:10px;}
+table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 
-/* Emergency row */
-table.admin-table tr.row-emergency td{
-  background:rgba(255,45,85,.07);
-  border-bottom-color:rgba(255,77,109,.2);
-}
-table.admin-table tr.row-emergency td:first-child{
-  border-left:4px solid var(--danger);
-  padding-left:10px;
-}
-table.admin-table tr.row-emergency:hover td{
-  background:rgba(255,45,85,.11);
-}
-
-.admin-table-wrap{
-  overflow-x:auto;-webkit-overflow-scrolling:touch;
-  border-radius:14px;border:1px solid var(--border);
-  background:var(--card);
-  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
-}
+.admin-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px;border:1px solid var(--border);background:var(--card);scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
 .admin-table-wrap::-webkit-scrollbar{height:8px;}
 .admin-table-wrap::-webkit-scrollbar-track{background:transparent;}
 .admin-table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
-/* Card view (mobile) */
 .admin-cards-wrap{display:none;flex-direction:column;gap:12px;}
-.admin-complaint-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:16px;padding:16px;
-  position:relative;overflow:hidden;
-  transition:transform .2s, box-shadow .2s;
-}
+.admin-complaint-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:transform .2s, box-shadow .2s;}
 .admin-complaint-card:active{transform:scale(.995);}
-.admin-complaint-card.emergency{
-  border-left:4px solid var(--danger);
-  background:linear-gradient(90deg, rgba(255,45,85,.07), var(--card) 35%);
-}
-.admin-complaint-card .acc-id{
-  font-family:ui-monospace,monospace;
-  font-size:10.5px;font-weight:800;letter-spacing:.5px;
-  color:var(--muted);text-transform:uppercase;
-  margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;
-}
-.admin-complaint-card .acc-name{
-  font-size:16px;font-weight:800;letter-spacing:-.3px;
-  margin-bottom:10px;line-height:1.3;word-break:break-word;
-}
-.admin-complaint-card .acc-row{
-  display:flex;align-items:center;gap:8px;
-  font-size:13px;color:var(--muted);
-  margin-bottom:7px;line-height:1.4;
-}
-.admin-complaint-card .acc-row .acc-label{
-  font-weight:700;color:var(--text);min-width:0;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.admin-complaint-card .acc-actions{
-  display:grid;grid-template-columns:1fr 1fr;gap:8px;
-  margin-top:14px;
-}
-.admin-complaint-card .acc-actions button{
-  padding:11px 10px;font-size:13.5px;font-weight:800;
-  border-radius:11px;cursor:pointer;
-  font-family:inherit;border:1px solid transparent;
-  transition:background .2s, transform .15s, box-shadow .2s;
-  letter-spacing:.2px;
-}
+.admin-complaint-card.emergency{border-left:4px solid var(--danger);background:linear-gradient(90deg, rgba(255,45,85,.07), var(--card) 35%);}
+.admin-complaint-card .acc-id{font-family:ui-monospace,monospace;font-size:10.5px;font-weight:800;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.admin-complaint-card .acc-name{font-size:16px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px;line-height:1.3;word-break:break-word;}
+.admin-complaint-card .acc-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:7px;line-height:1.4;}
+.admin-complaint-card .acc-row .acc-label{font-weight:700;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.admin-complaint-card .acc-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;}
+.admin-complaint-card .acc-actions button{padding:11px 10px;font-size:13.5px;font-weight:800;border-radius:11px;cursor:pointer;font-family:inherit;border:1px solid transparent;transition:background .2s, transform .15s, box-shadow .2s;letter-spacing:.2px;}
 .admin-complaint-card .acc-actions button:active{transform:scale(.96);}
-.acc-btn-approve{
-  background:linear-gradient(135deg,#22c98a,#12a5b8);
-  color:#fff;box-shadow:0 6px 16px rgba(34,201,138,.28);
-}
+.acc-btn-approve{background:linear-gradient(135deg,#22c98a,#12a5b8);color:#fff;box-shadow:0 6px 16px rgba(34,201,138,.28);}
 .acc-btn-approve:hover{box-shadow:0 8px 20px rgba(34,201,138,.45);}
-.acc-btn-reject{
-  background:linear-gradient(135deg,#ff2d55,#ff6b3d);
-  color:#fff;box-shadow:0 6px 16px rgba(255,45,85,.28);
-}
+.acc-btn-reject{background:linear-gradient(135deg,#ff2d55,#ff6b3d);color:#fff;box-shadow:0 6px 16px rgba(255,45,85,.28);}
 .acc-btn-reject:hover{box-shadow:0 8px 20px rgba(255,45,85,.45);}
-.acc-btn-resolve{
-  grid-column:1 / -1;
-  background:linear-gradient(135deg,var(--primary),var(--primary-2));
-  color:#fff;box-shadow:0 6px 16px rgba(79,124,255,.3);
-}
+.acc-btn-resolve{grid-column:1 / -1;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 6px 16px rgba(79,124,255,.3);}
 .acc-btn-resolve:hover{box-shadow:0 8px 20px rgba(79,124,255,.48);}
 
-/* Empty state */
-.admin-empty{
-  text-align:center;padding:56px 20px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:18px;box-shadow:var(--shadow);
-}
-.admin-empty .ae-emoji{
-  font-size:52px;display:block;margin-bottom:16px;
-  animation:bounceIn .6s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes bounceIn{
-  0%{transform:scale(.4);opacity:0;}
-  60%{transform:scale(1.08);opacity:1;}
-  100%{transform:scale(1);}
-}
-.admin-empty h3{
-  font-size:19px;font-weight:800;letter-spacing:-.3px;
-  margin-bottom:8px;color:var(--text);
-}
-.admin-empty p{
-  font-size:14px;color:var(--muted);max-width:400px;
-  margin:0 auto;line-height:1.6;
-}
+.admin-empty{text-align:center;padding:56px 20px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);}
+.admin-empty .ae-emoji{font-size:52px;display:block;margin-bottom:16px;animation:bounceIn .6s cubic-bezier(.34,1.56,.64,1);}
+@keyframes bounceIn{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.08);opacity:1;}100%{transform:scale(1);}}
+.admin-empty h3{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px;color:var(--text);}
+.admin-empty p{font-size:14px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.6;}
 
-.sos-btn{
-  position:fixed;right:16px;bottom:16px;z-index:80;
-  width:66px;height:66px;border-radius:50%;border:none;
-  background:linear-gradient(135deg,#ff2d55,#ff6b3d);
-  color:#fff;font-weight:900;font-size:13px;letter-spacing:.6px;
-  cursor:pointer;box-shadow:0 12px 30px rgba(255,45,85,.5);
-  display:grid;place-items:center;transition:transform .2s;
-}
+.sos-btn{position:fixed;right:16px;bottom:16px;z-index:80;width:66px;height:66px;border-radius:50%;border:none;background:linear-gradient(135deg,#ff2d55,#ff6b3d);color:#fff;font-weight:900;font-size:13px;letter-spacing:.6px;cursor:pointer;box-shadow:0 12px 30px rgba(255,45,85,.5);display:grid;place-items:center;transition:transform .2s;}
 .sos-btn:active{transform:scale(.92);}
 .sos-btn::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,45,85,.85);animation:sosPulse 2s infinite;pointer-events:none;z-index:-1;}
 @keyframes sosPulse{0%{transform:scale(1);opacity:.85;}100%{transform:scale(1.75);opacity:0;}}
@@ -605,7 +620,6 @@ table.admin-table tr.row-emergency:hover td{
   .admin-stats{grid-template-columns:1fr 1fr;}
 }
 @media (max-width:768px){
-  /* Mobile: swap table → card view */
   .admin-table-wrap{display:none;}
   .admin-cards-wrap{display:flex;}
 }
@@ -645,6 +659,8 @@ table.admin-table tr.row-emergency:hover td{
   .admin-tag{display:none;}
   .live-indicator{font-size:9.5px;padding:3px 8px;margin-left:6px;}
   .live-dot{width:6px;height:6px;}
+  .sync-badge{font-size:9.5px;padding:3px 8px;margin-left:4px;}
+  .sync-badge .sb-dot{width:5px;height:5px;}
 }
 @media (max-width:400px){
   .role-btn{padding:20px 8px;}
@@ -662,6 +678,7 @@ table.admin-table tr.row-emergency:hover td{
   .admin-card{padding:14px;gap:10px;}
   .admin-card .ac-icon{width:40px;height:40px;font-size:18px;}
   .admin-card .ac-num{font-size:20px;}
+  .sync-badge span:not(.sb-dot){display:none;}
 }
 </style>
 </head>
@@ -961,6 +978,7 @@ table.admin-table tr.row-emergency:hover td{
       <h2 class="section-title" style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
         📊 Admin Dashboard
         <span class="live-indicator"><span class="live-dot"></span>Live</span>
+        <span class="sync-badge" id="syncBadge"><span class="sb-dot"></span><span id="syncBadgeText">Connecting…</span></span>
       </h2>
       <p class="section-sub">Manage all complaints across the campus in real time.</p>
       <div id="adminContent"></div>
@@ -1257,6 +1275,38 @@ document.addEventListener("DOMContentLoaded", function () {
       el.style.transform = "translateY(-10px)";
       setTimeout(function () { el.remove(); }, 260);
     }, duration);
+  }
+
+  /* ============================================================
+     FIREBASE SYNC STATUS BADGE
+     ============================================================ */
+  const syncBadge = $("#syncBadge");
+  const syncBadgeText = $("#syncBadgeText");
+  function updateSyncBadge(state, text) {
+    if (!syncBadge) return;
+    syncBadge.className = "sync-badge " + state;
+    if (syncBadgeText) syncBadgeText.textContent = text || state;
+  }
+  if (window.UniSolveFirebase) {
+    window.UniSolveFirebase.onReady(function () {
+      updateSyncBadge("connected", "Firebase Synced");
+    });
+    // If Firebase errored before DOM loaded
+    if (window.UniSolveFirebase.error) {
+      updateSyncBadge("error", "Offline Mode");
+    }
+    // Watch for the error state after a short delay (in case module is still loading)
+    setTimeout(function () {
+      if (window.UniSolveFirebase.error && !window.UniSolveFirebase.ready) {
+        updateSyncBadge("error", "Offline Mode");
+      } else if (!window.UniSolveFirebase.ready) {
+        updateSyncBadge("offline", "Local Only");
+      } else {
+        updateSyncBadge("connected", "Firebase Synced");
+      }
+    }, 3500);
+  } else {
+    updateSyncBadge("error", "Offline Mode");
   }
 
   /* TAP SOUND */
@@ -1909,6 +1959,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!$("#cmpEmail").value) $("#cmpEmail").value = u.email || "";
     }
   }
+
   $("#complaintForm").addEventListener("submit", function (e) {
     e.preventDefault(); clearMsg("cmpMsg");
     const name = $("#cmpName").value.trim();
@@ -1924,15 +1975,52 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!section) return formMsg("cmpMsg", "Select a section.", "error");
     if (!category) return formMsg("cmpMsg", "Select a category.", "error");
     if (desc.length < 10) return formMsg("cmpMsg", "Describe the issue (min 10 chars).", "error");
+
     const session = getSession();
+    const location = course + (section ? " · Section " + section : "");
     const complaint = {
       id: "CMP" + Date.now().toString(36).toUpperCase(),
       name: name, email: email, course: course, section: section,
       category: category, priority: priority, description: desc,
+      location: location,
       status: "Pending", userEmail: session ? session.email : email,
       createdAt: new Date().toISOString()
     };
+
+    /* 1) Save to localStorage (always — offline fallback) */
     const list = getComplaints(); list.unshift(complaint); saveComplaints(list);
+
+    /* 2) Save to Firestore (best effort) */
+    if (window.UniSolveFirebase && window.UniSolveFirebase.ready) {
+      window.UniSolveFirebase.addComplaint({
+        title: category + " complaint",
+        category: category,
+        location: location,
+        description: desc,
+        studentName: name,
+        studentEmail: email,
+        course: course,
+        section: section,
+        priority: priority
+      }).then(function (docId) {
+        // Write the Firestore ID back into localStorage so the admin can dedupe
+        if (docId) {
+          const cur = getComplaints();
+          const idx = cur.findIndex(function (c) { return c.id === complaint.id; });
+          if (idx !== -1) {
+            cur[idx].firestoreId = docId;
+            saveComplaints(cur);
+          }
+        }
+        toast("☁️ Synced to cloud", "success", 1800);
+      }).catch(function (err) {
+        console.warn("[UniSolve] Firestore save failed:", err);
+        toast("Saved locally (cloud offline)", "info", 2200);
+      });
+    } else {
+      console.warn("[UniSolve] Firebase not ready, keeping local only");
+    }
+
     if (priority === "Emergency" || category === "Emergency") {
       const alerts = getAlerts();
       alerts.unshift({
@@ -1945,6 +2033,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (alerts.length > 60) alerts.length = 60;
       saveAlerts(alerts);
     }
+
     formMsg("cmpMsg", "Complaint submitted! ID: " + complaint.id, "success");
     toast("Complaint submitted ✅", "success");
     $("#cmpDesc").value = ""; $("#cmpCategory").value = ""; $("#cmpPriority").value = "Medium";
@@ -2351,9 +2440,7 @@ document.addEventListener("DOMContentLoaded", function () {
     else if (action === "edit") toast("✏️ Edit feature coming soon!", "info", 2800);
   });
 
-  /* ============================================================
-     STUDENT / TEACHER DASHBOARD
-     ============================================================ */
+  /* STUDENT / TEACHER DASHBOARD */
   function showDashboard() { showView("dashboard"); refreshDashboard(); }
   function statusClass(s) {
     if (s === "Resolved") return "resolved";
@@ -2456,6 +2543,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (i === -1) return;
     list[i].status = status;
     saveComplaints(list);
+    if (list[i].firestoreId && window.UniSolveFirebase && window.UniSolveFirebase.ready) {
+      window.UniSolveFirebase.updateStatus(list[i].firestoreId, status)
+        .catch(function (err) { console.warn("[UniSolve] Firestore update failed:", err); });
+    }
     refreshDashboard();
     if (isAdminLoggedIn()) renderAdminDashboard();
     toast("Complaint " + id + " → " + status, "success");
@@ -2468,7 +2559,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /* ============================================================
-     ADMIN — Hidden login via #admin
+     ADMIN — Hidden login via #admin + Firebase real-time
      ============================================================ */
   const ADMIN_EMAIL = "admin@unisolve.com";
   const ADMIN_PASS = "admin123";
@@ -2484,6 +2575,9 @@ document.addEventListener("DOMContentLoaded", function () {
     try { sessionStorage.removeItem(K.admin); } catch (e) {}
   }
 
+  /* Firestore-sourced complaints cache (real-time) */
+  let adminFirestoreComplaints = [];
+
   function enterAdminMode() {
     document.querySelector(".sticky-wrap").classList.add("hidden");
     document.querySelector(".footer").classList.add("hidden");
@@ -2498,22 +2592,66 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("adminView").classList.remove("hidden");
     document.body.style.overflow = "";
     window.scrollTo(0, 0);
+
+    /* Start Firestore real-time listener (or wait for Firebase) */
+    startAdminFirestoreListener();
+
     renderAdminDashboard();
   }
 
+  function startAdminFirestoreListener() {
+    if (!window.UniSolveFirebase) return;
+    window.UniSolveFirebase.onReady(function () {
+      updateSyncBadge("connected", "Firebase Synced");
+      window.UniSolveFirebase.listenComplaints(function (items) {
+        adminFirestoreComplaints = items || [];
+        renderAdminDashboard();
+      });
+    });
+    /* Update badge state if Firebase fails */
+    setTimeout(function () {
+      if (window.UniSolveFirebase.error && !window.UniSolveFirebase.ready) {
+        updateSyncBadge("error", "Offline Mode");
+        renderAdminDashboard();
+      }
+    }, 2500);
+  }
+
+  function stopAdminFirestoreListener() {
+    if (window.UniSolveFirebase && window.UniSolveFirebase.stopListening) {
+      window.UniSolveFirebase.stopListening();
+    }
+    adminFirestoreComplaints = [];
+  }
+
   function exitAdminMode() {
+    stopAdminFirestoreListener();
     clearAdminSession();
     try { history.replaceState(null, "", location.pathname + location.search); }
     catch (e) { location.hash = ""; }
     location.reload();
   }
 
-  /* Admin filter state (persisted across renders) */
-  const adminState = {
-    status: "all",
-    category: "all",
-    search: ""
-  };
+  /* Merged admin view: Firestore items (real-time) + local-only fallback */
+  function getAdminComplaints() {
+    const local = getComplaints();
+    if (!adminFirestoreComplaints || adminFirestoreComplaints.length === 0) {
+      return local.slice();
+    }
+    const firestoreIds = {};
+    adminFirestoreComplaints.forEach(function (c) { if (c.firestoreId) firestoreIds[c.firestoreId] = true; });
+    const localOnly = local.filter(function (c) {
+      return !c.firestoreId || !firestoreIds[c.firestoreId];
+    });
+    const merged = adminFirestoreComplaints.concat(localOnly);
+    merged.sort(function (a, b) {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    return merged;
+  }
+
+  /* Admin filter state */
+  const adminState = { status: "all", category: "all", search: "" };
 
   function isEmergencyComplaint(c) {
     const cat = String(c.category || "").toLowerCase();
@@ -2534,7 +2672,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const content = document.getElementById("adminContent");
     if (!content) return;
 
-    const allComplaints = getComplaints();
+    const allComplaints = getAdminComplaints();
     const alerts = getAlerts();
 
     const total = allComplaints.length;
@@ -2542,7 +2680,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const resolved = allComplaints.filter(function (c) { return c.status === "Resolved"; }).length;
     const emergency = allComplaints.filter(isEmergencyComplaint).length;
 
-    /* Apply filters */
     let filtered = allComplaints.slice();
     if (adminState.status !== "all") {
       filtered = filtered.filter(function (c) { return c.status === adminState.status; });
@@ -2560,7 +2697,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let html = "";
 
-    /* Stats */
     html += '<div class="admin-stats">' +
       '<div class="admin-card total"><div class="ac-icon">📋</div><div class="ac-body"><div class="ac-num">' + total + '</div><div class="ac-lbl">Total Complaints</div></div></div>' +
       '<div class="admin-card pending"><div class="ac-icon">⏳</div><div class="ac-body"><div class="ac-num">' + pending + '</div><div class="ac-lbl">Pending</div></div></div>' +
@@ -2568,19 +2704,17 @@ document.addEventListener("DOMContentLoaded", function () {
       '<div class="admin-card emergency"><div class="ac-icon">🚨</div><div class="ac-body"><div class="ac-num">' + emergency + '</div><div class="ac-lbl">Emergency</div></div></div>' +
     "</div>";
 
-    /* Empty state */
     if (allComplaints.length === 0) {
       html +=
         '<div class="admin-empty">' +
           '<span class="ae-emoji">🎉</span>' +
           "<h3>No pending complaints!</h3>" +
-          "<p>Everything is resolved. When students submit new complaints, they will appear here automatically.</p>" +
+          "<p>Everything is resolved. When students submit new complaints, they will appear here automatically — even from other devices.</p>" +
         "</div>";
       content.innerHTML = html;
       return;
     }
 
-    /* Filter bar */
     html += '<div class="admin-filter-bar">' +
       '<div class="af-search"><input type="text" id="adminSearch" placeholder="Search by name or ID…" value="' + esc(adminState.search) + '"></div>' +
       '<select id="adminFilterStatus">' +
@@ -2604,7 +2738,6 @@ document.addEventListener("DOMContentLoaded", function () {
       '</select>' +
     '</div>';
 
-    /* No results after filter */
     if (filtered.length === 0) {
       html += '<div class="admin-empty" style="padding:40px 20px;">' +
         '<span class="ae-emoji" style="font-size:40px;">🔍</span>' +
@@ -2663,7 +2796,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     html += "</div>";
 
-    /* Recent emergency alerts */
     if (alerts.length > 0) {
       html += '<div class="panel" style="margin-top:20px;"><div class="panel-title">🚨 Recent Emergency Alerts</div>';
       alerts.slice(0, 6).forEach(function (a) { html += alertCardHTML(a); });
@@ -2680,11 +2812,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoryEl = document.getElementById("adminFilterCategory");
 
     if (searchEl) {
-      // Restore cursor position on re-render
-      const val = searchEl.value;
       searchEl.addEventListener("input", function () {
         adminState.search = this.value;
-        // Preserve focus & cursor for smooth typing
         const pos = this.selectionStart;
         renderAdminDashboard();
         const newEl = document.getElementById("adminSearch");
@@ -2729,19 +2858,52 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 600);
   });
 
+  /* Admin action buttons — updates BOTH localStorage and Firestore */
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("[data-admin-action][data-id]");
     if (!btn) return;
     e.preventDefault();
     const action = btn.getAttribute("data-admin-action");
     const id = btn.getAttribute("data-id");
-    const list = getComplaints();
-    const i = list.findIndex(function (c) { return c.id === id; });
-    if (i === -1) return;
-    if (action === "approve") { list[i].status = "In Progress"; toast("Complaint " + id + " approved → In Progress", "success"); }
-    else if (action === "reject") { list[i].status = "Rejected"; toast("Complaint " + id + " rejected", "info"); }
-    else if (action === "resolve") { list[i].status = "Resolved"; toast("Complaint " + id + " resolved ✅", "success"); }
-    saveComplaints(list);
+
+    /* Find complaint in merged admin list */
+    const merged = getAdminComplaints();
+    const complaint = merged.find(function (c) { return c.id === id; });
+    if (!complaint) return;
+
+    let newStatus;
+    if (action === "approve") newStatus = "In Progress";
+    else if (action === "reject") newStatus = "Rejected";
+    else if (action === "resolve") newStatus = "Resolved";
+    else return;
+
+    /* 1) Update localStorage (works whether or not Firestore is available) */
+    const localList = getComplaints();
+    const localIdx = localList.findIndex(function (c) {
+      return c.id === id || (complaint.firestoreId && c.firestoreId === complaint.firestoreId);
+    });
+    if (localIdx !== -1) {
+      localList[localIdx].status = newStatus;
+      saveComplaints(localList);
+    }
+
+    /* 2) Update Firestore (source of truth for real-time sync) */
+    if (complaint.firestoreId && window.UniSolveFirebase && window.UniSolveFirebase.ready) {
+      window.UniSolveFirebase.updateStatus(complaint.firestoreId, newStatus)
+        .then(function () {
+          console.log("[UniSolve] Firestore status updated:", id, "→", newStatus);
+        })
+        .catch(function (err) {
+          console.warn("[UniSolve] Firestore update failed:", err);
+          toast("Local update only (cloud offline)", "info", 2200);
+        });
+    }
+
+    /* Instant feedback */
+    if (action === "approve") toast("Complaint " + id + " approved → In Progress", "success");
+    else if (action === "reject") toast("Complaint " + id + " rejected", "info");
+    else if (action === "resolve") toast("Complaint " + id + " resolved ✅", "success");
+
     renderAdminDashboard();
     refreshDashboard();
   });

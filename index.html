@@ -199,7 +199,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
 /* ============================================================
-   STICKY WRAPPER — high z-index, permanent subtle shadow
+   FIX 1: STICKY WRAPPER — width bound + overflow hidden
    ============================================================ */
 .sticky-wrap{
   position:-webkit-sticky;
@@ -207,6 +207,8 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   top:0;
   z-index:9999;
   width:100%;
+  max-width:100%;
+  overflow:hidden;
   background:var(--sticky-bg);
   box-shadow:0 2px 10px rgba(0,0,0,.16);
   transition:box-shadow .25s ease;
@@ -222,7 +224,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 }
 
 /* ============================================================
-   HEADER (bigger, premium)
+   FIX 2: HEADER — proper 16px horizontal padding
    ============================================================ */
 .header{background:transparent;}
 .header-inner{
@@ -230,8 +232,11 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   align-items:center;
   justify-content:space-between;
   min-height:72px;
-  padding:10px 0;
+  padding:10px 16px;          /* ← FIX: was 10px 0 (no side padding) */
   gap:12px;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
 }
 .brand{
   display:flex;align-items:center;gap:14px;flex:none;
@@ -263,7 +268,6 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .icon-btn:hover{border-color:var(--primary);}
 .icon-btn:active{transform:scale(.94);}
 
-/* Prominent close button */
 #drawerClose{
   width:44px;height:44px;
   font-size:22px;font-weight:900;line-height:1;
@@ -305,42 +309,65 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   color:#fff;font-size:12px;font-weight:800;
   letter-spacing:.3px;border:none;
 }
-.notif-btn{position:relative;}
+
+/* ============================================================
+   FIX 3: NOTIFICATION BADGE — positioned at true corner (-4px)
+   ============================================================ */
+.notif-btn{position:relative;overflow:visible !important;}
 .notif-dot{
-  position:absolute;top:7px;right:7px;
-  width:11px;height:11px;border-radius:50%;
-  background:var(--danger);border:2px solid var(--sticky-bg);
-  box-shadow:0 0 0 0 rgba(255,77,109,.6);
+  position:absolute;
+  top:-4px;
+  right:-4px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:var(--danger);
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  border:2px solid var(--sticky-bg);
+  box-shadow:0 2px 6px rgba(255,77,109,.5);
+  z-index:5;
   animation:notifPulse 2s infinite;
+  pointer-events:none;
 }
 @keyframes notifPulse{
-  0%{box-shadow:0 0 0 0 rgba(255,77,109,.6);}
-  70%{box-shadow:0 0 0 8px rgba(255,77,109,0);}
-  100%{box-shadow:0 0 0 0 rgba(255,77,109,0);}
+  0%{box-shadow:0 2px 6px rgba(255,77,109,.5), 0 0 0 0 rgba(255,77,109,.6);}
+  70%{box-shadow:0 2px 6px rgba(255,77,109,.5), 0 0 0 8px rgba(255,77,109,0);}
+  100%{box-shadow:0 2px 6px rgba(255,77,109,.5), 0 0 0 0 rgba(255,77,109,0);}
 }
 
 /* ============================================================
-   TABBAR — horizontally scrollable, extra right padding
+   FIX 4: TABBAR — width-bounded, symmetric padding, no scrollbar
    ============================================================ */
 .tabbar{
   display:flex;
   gap:4px;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
   overflow-x:auto;
   overflow-y:hidden;
-  padding:0 32px 12px 12px;
+  white-space:nowrap;
+  padding:0 16px 12px 16px;    /* ← FIX: symmetric 16px on both sides */
   scrollbar-width:none;
   -ms-overflow-style:none;
   scroll-snap-type:x proximity;
   -webkit-overflow-scrolling:touch;
   background:transparent;
 }
-.tabbar::-webkit-scrollbar{display:none;}
+.tabbar::-webkit-scrollbar{display:none;height:0;}
 .tab{
   flex:0 0 auto;
   display:inline-flex;align-items:center;gap:7px;
   padding:13px 15px 12px;
   border:none;background:transparent;color:var(--muted);
-  font-size:14.5px;font-weight:600;cursor:pointer;white-space:nowrap;
+  font-size:14.5px;font-weight:600;cursor:pointer;
+  white-space:nowrap;
   transition:color .2s ease;scroll-snap-align:start;
   font-family:inherit;position:relative;
   border-radius:0;box-shadow:none;outline:none;
@@ -356,9 +383,6 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .tab.active{color:var(--text);font-weight:800;background:transparent;border:none;box-shadow:none;}
 .tab.active::after{background:linear-gradient(90deg,var(--primary),var(--primary-2));}
 
-/* ============================================================
-   NOTIFICATION DROPDOWN — above everything, positioned below header
-   ============================================================ */
 .notif-dropdown{
   position:fixed;
   top:138px;
@@ -407,7 +431,6 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .notif-empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13.5px;}
 .notif-empty .e-emoji{font-size:32px;display:block;margin-bottom:10px;opacity:.7;}
 
-/* DRAWER */
 .drawer{
   position:fixed;top:0;right:0;height:100%;width:292px;max-width:86vw;
   background:var(--card);border-left:1px solid var(--border);
@@ -841,13 +864,14 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   .tab::after{left:10px;right:10px;}
 }
 @media (max-width:480px){
-  .header-inner{min-height:64px;padding:8px 0;gap:10px;}
+  /* FIX: keep horizontal padding on small screens (was 8px 0) */
+  .header-inner{min-height:64px;padding:8px 16px;gap:10px;}
   .brand-mark{width:42px;height:42px;font-size:16px;border-radius:12px;}
   .brand-text{font-size:18px;}
   .icon-btn{width:40px;height:40px;font-size:17px;border-radius:11px;}
   #drawerClose{width:42px;height:42px;font-size:19px;}
   .header-actions{gap:6px;}
-  .notif-dot{width:9px;height:9px;top:6px;right:6px;}
+  .notif-dot{min-width:16px;height:16px;font-size:9px;top:-3px;right:-3px;}
   .tab{padding:11px 10px 10px;font-size:12.5px;gap:4px;}
   .tab::after{left:8px;right:8px;}
   .admin-brand-text{font-size:15px;}
@@ -1064,7 +1088,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </section>
 </main>
 
-<!-- UNISOLVE AI (was Sukoon AI) -->
+<!-- UNISOLVE AI -->
 <main id="view-sukoon" class="hidden">
   <section class="section">
     <div class="wrap">
@@ -1376,7 +1400,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
         <label for="admPass">Password <span class="req">*</span></label>
         <input type="password" id="admPass" placeholder="Enter admin password" autocomplete="off" required>
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Sign In as Admin</button>
+      <button type="submit" class="btn btn-primary btn-block">Sign in as Admin</button>
       <div class="admin-hint">
         <strong>Demo credentials:</strong><br>
         Email: <code>admin@unisolve.com</code> · Password: <code>admin123</code>
@@ -2460,7 +2484,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  /* UNISOLVE AI (was Sukoon AI) */
+  /* UNISOLVE AI */
   const chatBody = $("#chatBody");
   const chatInput = $("#chatInput");
   const CRISIS_WORDS = ["suicide", "kill myself", "end my life", "self harm", "self-harm", "want to die", "no reason to live", "end it all"];
@@ -2686,7 +2710,7 @@ document.addEventListener("DOMContentLoaded", function () {
     else if (action === "edit") toast("✏️ Edit feature coming soon!", "info", 2800);
   });
 
-  /* STUDENT / TEACHER DASHBOARD */
+  /* DASHBOARD */
   function showDashboard() { showView("dashboard"); refreshDashboard(); }
   function statusClass(s) {
     if (s === "Resolved") return "resolved";
@@ -2804,7 +2828,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateComplaintStatus(btn.getAttribute("data-id"), btn.getAttribute("data-status"));
   });
 
-  /* ADMIN — Hidden login via #admin */
+  /* ADMIN */
   const ADMIN_EMAIL = "admin@unisolve.com";
   const ADMIN_PASS = "admin123";
 
@@ -3174,9 +3198,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-/* ============================================================
-   SERVICE WORKER REGISTRATION (PWA)
-   ============================================================ */
+/* SERVICE WORKER */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js')

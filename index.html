@@ -17,6 +17,7 @@
   --bg:#0a1020;--bg-soft:#111a2e;--card:#141f38;--border:#25324f;
   --text:#e9eefb;--muted:#8fa0c2;--input-bg:#0e1729;
   --header-bg:rgba(10,16,32,.88);
+  --sticky-bg:#0d1528;
   --primary:#4f7cff;--primary-2:#7c5cff;--danger:#ff4d6d;--ok:#22c98a;--warn:#ffb020;
   --shadow:0 18px 40px rgba(0,0,0,.45);--radius:18px;
 }
@@ -24,10 +25,23 @@
   --bg:#f2f5fc;--bg-soft:#fff;--card:#fff;--border:#dce4f4;
   --text:#0e1a33;--muted:#5b6b8c;--input-bg:#f7f9fe;
   --header-bg:rgba(255,255,255,.9);
+  --sticky-bg:#ffffff;
   --shadow:0 18px 40px rgba(25,50,110,.13);
 }
-html,body{overflow-x:hidden;width:100%;max-width:100%;}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:130px;}
+
+/* ============================================================
+   CRITICAL: overflow-x:clip (NOT hidden) so sticky works!
+   ============================================================ */
+html,body{
+  overflow-x:hidden;   /* fallback for very old browsers */
+  overflow-x:clip;     /* modern: doesn't break position:sticky */
+  width:100%;max-width:100%;
+}
+html{
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;
+  scroll-behavior:smooth;
+  scroll-padding-top:130px;
+}
 body{
   font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
   background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;
@@ -51,26 +65,37 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
 /* ============================================================
-   HEADER (STICKY, z-index:100)
+   STICKY WRAPPER (contains header + tabbar)
    ============================================================ */
-.header{
+.sticky-wrap{
   position:-webkit-sticky;
   position:sticky;
   top:0;
-  z-index:100;
-  background:var(--header-bg);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  transition:box-shadow .25s ease,background .3s ease;
-  will-change:box-shadow;
+  z-index:9999;
+  width:100%;
+  background:var(--sticky-bg);
+  transition:box-shadow .25s ease;
 }
-.header.scrolled{
+.sticky-wrap.scrolled{
   box-shadow:0 6px 22px rgba(0,0,0,.42);
 }
-[data-theme="light"] .header.scrolled{
-  box-shadow:0 6px 22px rgba(25,50,110,.12);
+[data-theme="light"] .sticky-wrap.scrolled{
+  box-shadow:0 6px 22px rgba(25,50,110,.14);
 }
-.header-inner{display:flex;align-items:center;justify-content:space-between;height:60px;gap:10px;}
-.brand{display:flex;align-items:center;gap:10px;flex:none;cursor:pointer;background:none;border:none;color:inherit;font:inherit;}
+
+/* Header (inner row only — no sticky needed, wrapper handles it) */
+.header{
+  background:transparent;
+  border-bottom:1px solid var(--border);
+}
+.header-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  height:60px;gap:10px;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;flex:none;
+  cursor:pointer;background:none;border:none;color:inherit;font:inherit;
+}
 .brand-mark{
   width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
@@ -108,7 +133,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .notif-dot{
   position:absolute;top:6px;right:6px;
   width:10px;height:10px;border-radius:50%;
-  background:var(--danger);border:2px solid var(--bg);
+  background:var(--danger);border:2px solid var(--sticky-bg);
   box-shadow:0 0 0 0 rgba(255,77,109,.6);
   animation:notifPulse 2s infinite;
 }
@@ -118,13 +143,69 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   100%{box-shadow:0 0 0 0 rgba(255,77,109,0);}
 }
 
-/* NOTIFICATION DROPDOWN */
+/* TABBAR (inside sticky wrapper, below header) */
+.tabbar{
+  display:flex;
+  gap:4px;
+  overflow-x:auto;
+  padding:0 12px;
+  scrollbar-width:none;-ms-overflow-style:none;
+  scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;
+  background:transparent;
+}
+.tabbar::-webkit-scrollbar{display:none;}
+.tab{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:13px 14px 12px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:color .2s ease;
+  scroll-snap-align:start;
+  font-family:inherit;
+  position:relative;
+  border-radius:0;
+  box-shadow:none;
+  outline:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.tab::after{
+  content:"";
+  position:absolute;
+  left:12px;right:12px;
+  bottom:0;
+  height:3px;
+  background:transparent;
+  border-radius:2px 2px 0 0;
+  transition:background .2s ease;
+}
+.tab:hover{color:var(--text);}
+.tab.active{
+  color:var(--text);
+  font-weight:800;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+}
+.tab.active::after{
+  background:linear-gradient(90deg,var(--primary),var(--primary-2));
+}
+
+/* NOTIFICATION DROPDOWN — positioned below full sticky wrapper */
 .notif-dropdown{
-  position:fixed;top:68px;right:16px;
+  position:fixed;top:110px;right:16px;
   width:min(380px,calc(100vw - 32px));max-height:72vh;
   background:var(--card);border:1px solid var(--border);
   border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.5);
-  z-index:150;overflow:hidden;display:flex;flex-direction:column;
+  z-index:10000;overflow:hidden;display:flex;flex-direction:column;
   animation:dropIn .22s cubic-bezier(.34,1.4,.64,1);
 }
 @keyframes dropIn{from{opacity:0;transform:translateY(-8px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
@@ -159,67 +240,6 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .notif-item .ni-msg{font-size:13.5px;font-weight:600;line-height:1.45;word-break:break-word;}
 .notif-empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13.5px;}
 .notif-empty .e-emoji{font-size:32px;display:block;margin-bottom:10px;opacity:.7;}
-
-/* ============================================================
-   TABBAR — YouTube/Instagram style underline tabs
-   ============================================================ */
-.tabbar{
-  display:flex;
-  gap:4px;
-  overflow-x:auto;
-  padding:0 12px;
-  scrollbar-width:none;-ms-overflow-style:none;
-  scroll-snap-type:x proximity;
-  -webkit-overflow-scrolling:touch;
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-  background:transparent;
-}
-.tabbar::-webkit-scrollbar{display:none;}
-
-.tab{
-  flex:0 0 auto;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:13px 14px 12px;
-  border:none;
-  background:transparent;
-  color:var(--muted);
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  white-space:nowrap;
-  transition:color .2s ease;
-  scroll-snap-align:start;
-  font-family:inherit;
-  position:relative;
-  border-radius:0;
-  box-shadow:none;
-  outline:none;
-  -webkit-tap-highlight-color:transparent;
-}
-.tab::after{
-  content:"";
-  position:absolute;
-  left:12px;right:12px;
-  bottom:-1px;
-  height:3px;
-  background:transparent;
-  border-radius:2px 2px 0 0;
-  transition:background .2s ease;
-}
-.tab:hover{color:var(--text);}
-.tab.active{
-  color:var(--text);
-  font-weight:800;
-  background:transparent;
-  border:none;
-  box-shadow:none;
-}
-.tab.active::after{
-  background:linear-gradient(90deg,var(--primary),var(--primary-2));
-}
 
 /* DRAWER */
 .drawer{
@@ -263,7 +283,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 }
 .drawer-backdrop.open{opacity:1;pointer-events:auto;}
 
-/* BUTTONS (distinct from tabs) */
+/* BUTTONS */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   font-size:15px;font-weight:700;padding:12px 20px;border-radius:13px;
@@ -792,10 +812,10 @@ table.tt tr.tt-lunch td:first-child{
   .tt-scroll{display:none;}
   .tt-cards{display:flex;}
   .notif-dropdown{
-    top:60px;left:0;right:0;
+    top:104px;left:0;right:0;
     width:100%;max-width:100%;
     border-radius:0 0 18px 18px;
-    max-height:calc(100vh - 60px);
+    max-height:calc(100vh - 104px);
     border-left:none;border-right:none;border-top:none;
   }
   .tab{padding:12px 11px 11px;font-size:13.5px;}
@@ -828,26 +848,31 @@ table.tt tr.tt-lunch td:first-child{
 
 <body>
 
-<!-- HEADER (sticky, contains tabbar too) -->
-<header class="header" id="siteHeader">
-  <div class="wrap header-inner">
-    <button type="button" class="brand" data-view="home" aria-label="Home">
-      <span class="brand-mark">C1</span>
-      <span class="brand-text">Campus<b>One</b></span>
-    </button>
+<!-- ============================================================
+     STICKY WRAPPER — contains header + tabbar
+     ============================================================ -->
+<div class="sticky-wrap" id="stickyWrap">
 
-    <div class="header-actions">
-      <button type="button" class="icon-btn" id="soundToggle" aria-label="Toggle tap sound">🔊</button>
-      <button type="button" class="icon-btn notif-btn" id="notifBell" aria-label="Notifications">
-        🔔<span class="notif-dot hidden" id="notifDot"></span>
+  <header class="header" id="siteHeader">
+    <div class="wrap header-inner">
+      <button type="button" class="brand" data-view="home" aria-label="Home">
+        <span class="brand-mark">C1</span>
+        <span class="brand-text">Campus<b>One</b></span>
       </button>
-      <button type="button" class="icon-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
-      <button type="button" class="user-chip hidden" id="headerUser" aria-label="Dashboard"></button>
-      <button type="button" class="icon-btn hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
+
+      <div class="header-actions">
+        <button type="button" class="icon-btn" id="soundToggle" aria-label="Toggle tap sound">🔊</button>
+        <button type="button" class="icon-btn notif-btn" id="notifBell" aria-label="Notifications">
+          🔔<span class="notif-dot hidden" id="notifDot"></span>
+        </button>
+        <button type="button" class="icon-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        <button type="button" class="user-chip hidden" id="headerUser" aria-label="Dashboard"></button>
+        <button type="button" class="icon-btn hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
-  </div>
+  </header>
 
   <nav class="tabbar" id="tabbar">
     <button type="button" class="tab active" data-view="home">🏠 Home</button>
@@ -856,7 +881,8 @@ table.tt tr.tt-lunch td:first-child{
     <button type="button" class="tab" data-view="sukoon">🧠 Sukoon AI</button>
     <button type="button" class="tab" data-view="schedule">📅 Schedule</button>
   </nav>
-</header>
+
+</div>
 
 <!-- NOTIFICATION DROPDOWN -->
 <div class="notif-dropdown hidden" id="notifDropdown">
@@ -1369,70 +1395,96 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* =========================================================
-     NEW: TAP SOUND (Haptic feedback)
+     TAP SOUND — Web Audio API with lazy init (mobile-safe)
      ========================================================= */
-  const TAP_SOUND_URL = "https://actions.google.com/sounds/v1/ui/ui_tap_variant_1.ogg";
-  const TAP_THROTTLE_MS = 200;
-
-  let soundEnabled = readLS(K.sound, true);
-  if (typeof soundEnabled !== "boolean") soundEnabled = true;
-
-  let tapAudio = null;
-  let lastTapTime = 0;
+  let audioCtx = null;
+  let tapBuffer = null;
   let audioReady = false;
+  let lastTapTime = 0;
+  const TAP_THROTTLE_MS = 200;
+  const TAP_SOUND_URL = "https://actions.google.com/sounds/v1/ui/ui_tap_variant_1.ogg";
 
-  // Lazy-create and warm up the audio element on the first user gesture
-  function warmUpAudio() {
-    if (audioReady) return;
+  function initAudio() {
     try {
-      if (!tapAudio) {
-        tapAudio = new Audio(TAP_SOUND_URL);
-        tapAudio.preload = "auto";
-        tapAudio.volume = 0.15;
+      if (!audioCtx) {
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        if (!Ctor) return;
+        audioCtx = new Ctor();
       }
-      // Attempt to prime the element (silent play) - enables subsequent plays on mobile
-      const p = tapAudio.play();
-      if (p && typeof p.then === "function") {
-        p.then(function () {
-          try { tapAudio.pause(); tapAudio.currentTime = 0; } catch (e) {}
-          audioReady = true;
-        }).catch(function () {
-          // Autoplay blocked → will try again on next tap
-        });
-      } else {
-        audioReady = true;
+      if (audioCtx.state === "suspended") {
+        const p = audioCtx.resume();
+        if (p && typeof p.catch === "function") p.catch(function () {});
       }
-    } catch (e) { /* silent */ }
+      // Preload the tap sound once we have an audioCtx
+      if (!tapBuffer && audioCtx) {
+        fetch(TAP_SOUND_URL)
+          .then(function (r) { return r.arrayBuffer(); })
+          .then(function (buf) {
+            return new Promise(function (resolve, reject) {
+              const onOk = function (decoded) { resolve(decoded); };
+              const onErr = function (err) { reject(err); };
+              const res = audioCtx.decodeAudioData(buf, onOk, onErr);
+              if (res && typeof res.then === "function") res.then(onOk).catch(onErr);
+            });
+          })
+          .then(function (decoded) {
+            tapBuffer = decoded;
+            audioReady = true;
+          })
+          .catch(function (e) { console.warn("Sound load failed", e); });
+      }
+    } catch (e) {
+      console.warn("Audio init failed", e);
+    }
+    document.removeEventListener("touchstart", initAudio);
+    document.removeEventListener("click", initAudio);
   }
+
+  // Attach once — remove inside initAudio
+  document.addEventListener("touchstart", initAudio, { passive: true });
+  document.addEventListener("click", initAudio);
 
   function playTapSound() {
-    if (!soundEnabled) return;
-    const now = Date.now();
-    if (now - lastTapTime < TAP_THROTTLE_MS) return;
-    lastTapTime = now;
     try {
-      if (!tapAudio) {
-        tapAudio = new Audio(TAP_SOUND_URL);
-        tapAudio.preload = "auto";
-        tapAudio.volume = 0.15;
+      // Check saved preference
+      let enabled = true;
+      try {
+        const s = localStorage.getItem(K.sound);
+        if (s !== null) enabled = JSON.parse(s);
+      } catch (e) {}
+      if (!enabled) return;
+
+      // Throttle
+      const now = Date.now();
+      if (now - lastTapTime < TAP_THROTTLE_MS) return;
+      lastTapTime = now;
+
+      // If not ready yet, try to init and bail
+      if (!audioCtx || audioCtx.state !== "running" || !tapBuffer) {
+        initAudio();
+        return;
       }
-      try { tapAudio.currentTime = 0; } catch (e) {}
-      const p = tapAudio.play();
-      if (p && typeof p.catch === "function") p.catch(function () {});
-    } catch (e) { /* silent */ }
+
+      const source = audioCtx.createBufferSource();
+      source.buffer = tapBuffer;
+      const gain = audioCtx.createGain();
+      gain.gain.value = 0.15;
+      source.connect(gain);
+      gain.connect(audioCtx.destination);
+      source.start(0);
+    } catch (e) {
+      console.warn("Sound blocked", e);
+    }
   }
 
-  // Warm up on very first interaction of any kind (capture phase)
-  ["pointerdown", "touchstart", "mousedown", "keydown"].forEach(function (evt) {
-    document.addEventListener(evt, warmUpAudio, { once: true, capture: true, passive: true });
-  });
-
-  // Global delegated tap-sound on any interactive element (capture phase so it fires first)
-  const TAP_TARGETS = "button, a, .tab, .chip, .quick-card, .role-btn, .mood-btn, .qr, .item-card, .btn, .check-pill, .radio-pill, label[for], .notif-item, [role='button']";
+  // Global tap-sound listener — capture phase so it fires before other handlers
   document.addEventListener("click", function (e) {
-    const el = e.target.closest(TAP_TARGETS);
+    const el = e.target.closest(
+      "button, a, .tab, .chip, .quick-card, .role-btn, .mood-btn, .qr, " +
+      ".item-card, .btn, .check-pill, .radio-pill, label[for], .notif-item, [role='button']"
+    );
     if (!el) return;
-    if (el.id === "soundToggle") return; // don't beep when toggling sound
+    if (el.id === "soundToggle") return;
     playTapSound();
   }, true);
 
@@ -1443,29 +1495,31 @@ document.addEventListener("DOMContentLoaded", function () {
     soundToggle.setAttribute("aria-label", soundEnabled ? "Mute tap sound" : "Unmute tap sound");
     soundToggle.title = soundEnabled ? "Tap sound: ON" : "Tap sound: OFF";
   }
+  let soundEnabled = readLS(K.sound, true);
+  if (typeof soundEnabled !== "boolean") soundEnabled = true;
   applySoundUI();
   soundToggle.addEventListener("click", function () {
     soundEnabled = !soundEnabled;
     writeLS(K.sound, soundEnabled);
     applySoundUI();
     if (soundEnabled) {
-      warmUpAudio();
-      setTimeout(playTapSound, 60);
+      initAudio();
+      setTimeout(playTapSound, 80);
     }
     toast(soundEnabled ? "🔊 Tap sound enabled" : "🔇 Tap sound muted", "info", 1600);
   });
 
   /* =========================================================
-     FIX 1 — STICKY HEADER SHADOW
+     STICKY WRAPPER SHADOW
      ========================================================= */
-  const siteHeader = $("#siteHeader");
-  function updateHeaderShadow() {
+  const stickyWrap = $("#stickyWrap");
+  function updateStickyShadow() {
     const y = window.scrollY || window.pageYOffset || 0;
-    if (y > 6) siteHeader.classList.add("scrolled");
-    else siteHeader.classList.remove("scrolled");
+    if (y > 6) stickyWrap.classList.add("scrolled");
+    else stickyWrap.classList.remove("scrolled");
   }
-  updateHeaderShadow();
-  window.addEventListener("scroll", updateHeaderShadow, { passive: true });
+  updateStickyShadow();
+  window.addEventListener("scroll", updateStickyShadow, { passive: true });
 
   /* =========================================================
      NOTIFICATIONS
@@ -1544,16 +1598,13 @@ document.addEventListener("DOMContentLoaded", function () {
     applyTheme(next);
   });
 
-  /* =========================================================
-     VIEWS + FIX 3 — SMOOTH SCROLL TO TOP OF TAB CONTENT
-     ========================================================= */
+  /* VIEWS */
   const VIEWS = ["home", "complaints", "lostfound", "sukoon", "schedule", "dashboard"];
 
   function scrollToViewTop() {
-    const headerH = siteHeader ? siteHeader.offsetHeight : 0;
-    const targetY = Math.max(0, (window.scrollY || 0) - 1);
-    // Find the currently visible view's top and scroll just above it
-    const visibleView = VIEWS.map(function (v) { return document.getElementById("view-" + v); })
+    const headerH = stickyWrap ? stickyWrap.offsetHeight : 0;
+    const visibleView = VIEWS
+      .map(function (v) { return document.getElementById("view-" + v); })
       .filter(function (el) { return el && !el.classList.contains("hidden"); })[0];
     if (!visibleView) {
       try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
@@ -1562,23 +1613,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const rect = visibleView.getBoundingClientRect();
     const currentY = window.scrollY || window.pageYOffset || 0;
     const viewTop = rect.top + currentY;
-    // Scroll so the view's top sits just below the sticky header
-    const desiredY = Math.max(0, viewTop - headerH - 6);
-    try {
-      window.scrollTo({ top: desiredY, behavior: "smooth" });
-    } catch (e) {
-      window.scrollTo(0, desiredY);
-    }
+    const desiredY = Math.max(0, viewTop - headerH - 4);
+    try { window.scrollTo({ top: desiredY, behavior: "smooth" }); }
+    catch (e) { window.scrollTo(0, desiredY); }
   }
 
   function showView(name) {
     if (VIEWS.indexOf(name) === -1) name = "home";
-
     VIEWS.forEach(function (v) {
       const el = document.getElementById("view-" + v);
       if (el) el.classList.toggle("hidden", v !== name);
     });
-
     $$(".tab").forEach(function (t) {
       const active = t.getAttribute("data-view") === name;
       t.classList.toggle("active", active);
@@ -1586,10 +1631,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try { t.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }); } catch (e) {}
       }
     });
-
-    // Smooth scroll to top of new content (below sticky header)
     setTimeout(scrollToViewTop, 40);
-
     if (name === "sukoon") {
       setTimeout(function () {
         const body = $("#chatBody");

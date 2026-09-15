@@ -190,20 +190,18 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
 /* ============================================================
-   FIX 1: STICKY WRAPPER — removed overflow:hidden (it was
-   creating a stacking context bug that pushed the fixed-position
-   notification dropdown behind the header on mobile).
-   Using isolation:isolate instead so the header's z-index
-   behaves predictably.
+   FIX 1: STICKY WRAPPER — z-index 9999, overflow visible
+   (so the absolutely-positioned notification dropdown inside
+   it can escape visually without being clipped).
    ============================================================ */
 .sticky-wrap{
   position:-webkit-sticky;
   position:sticky;
   top:0;
   z-index:9999;
-  isolation:isolate;
   width:100%;
   max-width:100%;
+  overflow:visible;          /* CRITICAL: don't clip the dropdown */
   background:var(--sticky-bg);
   box-shadow:0 2px 10px rgba(0,0,0,.16);
   transition:box-shadow .25s ease;
@@ -318,12 +316,13 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 }
 
 /* ============================================================
-   FIX 1: NOTIFICATION DROPDOWN — MAX z-index, fixed position.
-   `top` is set dynamically via JS (positionNotifDropdown()).
+   FIX 1: NOTIFICATION DROPDOWN — position:absolute inside
+   .sticky-wrap (which is position:sticky = positioned ancestor).
+   z-index: 10000 !important — above header content.
    ============================================================ */
 .notif-dropdown{
-  position:fixed;
-  top:140px; /* fallback — overwritten by JS */
+  position:absolute;
+  top:calc(100% + 8px);
   right:16px;
   width:min(380px,calc(100vw - 32px));
   max-height:72vh;
@@ -331,7 +330,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   border:1px solid var(--border);
   border-radius:16px;
   box-shadow:0 20px 50px rgba(0,0,0,.6), 0 0 0 1px rgba(79,124,255,.08);
-  z-index:2147483647; /* MAX — guaranteed above everything */
+  z-index:10000 !important;
   overflow:hidden;
   display:flex;flex-direction:column;
   animation:dropIn .22s cubic-bezier(.34,1.4,.64,1);
@@ -406,11 +405,11 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .tab.active{color:var(--text);font-weight:800;background:transparent;border:none;box-shadow:none;}
 .tab.active::after{background:linear-gradient(90deg,var(--primary),var(--primary-2));}
 
-/* DRAWER */
+/* DRAWER — z-index ABOVE sticky-wrap so it covers the header */
 .drawer{
   position:fixed;top:0;right:0;height:100%;width:292px;max-width:86vw;
   background:var(--card);border-left:1px solid var(--border);
-  z-index:130;transform:translateX(105%);
+  z-index:10001;transform:translateX(105%);
   transition:transform .3s cubic-bezier(.4,0,.2,1);
   display:flex;flex-direction:column;padding:18px;overflow-y:auto;
   box-shadow:-14px 0 40px rgba(0,0,0,.4);
@@ -432,13 +431,13 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .drawer-nav a:hover,.drawer-nav button:hover{background:var(--bg-soft);border-color:var(--border);}
 .drawer-nav .danger{color:var(--danger);}
 .drawer-nav .danger:hover{background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.3);}
-#drawerInstall{
+#installAppBtn{
   background:linear-gradient(135deg,rgba(79,124,255,.18),rgba(124,92,255,.14));
   border:1px solid rgba(79,124,255,.4);
   color:var(--text);
   font-weight:800;
 }
-#drawerInstall:hover{
+#installAppBtn:hover{
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
   color:#fff;border-color:transparent;
   box-shadow:0 8px 20px rgba(79,124,255,.35);
@@ -458,7 +457,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   background:rgba(3,7,16,.72);
   opacity:0;pointer-events:none;
   transition:opacity .3s;
-  z-index:125;
+  z-index:10000;
   backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
 }
 .drawer-backdrop.open{opacity:1;pointer-events:auto;}
@@ -756,7 +755,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 .sos-btn:active{transform:scale(.92);}
 .sos-btn::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,45,85,.85);animation:sosPulse 2s infinite;pointer-events:none;z-index:-1;}
 @keyframes sosPulse{0%{transform:scale(1);opacity:.85;}100%{transform:scale(1.75);opacity:0;}}
-.toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:2147483646;display:flex;flex-direction:column;gap:8px;width:calc(100% - 28px);max-width:430px;pointer-events:none;}
+.toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:8px;width:calc(100% - 28px);max-width:430px;pointer-events:none;}
 .toast{padding:13px 16px;border-radius:14px;background:var(--card);border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.32);font-size:14px;font-weight:600;animation:toastIn .28s;word-break:break-word;pointer-events:auto;}
 .toast.success{border-left:4px solid var(--ok);}
 .toast.error{border-left:4px solid var(--danger);}
@@ -770,7 +769,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 .help-box{display:inline-flex;align-items:center;gap:11px;padding:12px 18px;border-radius:14px;background:var(--card);border:1px solid var(--border);font-size:13.5px;font-weight:700;flex-wrap:wrap;justify-content:center;text-align:center;}
 .help-box .hn{color:var(--danger);font-weight:900;letter-spacing:.3px;}
 .footer-copy{text-align:center;font-size:12.5px;color:var(--muted);line-height:1.6;}
-.modal-overlay{position:fixed;inset:0;background:rgba(4,8,18,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:16px;z-index:200;overflow-y:auto;overscroll-behavior:contain;}
+.modal-overlay{position:fixed;inset:0;background:rgba(4,8,18,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:16px;z-index:20000;overflow-y:auto;overscroll-behavior:contain;}
 .modal-overlay.open{display:flex;}
 .modal{width:100%;max-width:560px;margin:auto;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:26px;box-shadow:0 30px 70px rgba(0,0,0,.5);position:relative;animation:modalIn .25s;}
 .modal.wide{max-width:640px;}
@@ -877,7 +876,9 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 
 <body>
 
-<!-- STICKY WRAPPER -->
+<!-- ============================================================
+     STICKY WRAPPER (now contains the notification dropdown too)
+     ============================================================ -->
 <div class="sticky-wrap" id="stickyWrap">
   <header class="header" id="siteHeader">
     <div class="wrap header-inner">
@@ -907,15 +908,15 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
     <button type="button" class="tab" data-view="sukoon">🧠 UniSolve AI</button>
     <button type="button" class="tab" data-view="schedule">📅 Schedule</button>
   </nav>
-</div>
 
-<!-- NOTIFICATION DROPDOWN (sibling of sticky-wrap, max z-index) -->
-<div class="notif-dropdown hidden" id="notifDropdown">
-  <div class="notif-head">
-    <strong>🔔 Notifications</strong>
-    <button type="button" id="markAllRead">Mark all as read</button>
+  <!-- NOTIFICATION DROPDOWN — inside sticky-wrap, positioned absolute relative to it -->
+  <div class="notif-dropdown hidden" id="notifDropdown">
+    <div class="notif-head">
+      <strong>🔔 Notifications</strong>
+      <button type="button" id="markAllRead">Mark all as read</button>
+    </div>
+    <div class="notif-list" id="notifList"></div>
   </div>
-  <div class="notif-list" id="notifList"></div>
 </div>
 
 <!-- DRAWER -->
@@ -938,7 +939,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
     <div class="drawer-divider hidden" id="drawerDiv2"></div>
     <button type="button" id="drawerLogout" class="danger hidden">🚪 Logout</button>
     <div class="drawer-divider" id="drawerDiv3"></div>
-    <button type="button" id="drawerInstall">📥 Install App</button>
+    <button type="button" id="installAppBtn">📥 Install App</button>
   </nav>
 </aside>
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
@@ -1557,21 +1558,8 @@ document.addEventListener("DOMContentLoaded", function () {
   updateStickyShadow();
   window.addEventListener("scroll", updateStickyShadow, { passive: true });
 
-  /* ============================================================
-     FIX 1: POSITION THE NOTIFICATION DROPDOWN DYNAMICALLY
-     ============================================================ */
-  const notifDropdown = $("#notifDropdown");
-  function positionNotifDropdown() {
-    if (!notifDropdown || notifDropdown.classList.contains("hidden")) return;
-    const wrapH = stickyWrap ? stickyWrap.getBoundingClientRect().height : 130;
-    notifDropdown.style.top = Math.round(wrapH + 8) + "px";
-  }
-  window.addEventListener("resize", positionNotifDropdown);
-  window.addEventListener("orientationchange", function () {
-    setTimeout(positionNotifDropdown, 120);
-  });
-
   /* NOTIFICATIONS */
+  const notifDropdown = $("#notifDropdown");
   const SAMPLE_NOTIFICATIONS = [
     { id: "N1", icon: "🎉", message: "Welcome to UniSolve! Explore all features." },
     { id: "N2", icon: "📝", message: "Your complaint #101 is under review." },
@@ -1606,10 +1594,7 @@ document.addEventListener("DOMContentLoaded", function () {
     e.stopPropagation();
     if (notifDropdown.classList.contains("hidden")) {
       renderNotifList();
-      positionNotifDropdown();               // ← compute top BEFORE showing
       notifDropdown.classList.remove("hidden");
-      positionNotifDropdown();               // ← recompute after display:flex takes effect
-      requestAnimationFrame(positionNotifDropdown);
       setTimeout(markAllAsRead, 700);
     } else {
       notifDropdown.classList.add("hidden");
@@ -1626,9 +1611,6 @@ document.addEventListener("DOMContentLoaded", function () {
     markAllAsRead();
     toast("All notifications marked as read", "success", 1800);
   });
-  window.addEventListener("scroll", function () {
-    if (!notifDropdown.classList.contains("hidden")) positionNotifDropdown();
-  }, { passive: true });
   renderNotifDot();
   renderNotifList();
 
@@ -1916,82 +1898,90 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /* ============================================================
-     FIX 2: PWA INSTALL APP — with proper prompt handling
-     + standalone detection + fallback toast message
+     FIX 2: PWA INSTALL APP BUTTON
+     Uses id="installAppBtn", deferredPrompt variable, try/catch,
+     standalone-mode detection, and fallback toast.
      ============================================================ */
-  let deferredInstallPrompt = null;
+  let deferredPrompt = null;
 
-  /* Detect standalone / already installed */
-  function isStandaloneMode() {
-    try {
-      if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
-      if (window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches) return true;
-      if (window.matchMedia && window.matchMedia("(display-mode: minimal-ui)").matches) return true;
-      if (window.navigator.standalone === true) return true;
-      if (document.referrer && document.referrer.indexOf("android-app://") === 0) return true;
-    } catch (e) {}
-    return false;
-  }
+  try {
+    const installBtnEl = document.getElementById('installAppBtn');
 
-  function hideInstallButton() {
-    const btn = document.getElementById("drawerInstall");
-    const div = document.getElementById("drawerDiv3");
-    if (btn) btn.classList.add("hidden");
-    if (div) div.classList.add("hidden");
-  }
+    // Detect if the app is already installed (standalone display mode)
+    const isStandalone =
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      (window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches) ||
+      (window.matchMedia && window.matchMedia('(display-mode: minimal-ui)').matches) ||
+      (window.navigator && window.navigator.standalone === true);
 
-  /* If already installed → hide button */
-  if (isStandaloneMode()) {
-    hideInstallButton();
-  }
+    if (isStandalone && installBtnEl) {
+      installBtnEl.style.display = 'none';
+      const div3 = document.getElementById('drawerDiv3');
+      if (div3) div3.style.display = 'none';
+    }
 
-  /* Listen for beforeinstallprompt */
-  window.addEventListener("beforeinstallprompt", function (e) {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    console.log("[UniSolve] beforeinstallprompt captured ✅");
-    // Un-hide the button in case it was hidden earlier
-    const btn = document.getElementById("drawerInstall");
-    const div = document.getElementById("drawerDiv3");
-    if (btn && !isStandaloneMode()) btn.classList.remove("hidden");
-    if (div && !isStandaloneMode()) div.classList.remove("hidden");
-  });
+    // Capture the install prompt
+    window.addEventListener('beforeinstallprompt', function (e) {
+      try {
+        e.preventDefault();
+        deferredPrompt = e;
+        const installBtn = document.getElementById('installAppBtn');
+        if (installBtn) installBtn.style.display = 'flex';
+        const div3 = document.getElementById('drawerDiv3');
+        if (div3) div3.style.display = '';
+        console.log('[UniSolve] beforeinstallprompt captured ✅');
+      } catch (err) {
+        console.warn('[Install] beforeinstallprompt error:', err);
+      }
+    });
 
-  /* Listen for appinstalled */
-  window.addEventListener("appinstalled", function () {
-    console.log("[UniSolve] App installed ✅");
-    deferredInstallPrompt = null;
-    hideInstallButton();
-    toast("🎉 UniSolve installed successfully!", "success", 3000);
-  });
-
-  /* Click handler */
-  const drawerInstallBtn = document.getElementById("drawerInstall");
-  if (drawerInstallBtn) {
-    drawerInstallBtn.addEventListener("click", async function () {
-      closeDrawer();
-
-      /* Case 1: prompt available → show it */
-      if (deferredInstallPrompt) {
+    // Click handler on the Install button
+    if (installBtnEl) {
+      installBtnEl.addEventListener('click', function () {
         try {
-          deferredInstallPrompt.prompt();
-          const choice = await deferredInstallPrompt.userChoice;
-          if (choice && choice.outcome === "accepted") {
-            toast("🎉 UniSolve installed! Check your home screen.", "success", 3000);
+          closeDrawer();
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function (choice) {
+              try {
+                if (choice.outcome === 'accepted') {
+                  toast('UniSolve installed successfully!', 'success', 3000);
+                } else {
+                  toast('Install cancelled.', 'info', 2000);
+                }
+              } catch (err) {
+                console.warn('[Install] userChoice handling error:', err);
+              }
+              deferredPrompt = null;
+            }).catch(function (err) {
+              console.warn('[Install] userChoice promise error:', err);
+              deferredPrompt = null;
+            });
           } else {
-            toast("Install cancelled", "info", 1800);
+            toast('Install not available yet. Use your browser menu (⋮) and tap "Add to Home Screen".', 'info', 5000);
           }
         } catch (err) {
-          console.warn("[UniSolve] Install prompt error:", err);
-          toast("Install failed. Try again later.", "error", 2200);
+          console.warn('[Install] click error:', err);
+          toast('Install not available right now.', 'error', 2200);
         }
-        deferredInstallPrompt = null;
-        return;
-      }
+      });
+    }
 
-      /* Case 2: no prompt yet → fallback toast */
-      toast("Install option not available yet. Try refreshing the page or use your browser's menu to Add to Home Screen.", "info", 5000);
+    // Hide button after successful install
+    window.addEventListener('appinstalled', function () {
+      try {
+        deferredPrompt = null;
+        const installBtn = document.getElementById('installAppBtn');
+        if (installBtn) installBtn.style.display = 'none';
+        const div3 = document.getElementById('drawerDiv3');
+        if (div3) div3.style.display = 'none';
+        toast('🎉 UniSolve installed successfully!', 'success', 3000);
+      } catch (err) {
+        console.warn('[Install] appinstalled error:', err);
+      }
     });
+  } catch (installErr) {
+    console.warn('[Install] setup error:', installErr);
   }
 
   /* AUTH UI */
@@ -3117,12 +3107,14 @@ document.addEventListener("DOMContentLoaded", function () {
   if (location.hash === "#admin") setTimeout(handleAdminHash, 100);
 });
 
-/* SERVICE WORKER REGISTRATION */
+/* ============================================================
+   SERVICE WORKER REGISTRATION (PWA)
+   ============================================================ */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js')
-      .then(reg => console.log('SW registered ✅'))
-      .catch(err => console.log('SW error', err));
+      .then(reg => console.log('[UniSolve] Service Worker registered ✅', reg.scope))
+      .catch(err => console.log('[UniSolve] Service Worker error:', err));
   });
 }
 </script>

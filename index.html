@@ -16,15 +16,11 @@
   } catch (e) {}
 </script>
 
-<!-- ============================================================
-     FIREBASE: STUB GLOBAL
-     ============================================================ -->
+<!-- FIREBASE STUB -->
 <script>
   window.UniSolveFirebase = {
-    ready: false,
-    error: null,
-    _readyCallbacks: [],
-    _listenerUnsub: null,
+    ready: false, error: null,
+    _readyCallbacks: [], _listenerUnsub: null,
     onReady: function (cb) {
       if (this.ready) { try { cb(); } catch (e) { console.warn(e); } }
       else this._readyCallbacks.push(cb);
@@ -42,9 +38,7 @@
   };
 </script>
 
-<!-- ============================================================
-     FIREBASE: ES MODULE
-     ============================================================ -->
+<!-- FIREBASE MODULE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
@@ -94,8 +88,7 @@
         this._listenerUnsub = null;
       }
       const q = collection(db, "complaints");
-      const unsub = onSnapshot(
-        q,
+      const unsub = onSnapshot(q,
         function (snapshot) {
           const items = [];
           snapshot.forEach(function (docSnap) {
@@ -123,9 +116,7 @@
               fromFirestore: true
             });
           });
-          items.sort(function (a, b) {
-            return new Date(b.createdAt) - new Date(a.createdAt);
-          });
+          items.sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
           try { callback(items); } catch (e) { console.warn(e); }
         },
         function (err) {
@@ -147,7 +138,7 @@
     window.UniSolveFirebase._fireReady();
     console.log("[UniSolve] Firebase connected ✅");
   } catch (e) {
-    console.warn("[UniSolve] Firebase init failed, using localStorage only:", e);
+    console.warn("[UniSolve] Firebase init failed:", e);
     window.UniSolveFirebase.error = e;
   }
 </script>
@@ -199,16 +190,20 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px;}
 
 /* ============================================================
-   FIX 1: STICKY WRAPPER — width bound + overflow hidden
+   FIX 1: STICKY WRAPPER — removed overflow:hidden (it was
+   creating a stacking context bug that pushed the fixed-position
+   notification dropdown behind the header on mobile).
+   Using isolation:isolate instead so the header's z-index
+   behaves predictably.
    ============================================================ */
 .sticky-wrap{
   position:-webkit-sticky;
   position:sticky;
   top:0;
   z-index:9999;
+  isolation:isolate;
   width:100%;
   max-width:100%;
-  overflow:hidden;
   background:var(--sticky-bg);
   box-shadow:0 2px 10px rgba(0,0,0,.16);
   transition:box-shadow .25s ease;
@@ -223,16 +218,14 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   box-shadow:0 10px 30px rgba(25,50,110,.16);
 }
 
-/* ============================================================
-   FIX 2: HEADER — proper 16px horizontal padding
-   ============================================================ */
+/* HEADER */
 .header{background:transparent;}
 .header-inner{
   display:flex;
   align-items:center;
   justify-content:space-between;
   min-height:72px;
-  padding:10px 16px;          /* ← FIX: was 10px 0 (no side padding) */
+  padding:10px 16px;
   gap:12px;
   width:100%;
   max-width:100%;
@@ -250,10 +243,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   box-shadow:0 10px 22px rgba(79,124,255,.45);
   flex:none;
 }
-.brand-text{
-  font-size:21px;font-weight:800;
-  letter-spacing:-.5px;white-space:nowrap;
-}
+.brand-text{font-size:21px;font-weight:800;letter-spacing:-.5px;white-space:nowrap;}
 .brand-text b{
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -280,9 +270,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   background:var(--danger);color:#fff;border-color:var(--danger);
   transform:rotate(90deg);
 }
-#drawerClose:active{
-  transform:scale(.9) rotate(90deg);
-}
+#drawerClose:active{transform:scale(.9) rotate(90deg);}
 
 .hamburger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
 .hamburger span{display:block;width:22px;height:2.5px;background:var(--text);border-radius:2px;transition:.25s;}
@@ -299,10 +287,7 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 }
 .user-chip:hover{border-color:var(--primary);}
 .user-chip .uname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.avatar{
-  width:34px;height:34px;border-radius:50%;
-  object-fit:cover;flex:none;border:1px solid var(--border);
-}
+.avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--border);}
 .avatar-initials{
   display:grid;place-items:center;
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
@@ -310,25 +295,16 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
   letter-spacing:.3px;border:none;
 }
 
-/* ============================================================
-   FIX 3: NOTIFICATION BADGE — positioned at true corner (-4px)
-   ============================================================ */
+/* NOTIFICATION BELL */
 .notif-btn{position:relative;overflow:visible !important;}
 .notif-dot{
   position:absolute;
-  top:-4px;
-  right:-4px;
-  min-width:18px;
-  height:18px;
-  padding:0 5px;
+  top:-4px;right:-4px;
+  min-width:18px;height:18px;padding:0 5px;
   border-radius:999px;
-  background:var(--danger);
-  color:#fff;
-  font-size:10px;
-  font-weight:800;
-  line-height:1;
-  display:grid;
-  place-items:center;
+  background:var(--danger);color:#fff;
+  font-size:10px;font-weight:800;line-height:1;
+  display:grid;place-items:center;
   border:2px solid var(--sticky-bg);
   box-shadow:0 2px 6px rgba(255,77,109,.5);
   z-index:5;
@@ -342,61 +318,24 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 }
 
 /* ============================================================
-   FIX 4: TABBAR — width-bounded, symmetric padding, no scrollbar
+   FIX 1: NOTIFICATION DROPDOWN — MAX z-index, fixed position.
+   `top` is set dynamically via JS (positionNotifDropdown()).
    ============================================================ */
-.tabbar{
-  display:flex;
-  gap:4px;
-  width:100%;
-  max-width:100%;
-  box-sizing:border-box;
-  overflow-x:auto;
-  overflow-y:hidden;
-  white-space:nowrap;
-  padding:0 16px 12px 16px;    /* ← FIX: symmetric 16px on both sides */
-  scrollbar-width:none;
-  -ms-overflow-style:none;
-  scroll-snap-type:x proximity;
-  -webkit-overflow-scrolling:touch;
-  background:transparent;
-}
-.tabbar::-webkit-scrollbar{display:none;height:0;}
-.tab{
-  flex:0 0 auto;
-  display:inline-flex;align-items:center;gap:7px;
-  padding:13px 15px 12px;
-  border:none;background:transparent;color:var(--muted);
-  font-size:14.5px;font-weight:600;cursor:pointer;
-  white-space:nowrap;
-  transition:color .2s ease;scroll-snap-align:start;
-  font-family:inherit;position:relative;
-  border-radius:0;box-shadow:none;outline:none;
-}
-.tab::after{
-  content:"";position:absolute;
-  left:13px;right:13px;bottom:0;
-  height:3px;background:transparent;
-  border-radius:2px 2px 0 0;
-  transition:background .2s ease;
-}
-.tab:hover{color:var(--text);}
-.tab.active{color:var(--text);font-weight:800;background:transparent;border:none;box-shadow:none;}
-.tab.active::after{background:linear-gradient(90deg,var(--primary),var(--primary-2));}
-
 .notif-dropdown{
   position:fixed;
-  top:138px;
+  top:140px; /* fallback — overwritten by JS */
   right:16px;
   width:min(380px,calc(100vw - 32px));
   max-height:72vh;
   background:var(--card);
   border:1px solid var(--border);
   border-radius:16px;
-  box-shadow:0 20px 50px rgba(0,0,0,.5);
-  z-index:10000;
+  box-shadow:0 20px 50px rgba(0,0,0,.6), 0 0 0 1px rgba(79,124,255,.08);
+  z-index:2147483647; /* MAX — guaranteed above everything */
   overflow:hidden;
   display:flex;flex-direction:column;
   animation:dropIn .22s cubic-bezier(.34,1.4,.64,1);
+  pointer-events:auto;
 }
 @keyframes dropIn{from{opacity:0;transform:translateY(-8px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
 .notif-head{
@@ -431,6 +370,43 @@ button,a,[role="button"],label,.tab,.chip,.quick-card,.role-btn,.mood-btn,
 .notif-empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13.5px;}
 .notif-empty .e-emoji{font-size:32px;display:block;margin-bottom:10px;opacity:.7;}
 
+/* TABBAR */
+.tabbar{
+  display:flex;gap:4px;
+  width:100%;max-width:100%;
+  box-sizing:border-box;
+  overflow-x:auto;overflow-y:hidden;
+  white-space:nowrap;
+  padding:0 16px 12px 16px;
+  scrollbar-width:none;-ms-overflow-style:none;
+  scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;
+  background:transparent;
+}
+.tabbar::-webkit-scrollbar{display:none;height:0;}
+.tab{
+  flex:0 0 auto;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:13px 15px 12px;
+  border:none;background:transparent;color:var(--muted);
+  font-size:14.5px;font-weight:600;cursor:pointer;
+  white-space:nowrap;
+  transition:color .2s ease;scroll-snap-align:start;
+  font-family:inherit;position:relative;
+  border-radius:0;box-shadow:none;outline:none;
+}
+.tab::after{
+  content:"";position:absolute;
+  left:13px;right:13px;bottom:0;
+  height:3px;background:transparent;
+  border-radius:2px 2px 0 0;
+  transition:background .2s ease;
+}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--text);font-weight:800;background:transparent;border:none;box-shadow:none;}
+.tab.active::after{background:linear-gradient(90deg,var(--primary),var(--primary-2));}
+
+/* DRAWER */
 .drawer{
   position:fixed;top:0;right:0;height:100%;width:292px;max-width:86vw;
   background:var(--card);border-left:1px solid var(--border);
@@ -780,7 +756,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 .sos-btn:active{transform:scale(.92);}
 .sos-btn::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,45,85,.85);animation:sosPulse 2s infinite;pointer-events:none;z-index:-1;}
 @keyframes sosPulse{0%{transform:scale(1);opacity:.85;}100%{transform:scale(1.75);opacity:0;}}
-.toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;width:calc(100% - 28px);max-width:430px;pointer-events:none;}
+.toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:2147483646;display:flex;flex-direction:column;gap:8px;width:calc(100% - 28px);max-width:430px;pointer-events:none;}
 .toast{padding:13px 16px;border-radius:14px;background:var(--card);border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.32);font-size:14px;font-weight:600;animation:toastIn .28s;word-break:break-word;pointer-events:auto;}
 .toast.success{border-left:4px solid var(--ok);}
 .toast.error{border-left:4px solid var(--danger);}
@@ -831,7 +807,6 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 @media (max-width:768px){
   .admin-table-wrap{display:none;}
   .admin-cards-wrap{display:flex;}
-  .notif-dropdown{top:132px;}
 }
 @media (max-width:720px){
   html{scroll-padding-top:140px;}
@@ -854,17 +829,15 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   .tt-scroll{display:none;}
   .tt-cards{display:flex;}
   .notif-dropdown{
-    top:126px;left:0;right:0;
-    width:100%;max-width:100%;
-    border-radius:0 0 18px 18px;
-    max-height:calc(100vh - 126px);
-    border-left:none;border-right:none;border-top:none;
+    left:8px;right:8px;
+    width:auto;max-width:calc(100vw - 16px);
+    border-radius:14px;
+    max-height:calc(100vh - 160px);
   }
   .tab{padding:12px 12px 11px;font-size:13.5px;}
   .tab::after{left:10px;right:10px;}
 }
 @media (max-width:480px){
-  /* FIX: keep horizontal padding on small screens (was 8px 0) */
   .header-inner{min-height:64px;padding:8px 16px;gap:10px;}
   .brand-mark{width:42px;height:42px;font-size:16px;border-radius:12px;}
   .brand-text{font-size:18px;}
@@ -880,7 +853,6 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   .live-dot{width:6px;height:6px;}
   .sync-badge{font-size:9.5px;padding:3px 8px;margin-left:4px;}
   .sync-badge .sb-dot{width:5px;height:5px;}
-  .notif-dropdown{top:120px;max-height:calc(100vh - 120px);}
 }
 @media (max-width:400px){
   .role-btn{padding:20px 8px;}
@@ -937,7 +909,7 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </nav>
 </div>
 
-<!-- NOTIFICATION DROPDOWN -->
+<!-- NOTIFICATION DROPDOWN (sibling of sticky-wrap, max z-index) -->
 <div class="notif-dropdown hidden" id="notifDropdown">
   <div class="notif-head">
     <strong>🔔 Notifications</strong>
@@ -1231,14 +1203,11 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
 <button type="button" class="sos-btn" id="sosBtn" aria-label="SOS">SOS</button>
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ROLE MODAL -->
+<!-- MODALS -->
 <div class="modal-overlay" id="roleModal">
   <div class="modal narrow">
     <button type="button" class="modal-close" data-close-modal="roleModal">✕</button>
-    <div class="modal-head">
-      <h3>Are you a Student or a Teacher?</h3>
-      <p>Choose your role to continue.</p>
-    </div>
+    <div class="modal-head"><h3>Are you a Student or a Teacher?</h3><p>Choose your role to continue.</p></div>
     <div class="role-grid">
       <button type="button" class="role-btn" data-role="student"><span class="emoji">🎓</span><span class="rname">Student</span><span class="rdesc">File &amp; track complaints</span></button>
       <button type="button" class="role-btn" data-role="teacher"><span class="emoji">👨‍🏫</span><span class="rname">Teacher</span><span class="rdesc">Manage class complaints</span></button>
@@ -1246,7 +1215,6 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </div>
 </div>
 
-<!-- STUDENT SIGNUP -->
 <div class="modal-overlay" id="studentModal">
   <div class="modal wide">
     <button type="button" class="modal-close" data-close-modal="studentModal">✕</button>
@@ -1294,7 +1262,6 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </div>
 </div>
 
-<!-- TEACHER SIGNUP -->
 <div class="modal-overlay" id="teacherModal">
   <div class="modal wide">
     <button type="button" class="modal-close" data-close-modal="teacherModal">✕</button>
@@ -1348,7 +1315,6 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </div>
 </div>
 
-<!-- LOGIN -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal narrow">
     <button type="button" class="modal-close" data-close-modal="loginModal">✕</button>
@@ -1367,7 +1333,6 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </div>
 </div>
 
-<!-- FORGOT PASSWORD -->
 <div class="modal-overlay" id="forgotModal">
   <div class="modal narrow">
     <button type="button" class="modal-close" data-close-modal="forgotModal">✕</button>
@@ -1382,34 +1347,20 @@ table.admin-table tr.row-emergency:hover td{background:rgba(255,45,85,.11);}
   </div>
 </div>
 
-<!-- ADMIN LOGIN -->
 <div class="modal-overlay" id="adminLoginModal">
   <div class="modal narrow">
     <button type="button" class="modal-close" data-close-modal="adminLoginModal" data-admin-close="1">✕</button>
-    <div class="modal-head">
-      <h3>🔐 Admin Login</h3>
-      <p>Restricted area · Authorized personnel only</p>
-    </div>
+    <div class="modal-head"><h3>🔐 Admin Login</h3><p>Restricted area · Authorized personnel only</p></div>
     <form id="adminLoginForm" novalidate>
       <div class="form-msg" id="admMsg"></div>
-      <div class="field">
-        <label for="admEmail">Admin Email <span class="req">*</span></label>
-        <input type="email" id="admEmail" placeholder="admin@unisolve.com" autocomplete="off" required>
-      </div>
-      <div class="field">
-        <label for="admPass">Password <span class="req">*</span></label>
-        <input type="password" id="admPass" placeholder="Enter admin password" autocomplete="off" required>
-      </div>
+      <div class="field"><label for="admEmail">Admin Email <span class="req">*</span></label><input type="email" id="admEmail" placeholder="admin@unisolve.com" autocomplete="off" required></div>
+      <div class="field"><label for="admPass">Password <span class="req">*</span></label><input type="password" id="admPass" placeholder="Enter admin password" autocomplete="off" required></div>
       <button type="submit" class="btn btn-primary btn-block">Sign in as Admin</button>
-      <div class="admin-hint">
-        <strong>Demo credentials:</strong><br>
-        Email: <code>admin@unisolve.com</code> · Password: <code>admin123</code>
-      </div>
+      <div class="admin-hint"><strong>Demo credentials:</strong><br>Email: <code>admin@unisolve.com</code> · Password: <code>admin123</code></div>
     </form>
   </div>
 </div>
 
-<!-- ITEM MODAL -->
 <div class="modal-overlay" id="itemModal">
   <div class="modal wide">
     <button type="button" class="modal-close" data-close-modal="itemModal">✕</button>
@@ -1499,7 +1450,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, duration);
   }
 
-  /* FIREBASE SYNC STATUS BADGE */
+  /* FIREBASE BADGE */
   const syncBadge = $("#syncBadge");
   const syncBadgeText = $("#syncBadgeText");
   function updateSyncBadge(state, text) {
@@ -1508,20 +1459,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (syncBadgeText) syncBadgeText.textContent = text || state;
   }
   if (window.UniSolveFirebase) {
-    window.UniSolveFirebase.onReady(function () {
-      updateSyncBadge("connected", "Firebase Synced");
-    });
-    if (window.UniSolveFirebase.error) {
-      updateSyncBadge("error", "Offline Mode");
-    }
+    window.UniSolveFirebase.onReady(function () { updateSyncBadge("connected", "Firebase Synced"); });
+    if (window.UniSolveFirebase.error) updateSyncBadge("error", "Offline Mode");
     setTimeout(function () {
-      if (window.UniSolveFirebase.error && !window.UniSolveFirebase.ready) {
-        updateSyncBadge("error", "Offline Mode");
-      } else if (!window.UniSolveFirebase.ready) {
-        updateSyncBadge("offline", "Local Only");
-      } else {
-        updateSyncBadge("connected", "Firebase Synced");
-      }
+      if (window.UniSolveFirebase.error && !window.UniSolveFirebase.ready) updateSyncBadge("error", "Offline Mode");
+      else if (!window.UniSolveFirebase.ready) updateSyncBadge("offline", "Local Only");
+      else updateSyncBadge("connected", "Firebase Synced");
     }, 3500);
   } else {
     updateSyncBadge("error", "Offline Mode");
@@ -1614,6 +1557,20 @@ document.addEventListener("DOMContentLoaded", function () {
   updateStickyShadow();
   window.addEventListener("scroll", updateStickyShadow, { passive: true });
 
+  /* ============================================================
+     FIX 1: POSITION THE NOTIFICATION DROPDOWN DYNAMICALLY
+     ============================================================ */
+  const notifDropdown = $("#notifDropdown");
+  function positionNotifDropdown() {
+    if (!notifDropdown || notifDropdown.classList.contains("hidden")) return;
+    const wrapH = stickyWrap ? stickyWrap.getBoundingClientRect().height : 130;
+    notifDropdown.style.top = Math.round(wrapH + 8) + "px";
+  }
+  window.addEventListener("resize", positionNotifDropdown);
+  window.addEventListener("orientationchange", function () {
+    setTimeout(positionNotifDropdown, 120);
+  });
+
   /* NOTIFICATIONS */
   const SAMPLE_NOTIFICATIONS = [
     { id: "N1", icon: "🎉", message: "Welcome to UniSolve! Explore all features." },
@@ -1645,14 +1602,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }).join("");
   }
   const notifBell = $("#notifBell");
-  const notifDropdown = $("#notifDropdown");
   notifBell.addEventListener("click", function (e) {
     e.stopPropagation();
     if (notifDropdown.classList.contains("hidden")) {
       renderNotifList();
+      positionNotifDropdown();               // ← compute top BEFORE showing
       notifDropdown.classList.remove("hidden");
+      positionNotifDropdown();               // ← recompute after display:flex takes effect
+      requestAnimationFrame(positionNotifDropdown);
       setTimeout(markAllAsRead, 700);
-    } else notifDropdown.classList.add("hidden");
+    } else {
+      notifDropdown.classList.add("hidden");
+    }
   });
   document.addEventListener("click", function (e) {
     if (notifDropdown.classList.contains("hidden")) return;
@@ -1665,6 +1626,9 @@ document.addEventListener("DOMContentLoaded", function () {
     markAllAsRead();
     toast("All notifications marked as read", "success", 1800);
   });
+  window.addEventListener("scroll", function () {
+    if (!notifDropdown.classList.contains("hidden")) positionNotifDropdown();
+  }, { passive: true });
   renderNotifDot();
   renderNotifList();
 
@@ -1951,19 +1915,63 @@ document.addEventListener("DOMContentLoaded", function () {
     if (drawer.classList.contains("open")) closeDrawer();
   });
 
-  /* PWA INSTALL APP BUTTON */
+  /* ============================================================
+     FIX 2: PWA INSTALL APP — with proper prompt handling
+     + standalone detection + fallback toast message
+     ============================================================ */
   let deferredInstallPrompt = null;
 
+  /* Detect standalone / already installed */
+  function isStandaloneMode() {
+    try {
+      if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
+      if (window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches) return true;
+      if (window.matchMedia && window.matchMedia("(display-mode: minimal-ui)").matches) return true;
+      if (window.navigator.standalone === true) return true;
+      if (document.referrer && document.referrer.indexOf("android-app://") === 0) return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function hideInstallButton() {
+    const btn = document.getElementById("drawerInstall");
+    const div = document.getElementById("drawerDiv3");
+    if (btn) btn.classList.add("hidden");
+    if (div) div.classList.add("hidden");
+  }
+
+  /* If already installed → hide button */
+  if (isStandaloneMode()) {
+    hideInstallButton();
+  }
+
+  /* Listen for beforeinstallprompt */
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredInstallPrompt = e;
-    console.log("[UniSolve] beforeinstallprompt captured");
+    console.log("[UniSolve] beforeinstallprompt captured ✅");
+    // Un-hide the button in case it was hidden earlier
+    const btn = document.getElementById("drawerInstall");
+    const div = document.getElementById("drawerDiv3");
+    if (btn && !isStandaloneMode()) btn.classList.remove("hidden");
+    if (div && !isStandaloneMode()) div.classList.remove("hidden");
   });
 
+  /* Listen for appinstalled */
+  window.addEventListener("appinstalled", function () {
+    console.log("[UniSolve] App installed ✅");
+    deferredInstallPrompt = null;
+    hideInstallButton();
+    toast("🎉 UniSolve installed successfully!", "success", 3000);
+  });
+
+  /* Click handler */
   const drawerInstallBtn = document.getElementById("drawerInstall");
   if (drawerInstallBtn) {
     drawerInstallBtn.addEventListener("click", async function () {
       closeDrawer();
+
+      /* Case 1: prompt available → show it */
       if (deferredInstallPrompt) {
         try {
           deferredInstallPrompt.prompt();
@@ -1978,16 +1986,13 @@ document.addEventListener("DOMContentLoaded", function () {
           toast("Install failed. Try again later.", "error", 2200);
         }
         deferredInstallPrompt = null;
-      } else {
-        toast("App is already installed, or your browser doesn't support it. Try adding it from your browser menu.", "info", 4500);
+        return;
       }
+
+      /* Case 2: no prompt yet → fallback toast */
+      toast("Install option not available yet. Try refreshing the page or use your browser's menu to Add to Home Screen.", "info", 5000);
     });
   }
-
-  window.addEventListener("appinstalled", function () {
-    console.log("[UniSolve] App installed");
-    deferredInstallPrompt = null;
-  });
 
   /* AUTH UI */
   function updateAuthUI() {
@@ -2287,8 +2292,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("[UniSolve] Firestore save failed:", err);
         toast("Saved locally (cloud offline)", "info", 2200);
       });
-    } else {
-      console.warn("[UniSolve] Firebase not ready, keeping local only");
     }
 
     if (priority === "Emergency" || category === "Emergency") {
@@ -2831,7 +2834,6 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ADMIN */
   const ADMIN_EMAIL = "admin@unisolve.com";
   const ADMIN_PASS = "admin123";
-
   function isAdminLoggedIn() {
     try { return sessionStorage.getItem(K.admin) === "1"; }
     catch (e) { return false; }
@@ -2842,9 +2844,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function clearAdminSession() {
     try { sessionStorage.removeItem(K.admin); } catch (e) {}
   }
-
   let adminFirestoreComplaints = [];
-
   function enterAdminMode() {
     document.querySelector(".sticky-wrap").classList.add("hidden");
     document.querySelector(".footer").classList.add("hidden");
@@ -2862,7 +2862,6 @@ document.addEventListener("DOMContentLoaded", function () {
     startAdminFirestoreListener();
     renderAdminDashboard();
   }
-
   function startAdminFirestoreListener() {
     if (!window.UniSolveFirebase) return;
     window.UniSolveFirebase.onReady(function () {
@@ -2879,14 +2878,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }, 2500);
   }
-
   function stopAdminFirestoreListener() {
-    if (window.UniSolveFirebase && window.UniSolveFirebase.stopListening) {
-      window.UniSolveFirebase.stopListening();
-    }
+    if (window.UniSolveFirebase && window.UniSolveFirebase.stopListening) window.UniSolveFirebase.stopListening();
     adminFirestoreComplaints = [];
   }
-
   function exitAdminMode() {
     stopAdminFirestoreListener();
     clearAdminSession();
@@ -2894,32 +2889,22 @@ document.addEventListener("DOMContentLoaded", function () {
     catch (e) { location.hash = ""; }
     location.reload();
   }
-
   function getAdminComplaints() {
     const local = getComplaints();
-    if (!adminFirestoreComplaints || adminFirestoreComplaints.length === 0) {
-      return local.slice();
-    }
+    if (!adminFirestoreComplaints || adminFirestoreComplaints.length === 0) return local.slice();
     const firestoreIds = {};
     adminFirestoreComplaints.forEach(function (c) { if (c.firestoreId) firestoreIds[c.firestoreId] = true; });
-    const localOnly = local.filter(function (c) {
-      return !c.firestoreId || !firestoreIds[c.firestoreId];
-    });
+    const localOnly = local.filter(function (c) { return !c.firestoreId || !firestoreIds[c.firestoreId]; });
     const merged = adminFirestoreComplaints.concat(localOnly);
-    merged.sort(function (a, b) {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
+    merged.sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
     return merged;
   }
-
   const adminState = { status: "all", category: "all", search: "" };
-
   function isEmergencyComplaint(c) {
     const cat = String(c.category || "").toLowerCase();
     const pri = String(c.priority || "").toLowerCase();
     return cat === "emergency" || pri === "emergency" || pri === "high";
   }
-
   function getCategoryEmoji(cat) {
     const map = {
       "Academic": "📚", "Infrastructure": "🏗️", "Canteen / Food": "🍽️",
@@ -2928,26 +2913,18 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     return map[cat] || "📋";
   }
-
   function renderAdminDashboard() {
     const content = document.getElementById("adminContent");
     if (!content) return;
-
     const allComplaints = getAdminComplaints();
     const alerts = getAlerts();
-
     const total = allComplaints.length;
     const pending = allComplaints.filter(function (c) { return c.status === "Pending"; }).length;
     const resolved = allComplaints.filter(function (c) { return c.status === "Resolved"; }).length;
     const emergency = allComplaints.filter(isEmergencyComplaint).length;
-
     let filtered = allComplaints.slice();
-    if (adminState.status !== "all") {
-      filtered = filtered.filter(function (c) { return c.status === adminState.status; });
-    }
-    if (adminState.category !== "all") {
-      filtered = filtered.filter(function (c) { return c.category === adminState.category; });
-    }
+    if (adminState.status !== "all") filtered = filtered.filter(function (c) { return c.status === adminState.status; });
+    if (adminState.category !== "all") filtered = filtered.filter(function (c) { return c.category === adminState.category; });
     if (adminState.search) {
       const q = adminState.search.toLowerCase();
       filtered = filtered.filter(function (c) {
@@ -2955,27 +2932,18 @@ document.addEventListener("DOMContentLoaded", function () {
                (c.id || "").toLowerCase().indexOf(q) !== -1;
       });
     }
-
     let html = "";
-
     html += '<div class="admin-stats">' +
       '<div class="admin-card total"><div class="ac-icon">📋</div><div class="ac-body"><div class="ac-num">' + total + '</div><div class="ac-lbl">Total Complaints</div></div></div>' +
       '<div class="admin-card pending"><div class="ac-icon">⏳</div><div class="ac-body"><div class="ac-num">' + pending + '</div><div class="ac-lbl">Pending</div></div></div>' +
       '<div class="admin-card resolved"><div class="ac-icon">✅</div><div class="ac-body"><div class="ac-num">' + resolved + '</div><div class="ac-lbl">Resolved</div></div></div>' +
       '<div class="admin-card emergency"><div class="ac-icon">🚨</div><div class="ac-body"><div class="ac-num">' + emergency + '</div><div class="ac-lbl">Emergency</div></div></div>' +
     "</div>";
-
     if (allComplaints.length === 0) {
-      html +=
-        '<div class="admin-empty">' +
-          '<span class="ae-emoji">🎉</span>' +
-          "<h3>No pending complaints!</h3>" +
-          "<p>Everything is resolved. When students submit new complaints, they will appear here automatically — even from other devices.</p>" +
-        "</div>";
+      html += '<div class="admin-empty"><span class="ae-emoji">🎉</span><h3>No pending complaints!</h3><p>Everything is resolved. When students submit new complaints, they will appear here automatically — even from other devices.</p></div>';
       content.innerHTML = html;
       return;
     }
-
     html += '<div class="admin-filter-bar">' +
       '<div class="af-search"><input type="text" id="adminSearch" placeholder="Search by name or ID…" value="' + esc(adminState.search) + '"></div>' +
       '<select id="adminFilterStatus">' +
@@ -2998,22 +2966,15 @@ document.addEventListener("DOMContentLoaded", function () {
         '<option value="Other"' + (adminState.category === "Other" ? " selected" : "") + '>📋 Other</option>' +
       '</select>' +
     '</div>';
-
     if (filtered.length === 0) {
-      html += '<div class="admin-empty" style="padding:40px 20px;">' +
-        '<span class="ae-emoji" style="font-size:40px;">🔍</span>' +
-        '<h3 style="font-size:16px;">No complaints match your filters</h3>' +
-        '<p>Try adjusting the search or filter criteria above.</p>' +
-      '</div>';
+      html += '<div class="admin-empty" style="padding:40px 20px;"><span class="ae-emoji" style="font-size:40px;">🔍</span><h3 style="font-size:16px;">No complaints match your filters</h3><p>Try adjusting the search or filter criteria above.</p></div>';
       content.innerHTML = html;
       attachAdminFilterListeners();
       return;
     }
-
     html += '<div class="admin-table-wrap"><table class="admin-table"><thead><tr>' +
       "<th>ID</th><th>Student Name</th><th>Category</th><th>Priority</th><th>Date & Time</th><th>Status</th><th>Actions</th>" +
     "</tr></thead><tbody>";
-
     filtered.forEach(function (c) {
       const isEmergency = isEmergencyComplaint(c);
       const rowCls = isEmergency ? "row-emergency" : "";
@@ -3032,18 +2993,14 @@ document.addEventListener("DOMContentLoaded", function () {
       "</tr>";
     });
     html += "</tbody></table></div>";
-
     html += '<div class="admin-cards-wrap">';
     filtered.forEach(function (c) {
       const isEmergency = isEmergencyComplaint(c);
       html +=
         '<div class="admin-complaint-card' + (isEmergency ? " emergency" : "") + '">' +
-          '<div class="acc-id">' +
-            "<span>" + esc(c.id) + "</span>" +
-            '<span class="badge ' + statusClass(c.status) + '">' + esc(c.status) + "</span>" +
-          "</div>" +
+          '<div class="acc-id"><span>' + esc(c.id) + '</span><span class="badge ' + statusClass(c.status) + '">' + esc(c.status) + "</span></div>" +
           '<div class="acc-name">' + esc(c.name || "—") + "</div>" +
-          '<div class="acc-row"><span>' + getCategoryEmoji(c.category) + "</span><span class=\"acc-label\">" + esc(c.category || "—") + "</span></div>" +
+          '<div class="acc-row"><span>' + getCategoryEmoji(c.category) + '</span><span class="acc-label">' + esc(c.category || "—") + "</span></div>" +
           '<div class="acc-row"><span class="priority ' + priorityClass(c.priority) + '">' + esc(c.priority || "Low") + "</span></div>" +
           '<div class="acc-row"><span>🕒</span><span class="acc-label">' + esc(formatDateTime(c.createdAt)) + "</span></div>" +
           '<div class="acc-actions">' +
@@ -3054,22 +3011,18 @@ document.addEventListener("DOMContentLoaded", function () {
         "</div>";
     });
     html += "</div>";
-
     if (alerts.length > 0) {
       html += '<div class="panel" style="margin-top:20px;"><div class="panel-title">🚨 Recent Emergency Alerts</div>';
       alerts.slice(0, 6).forEach(function (a) { html += alertCardHTML(a); });
       html += "</div>";
     }
-
     content.innerHTML = html;
     attachAdminFilterListeners();
   }
-
   function attachAdminFilterListeners() {
     const searchEl = document.getElementById("adminSearch");
     const statusEl = document.getElementById("adminFilterStatus");
     const categoryEl = document.getElementById("adminFilterCategory");
-
     if (searchEl) {
       searchEl.addEventListener("input", function () {
         adminState.search = this.value;
@@ -3082,31 +3035,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     }
-    if (statusEl) {
-      statusEl.addEventListener("change", function () {
-        adminState.status = this.value;
-        renderAdminDashboard();
-      });
-    }
-    if (categoryEl) {
-      categoryEl.addEventListener("change", function () {
-        adminState.category = this.value;
-        renderAdminDashboard();
-      });
-    }
+    if (statusEl) statusEl.addEventListener("change", function () { adminState.status = this.value; renderAdminDashboard(); });
+    if (categoryEl) categoryEl.addEventListener("change", function () { adminState.category = this.value; renderAdminDashboard(); });
   }
-
   document.getElementById("adminLoginForm").addEventListener("submit", function (e) {
     e.preventDefault();
     clearMsg("admMsg");
     const email = document.getElementById("admEmail").value.trim().toLowerCase();
     const pass = document.getElementById("admPass").value;
-
     if (email !== ADMIN_EMAIL || pass !== ADMIN_PASS) {
       formMsg("admMsg", "Invalid admin credentials. Please try again.", "error");
       return;
     }
-
     setAdminLoggedIn();
     formMsg("admMsg", "Access granted. Loading dashboard…", "success");
     const self = this;
@@ -3116,61 +3056,43 @@ document.addEventListener("DOMContentLoaded", function () {
       enterAdminMode();
     }, 600);
   });
-
   document.addEventListener("click", function (e) {
     const btn = e.target.closest("[data-admin-action][data-id]");
     if (!btn) return;
     e.preventDefault();
     const action = btn.getAttribute("data-admin-action");
     const id = btn.getAttribute("data-id");
-
     const merged = getAdminComplaints();
     const complaint = merged.find(function (c) { return c.id === id; });
     if (!complaint) return;
-
     let newStatus;
     if (action === "approve") newStatus = "In Progress";
     else if (action === "reject") newStatus = "Rejected";
     else if (action === "resolve") newStatus = "Resolved";
     else return;
-
     const localList = getComplaints();
     const localIdx = localList.findIndex(function (c) {
       return c.id === id || (complaint.firestoreId && c.firestoreId === complaint.firestoreId);
     });
-    if (localIdx !== -1) {
-      localList[localIdx].status = newStatus;
-      saveComplaints(localList);
-    }
-
+    if (localIdx !== -1) { localList[localIdx].status = newStatus; saveComplaints(localList); }
     if (complaint.firestoreId && window.UniSolveFirebase && window.UniSolveFirebase.ready) {
       window.UniSolveFirebase.updateStatus(complaint.firestoreId, newStatus)
-        .then(function () {
-          console.log("[UniSolve] Firestore status updated:", id, "→", newStatus);
-        })
-        .catch(function (err) {
-          console.warn("[UniSolve] Firestore update failed:", err);
-          toast("Local update only (cloud offline)", "info", 2200);
-        });
+        .then(function () { console.log("[UniSolve] Firestore status updated:", id, "→", newStatus); })
+        .catch(function (err) { console.warn("[UniSolve] Firestore update failed:", err); toast("Local update only (cloud offline)", "info", 2200); });
     }
-
     if (action === "approve") toast("Complaint " + id + " approved → In Progress", "success");
     else if (action === "reject") toast("Complaint " + id + " rejected", "info");
     else if (action === "resolve") toast("Complaint " + id + " resolved ✅", "success");
-
     renderAdminDashboard();
     refreshDashboard();
   });
-
   document.getElementById("adminBackBtn").addEventListener("click", exitAdminMode);
-
   function handleAdminHash() {
     if (location.hash !== "#admin") return;
     if (isAdminLoggedIn()) enterAdminMode();
     else openModal("adminLoginModal");
   }
   window.addEventListener("hashchange", handleAdminHash);
-
   $$(".footer-links a").forEach(function (a) {
     a.addEventListener("click", function (e) {
       e.preventDefault();
@@ -3192,17 +3114,14 @@ document.addEventListener("DOMContentLoaded", function () {
   renderMoodSelection();
   renderItems();
   if (getSession()) refreshDashboard();
-
-  if (location.hash === "#admin") {
-    setTimeout(handleAdminHash, 100);
-  }
+  if (location.hash === "#admin") setTimeout(handleAdminHash, 100);
 });
 
-/* SERVICE WORKER */
+/* SERVICE WORKER REGISTRATION */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./service-worker.js')
-      .then(reg => console.log('SW registered'))
+      .then(reg => console.log('SW registered ✅'))
       .catch(err => console.log('SW error', err));
   });
 }
